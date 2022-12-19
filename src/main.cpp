@@ -5,6 +5,7 @@
 
 #include <iostream>
 
+
 using namespace std::chrono_literals;
 
 void callback(std::shared_ptr<BaseStreamDeck> deck, ushort key, bool val)
@@ -47,10 +48,28 @@ int main()
 		deck->set_key_image(2, create_image(deck));
 		deck->set_key_image(5, create_image(deck));
 		deck->set_key_image(12, create_image(deck));
-
-		while (deck->is_open())
-			std::this_thread::sleep_for(100ms);
 	}
+
+    for ( ;; )
+    {
+        bool all_devices_closed = true;
+        for (auto deck : streamdecks)
+        {
+            if (deck->is_open())
+            {
+                all_devices_closed = false;
+                break;
+            }
+        }
+
+        if (all_devices_closed)
+        {
+            break;
+        }
+
+        std::this_thread::sleep_for(100ms);
+        std::this_thread::yield();
+    }
 
     return 0;
 }
