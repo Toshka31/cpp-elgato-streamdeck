@@ -3,7 +3,7 @@
 #include <string>
 #include <iostream>
 
-#include "Devices/BaseDevice.h"
+#include "Devices/StreamDeckFactory.h"
 #include "ProductID.h"
 
 
@@ -38,7 +38,7 @@ public:
             for (const auto &device : devices)
             {
                 std::cout << prod << std::endl;
-                list_streamdeck.push_back(BaseStreamDeckFactory::createInstance(prod, device));
+                list_streamdeck.push_back(StreamDeckFactory::createInstance(prod, device));
             }
         }
 
