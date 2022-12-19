@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Transport/Transport.h"
+#include "../Transport/ITransport.h"
 #include "../ProductID.h"
 
 #include <string>
