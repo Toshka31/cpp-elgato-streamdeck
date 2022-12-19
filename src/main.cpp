@@ -16,7 +16,17 @@ void callback(std::shared_ptr<BaseStreamDeck> deck, ushort key, bool val)
 std::vector<unsigned char> create_image(std::shared_ptr<BaseStreamDeck> deck)
 {
 	auto size = deck->key_image_format().size;
-    return {};
+	int sz = 72*72;
+	std::vector<unsigned char> image;
+	image.reserve(sz);
+	for (int i = 0; i < sz; ++i)
+	{
+		image.push_back(0xFF);
+		image.push_back(0xFF);
+		image.push_back(0xFF);
+	}
+
+	return image;
 }
 
 int main()
@@ -34,9 +44,10 @@ int main()
 
 		deck->set_key_callback(&callback);
 
-create_image(deck);
-
-		//deck->set_key_image(0, {});
+		deck->set_key_image(1, create_image(deck));
+		deck->set_key_image(2, create_image(deck));
+		deck->set_key_image(5, create_image(deck));
+		deck->set_key_image(12, create_image(deck));
 	}
 
     for ( ;; )
