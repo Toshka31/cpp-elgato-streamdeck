@@ -98,7 +98,7 @@ public:
         data[0] = report_id;
 
         std::unique_lock lock(hid_mutex);
-        int result = hid_get_feature_report(device, &*data.begin(), length);
+        int result = hid_get_feature_report(device, data.data(), length);
         lock.unlock();
 
         if (result < 0)
@@ -109,11 +109,12 @@ public:
 
     int write(hid_device* device, unsigned char *data, size_t size)
     {
-        std::unique_lock lock(hid_mutex);
         if (!device)
-            throw std::runtime_error("No HID device.");
+            throw std::runtime_error("No HID device (write).");
 
+        std::unique_lock lock(hid_mutex);
         int result = hid_write(device, data, size);
+        lock.unlock();
 
         if (result < 0)
             throw std::runtime_error("Failed to write out report: " + std::to_string(result));
@@ -123,10 +124,10 @@ public:
 
     std::vector<unsigned char> read(hid_device* device, size_t length)
     {
-        std::vector<unsigned char> data(length);
-
         if (!device)
             throw std::runtime_error("No HID device.");
+
+        std::vector<unsigned char> data(length);
 
         std::unique_lock lock(hid_mutex);
         int result = hid_read(device, data.data(), length);
