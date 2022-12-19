@@ -10,6 +10,7 @@ can be communicated with by an upper layer high level protocol.
 class IDevice
 {
 public:
+    virtual ~IDevice() = default;
     /*
     Opens the device for input/output. This must be called prior to
     sending or receiving any reports.
@@ -31,7 +32,7 @@ public:
     :rtype: bool
     :return: `True` if the device is open, `False` otherwise.
     */      
-    virtual bool is_open() = 0;
+    virtual bool is_open() const = 0;
 
     /*
     Indicates if the physical device object this instance is attached
@@ -39,7 +40,7 @@ public:
     :rtype: bool
     :return: `True` if the device is still connected, `False` otherwise.
     */        
-    virtual bool connected() = 0;
+    virtual bool connected() const = 0;
 
     /*
     Retrieves the logical path of the attached device within the
@@ -48,21 +49,21 @@ public:
     :rtype: str
     :return: Logical device path for the attached device.
     */        
-    virtual std::string path() = 0;
+    virtual std::string path() const = 0;
 
     /*
     Retrieves the vendor ID value of the attached device.
     :rtype: int
     :return: Vendor ID of the attached device.
     */        
-    virtual unsigned short vendor_id() = 0;
+    virtual unsigned short vendor_id() const = 0;
 
     /*
     Retrieves the product ID value of the attached device.
     :rtype: int
     :return: Product ID of the attached device.
     */        
-    virtual unsigned short product_id() = 0;
+    virtual unsigned short product_id() const = 0;
 
     /*
     Sends a HID Feature report to the open HID device.

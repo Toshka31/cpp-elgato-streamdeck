@@ -11,6 +11,7 @@
 #include <mutex>
 #include <chrono>
 
+
 class BaseStreamDeck : public std::enable_shared_from_this<BaseStreamDeck>
 {
 public:
@@ -198,7 +199,11 @@ protected:
     std::mutex key_state_mutex;
 };
 
-template<typename T> std::shared_ptr<BaseStreamDeck> createStreamDeck(std::shared_ptr<IDevice> device) { return std::make_shared<T>(device); }
+template<typename T>
+std::shared_ptr<BaseStreamDeck> createStreamDeck(std::shared_ptr<IDevice> device)
+{
+    return std::make_shared<T>(device);
+}
 
 struct BaseStreamDeckFactory 
 {

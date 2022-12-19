@@ -5,12 +5,14 @@
 #include <algorithm>
 #include <iostream>
 
+
 class StreamDeckOriginalV2 : public BaseStreamDeck
 {
 public:
     StreamDeckOriginalV2(std::shared_ptr<IDevice> device) : 
         BaseStreamDeck(device, 15, 5, 3, 72, 72, "JPEG", {true, true}, 0, "Stream Deck Original", true)
     {}
+
     virtual ~StreamDeckOriginalV2() = default;
 
     void reset() override
@@ -81,6 +83,7 @@ public:
             page_number++;
         }
     }
+
 private:
     std::vector<bool> read_key_states() override
     {
@@ -102,6 +105,7 @@ private:
         payload[0] = 0x02;
         m_device->write(payload);
     }
+
 protected:
     static StreamDeckRegister<StreamDeckOriginalV2> reg;
 

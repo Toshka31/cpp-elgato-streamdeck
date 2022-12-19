@@ -3,9 +3,9 @@
 #include <string>
 #include <iostream>
 
-#include "Transport/UsbTransport.h"
 #include "Devices/BaseDevice.h"
 #include "ProductID.h"
+
 
 /*
     Central device manager, to enumerate any attached StreamDeck devices. An
@@ -15,7 +15,8 @@
 class DeviceManager
 {
 public:
-    DeviceManager(std::shared_ptr<ITransport> transport) : m_transport(transport) {}
+    DeviceManager(std::shared_ptr<ITransport> transport)
+        : m_transport(transport) {}
 
     std::vector<std::shared_ptr<BaseStreamDeck>> enumerate() 
     {
@@ -31,11 +32,10 @@ public:
         };
 
         std::vector<std::shared_ptr<BaseStreamDeck>> list_streamdeck;
-
         for (auto prod : products)
         {
-            std::vector<std::shared_ptr<IDevice>> devices = m_transport->enumerate(USBVendorIDs::USB_VID_ELGATO, prod);
-            for (auto device : devices)
+            auto devices = m_transport->enumerate(USBVendorIDs::USB_VID_ELGATO, prod);
+            for (const auto &device : devices)
             {
                 std::cout << prod << std::endl;
                 list_streamdeck.push_back(BaseStreamDeckFactory::createInstance(prod, device));
@@ -44,6 +44,7 @@ public:
 
         return list_streamdeck;
     }
+
 private:
     std::shared_ptr<ITransport> m_transport;
 };
