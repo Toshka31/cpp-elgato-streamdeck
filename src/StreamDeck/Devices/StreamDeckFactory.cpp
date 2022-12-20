@@ -1,5 +1,7 @@
 #include "StreamDeckFactory.h"
 
+#include <stdexcept>
+
 
 StreamDeckFactory::map_type * StreamDeckFactory::map = nullptr;
 
@@ -7,7 +9,7 @@ std::shared_ptr<BaseStreamDeck> StreamDeckFactory::createInstance(USBProductIDs 
 {
     auto it = getMap()->find(s);
     if (it == getMap()->end())
-        return std::shared_ptr<BaseStreamDeck>();
+        throw std::runtime_error("StreamDeckFactory::createInstance: no suitable types for factory");
 
     return it->second(device);
 }

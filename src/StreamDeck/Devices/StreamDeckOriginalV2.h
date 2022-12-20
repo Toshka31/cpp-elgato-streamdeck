@@ -1,7 +1,6 @@
 #pragma once
 
 #include "BaseStreamDeck.h"
-#include "DeviceRegistrator.h"
 
 #include <algorithm>
 #include <iostream>
@@ -30,8 +29,6 @@ private:
     void reset_key_stream() override;
 
 protected:
-    static StreamDeckRegistrator<StreamDeckOriginalV2> reg;
-
     unsigned short IMAGE_REPORT_LENGTH = 1024;
     unsigned short IMAGE_REPORT_HEADER_LENGTH = 8;
     unsigned short IMAGE_REPORT_PAYLOAD_LENGTH = IMAGE_REPORT_LENGTH - IMAGE_REPORT_HEADER_LENGTH;

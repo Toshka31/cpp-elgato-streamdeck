@@ -1,12 +1,16 @@
 #include "StreamDeckOriginalV2.h"
+#include "DeviceRegistrator.h"
 #include "../Transport/IDevice.h"
 
 
-StreamDeckRegistrator<StreamDeckOriginalV2> StreamDeckOriginalV2::reg(USBProductIDs::USB_PID_STREAMDECK_ORIGINAL_V2);
-
-StreamDeckOriginalV2::StreamDeckOriginalV2(std::shared_ptr<IDevice> device) : 
-    BaseStreamDeck(device, 15, 5, 3, 72, 72, "JPEG", {true, true}, 0, "Stream Deck Original", true)
-{}
+StreamDeckOriginalV2::StreamDeckOriginalV2(std::shared_ptr<IDevice> device)
+    : BaseStreamDeck(device, 15, 5, 3, 72, 72, "JPEG", {true, true}, 0, "Stream Deck Original", true)
+{
+    {
+        static std::once_flag flag;
+        std::call_once(flag, [&]() { return StreamDeckRegistrator<StreamDeckOriginalV2>::insertDeckProduct(USB_PID_STREAMDECK_ORIGINAL_V2); });
+    }
+}
 
 void StreamDeckOriginalV2::reset()
 {
