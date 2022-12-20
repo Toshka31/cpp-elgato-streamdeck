@@ -1,4 +1,6 @@
 #include "StreamDeckOriginalV2.h"
+#include "../Transport/IDevice.h"
+
 
 StreamDeckRegistrator<StreamDeckOriginalV2> StreamDeckOriginalV2::reg(USBProductIDs::USB_PID_STREAMDECK_ORIGINAL_V2);
 

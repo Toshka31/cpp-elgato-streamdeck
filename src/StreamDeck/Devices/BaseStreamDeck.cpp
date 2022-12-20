@@ -1,5 +1,9 @@
 #include "BaseStreamDeck.h"
 
+#include "../Transport/ITransport.h"
+#include "../Transport/UsbDevice.h"
+
+
 BaseStreamDeck::BaseStreamDeck(
     std::shared_ptr<IDevice> device, 
     unsigned short KEY_COUNT, 

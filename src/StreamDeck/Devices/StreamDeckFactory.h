@@ -1,21 +1,21 @@
+#pragma once
 
-#include "BaseStreamDeck.h"
+#include "../ProductID.h"
 
 #include <memory>
+#include <map>
 
-template<typename T>
-std::shared_ptr<BaseStreamDeck> createStreamDeck(std::shared_ptr<IDevice> device)
-{
-    return std::make_shared<T>(device);
-}
+
+class BaseStreamDeck;
+class IDevice;
 
 struct StreamDeckFactory 
 {
-    typedef std::map<unsigned short, std::shared_ptr<BaseStreamDeck>(*)(std::shared_ptr<IDevice>)> map_type;
-
     static std::shared_ptr<BaseStreamDeck> createInstance(USBProductIDs s, std::shared_ptr<IDevice> device);
 
 protected:
+    using map_type = std::map<unsigned short, std::shared_ptr<BaseStreamDeck>(*)(std::shared_ptr<IDevice>)>;
+
     static map_type * getMap();
 
 private:

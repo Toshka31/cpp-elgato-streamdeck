@@ -1,5 +1,6 @@
 #pragma once
 
+#include "BaseStreamDeck.h"
 #include "DeviceRegistrator.h"
 
 #include <algorithm>
@@ -13,13 +14,13 @@ public:
 
     virtual ~StreamDeckOriginalV2() = default;
 
-    void reset();
+    void reset() override;
 
-    void set_brightness(unsigned char percent);
+    void set_brightness(unsigned char percent) override;
 
-    std::string get_serial_number();
+    std::string get_serial_number() override;
 
-    std::string get_firmware_version();
+    std::string get_firmware_version() override;
 
     void set_key_image(unsigned char key_index, std::vector<unsigned char> image_data) override;
 

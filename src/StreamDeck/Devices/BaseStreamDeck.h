@@ -1,8 +1,5 @@
 #pragma once
 
-#include "../Transport/ITransport.h"
-#include "../ProductID.h"
-
 #include <string>
 #include <memory>
 #include <map>
@@ -11,6 +8,8 @@
 #include <mutex>
 #include <chrono>
 
+
+class IDevice;
 
 class BaseStreamDeck : public std::enable_shared_from_this<BaseStreamDeck>
 {
@@ -53,24 +52,25 @@ public:
 
     unsigned short product_id()  const;
 
-    std::string id()  const;
+    std::string id() const;
 
-    unsigned short key_count()  const;
+    unsigned short key_count() const;
 
-    std::string deck_type()  const;
+    std::string deck_type() const;
 
-    bool is_visual()  const;
+    bool is_visual() const;
 
-    std::pair<unsigned short, unsigned short> key_layout()  const;
+    std::pair<unsigned short, unsigned short> key_layout() const;
 
-    struct KeyImageFormat {
+    struct KeyImageFormat
+    {
         std::pair<unsigned short, unsigned short> size;
         std::string format;
         std::pair<bool, bool> flip;
         unsigned short rotation;
     };
 
-    KeyImageFormat key_image_format()  const;
+    KeyImageFormat key_image_format() const;
 
     void set_poll_frequency(unsigned int hz);
 

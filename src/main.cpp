@@ -1,4 +1,5 @@
 #include "StreamDeck/DeviceManager.h"
+#include "StreamDeck/Devices/BaseStreamDeck.h"
 #include "StreamDeck/Transport/UsbTransport.h"
 
 #include <jpeglib.h>
@@ -6,7 +7,6 @@
 #include <iostream>
 
 
-using namespace std::chrono_literals;
 
 void callback(std::shared_ptr<BaseStreamDeck> deck, ushort key, bool val)
 {
@@ -16,7 +16,7 @@ void callback(std::shared_ptr<BaseStreamDeck> deck, ushort key, bool val)
 std::vector<unsigned char> create_image(std::shared_ptr<BaseStreamDeck> deck)
 {
 	auto size = deck->key_image_format().size;
-	int sz = 72*72;
+    int sz = 72 * 72;
 	std::vector<unsigned char> image;
 	image.reserve(sz);
 	for (int i = 0; i < sz; ++i)
@@ -31,11 +31,13 @@ std::vector<unsigned char> create_image(std::shared_ptr<BaseStreamDeck> deck)
 
 int main()
 {
+    using namespace std::chrono_literals;
+
 	std::shared_ptr<ITransport> transport(new UsbTransport());
 	DeviceManager mngr(transport);
 	auto streamdecks = mngr.enumerate();
 	
-	for (auto deck : streamdecks)
+    for (auto &deck : streamdecks)
 	{
 		deck->open();
 		deck->reset();
@@ -52,17 +54,10 @@ int main()
 
     for ( ;; )
     {
-        bool all_devices_closed = true;
-        for (auto deck : streamdecks)
-        {
-            if (deck->is_open())
-            {
-                all_devices_closed = false;
-                break;
-            }
-        }
+        const auto have_opened_decks = std::any_of(begin(streamdecks), end(streamdecks),
+                                                   [](const auto &deck) { return deck->is_open(); });
 
-        if (all_devices_closed)
+        if (!have_opened_decks)
         {
             break;
         }
