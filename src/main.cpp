@@ -1,11 +1,12 @@
 #include "StreamDeck/DeviceManager.h"
 #include "StreamDeck/Devices/BaseStreamDeck.h"
+#include "StreamDeck/Devices/StreamDeckOriginalV2.h"
 #include "StreamDeck/Transport/UsbTransport.h"
+#include "StreamDeck/Devices/DeviceRegistrator.h"
 
 #include <jpeglib.h>
 
 #include <iostream>
-
 
 
 void callback(std::shared_ptr<BaseStreamDeck> deck, ushort key, bool val)
@@ -29,9 +30,16 @@ std::vector<unsigned char> create_image(std::shared_ptr<BaseStreamDeck> deck)
 	return image;
 }
 
+void registerKnownProducts()
+{
+    StreamDeckRegistrator<StreamDeckOriginalV2>::insertDeckProduct(USB_PID_STREAMDECK_ORIGINAL_V2);
+}
+
 int main()
 {
     using namespace std::chrono_literals;
+
+    registerKnownProducts();
 
 	std::shared_ptr<ITransport> transport(new UsbTransport());
 	DeviceManager mngr(transport);
