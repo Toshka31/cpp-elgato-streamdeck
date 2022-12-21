@@ -28,8 +28,15 @@ int main()
 
 		deck->set_key_callback(&callback);
 
-		//deck->set_key_image(2, image::helper::readFromFile("horse.jpg"));
-		deck->set_key_image(3, image::helper::loadFromFile(std::string(SAMPLES_FOLDER) + "/horse_unscaled.jpg"));
+        // TODO: refactor Base deck class API, cause this code looks ugly
+		deck->set_key_image(3, image::helper::prepareImageForDeck(
+            std::string(SAMPLES_FOLDER) + "/horse_unscaled.jpg", 
+            deck->key_image_format().size.first, deck->key_image_format().size.second, 
+            deck->key_image_format().flip.first, deck->key_image_format().flip.second));
+		deck->set_key_image(7, image::helper::prepareImageForDeck(
+            std::string(SAMPLES_FOLDER) + "/spartak.png", 
+            deck->key_image_format().size.first, deck->key_image_format().size.second, 
+            deck->key_image_format().flip.first, deck->key_image_format().flip.second));
 	}
 
     for ( ;; )

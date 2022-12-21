@@ -14,4 +14,4 @@ if(Boost_FOUND)
 endif()
 
 add_executable(test ${HEADERS_FILES} ${SOURCE_FILES})
-target_link_libraries(test PUBLIC hidapi-libusb pthread jpeg)
+target_link_libraries(test PUBLIC hidapi-libusb pthread jpeg png)
