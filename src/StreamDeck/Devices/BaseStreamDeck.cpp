@@ -12,7 +12,17 @@ BaseStreamDeck::BaseStreamDeck(
     unsigned short KEY_ROTATION,
     std::string DECK_TYPE,
     bool DECK_VISUAL
-) : m_device(device) 
+) : m_device(device),
+    KEY_COUNT(KEY_COUNT),
+    KEY_COLS(KEY_COLS),
+    KEY_ROWS(KEY_ROWS) ,
+    KEY_PIXEL_WIDTH(KEY_PIXEL_WIDTH),
+    KEY_PIXEL_HEIGHT(KEY_PIXEL_HEIGHT),
+    KEY_IMAGE_FORMAT(KEY_IMAGE_FORMAT),
+    KEY_FLIP(KEY_FLIP),
+    KEY_ROTATION(KEY_ROTATION),
+    DECK_TYPE(DECK_TYPE),
+    DECK_VISUAL(DECK_VISUAL)
 {
     last_key_stated = std::vector<bool>(KEY_COUNT, false);
 }
