@@ -29,14 +29,16 @@ int main()
 		deck->set_key_callback(&callback);
 
         // TODO: refactor Base deck class API, cause this code looks ugly
+        image::helper::TargetImageParameters image_params = { 
+            deck->key_image_format().size.first, 
+            deck->key_image_format().size.second, 
+            deck->key_image_format().flip.first, 
+            deck->key_image_format().flip.second };
+
 		deck->set_key_image(3, image::helper::prepareImageForDeck(
-            std::string(SAMPLES_FOLDER) + "/horse_unscaled.jpg", 
-            deck->key_image_format().size.first, deck->key_image_format().size.second, 
-            deck->key_image_format().flip.first, deck->key_image_format().flip.second));
+            std::string(SAMPLES_FOLDER) + "/horse_unscaled.jpg", image_params));
 		deck->set_key_image(7, image::helper::prepareImageForDeck(
-            std::string(SAMPLES_FOLDER) + "/spartak.png", 
-            deck->key_image_format().size.first, deck->key_image_format().size.second, 
-            deck->key_image_format().flip.first, deck->key_image_format().flip.second));
+            std::string(SAMPLES_FOLDER) + "/spartak.png", image_params));
 	}
 
     for ( ;; )
