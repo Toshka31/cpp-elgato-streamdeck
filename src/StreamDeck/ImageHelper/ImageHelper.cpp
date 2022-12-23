@@ -1,4 +1,4 @@
-#include "ImageHelper.h"
+#include <StreamDeckLib/ImageHelper/ImageHelper.h>
 
 #include <boost/gil.hpp>
 #include <boost/gil/extension/io/jpeg.hpp>

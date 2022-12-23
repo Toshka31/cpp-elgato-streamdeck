@@ -1,22 +1,23 @@
-#include "StreamDeck/DeviceManager.h"
-#include "StreamDeck/Transport/UsbTransport.h"
-#include "StreamDeck/ImageHelper/ImageHelper.h"
+#include <StreamDeckLib/DeviceManager.h>
+#include <StreamDeckLib/Transport/TransportFactory.h>
+#include <StreamDeckLib/ImageHelper/ImageHelper.h>
 
 #include <jpeglib.h>
 
 #include <iostream>
+#include <chrono>
+#include <thread>
 
 using namespace std::chrono_literals;
 
-void callback(std::shared_ptr<BaseStreamDeck> deck, ushort key, bool val)
+void callback(std::shared_ptr<IStreamDeck> deck, ushort key, bool val)
 {
 	std::cout << "Key " << key << " state " << val << std::endl;
 }
 
 int main()
 {
-	std::shared_ptr<ITransport> transport(new UsbTransport());
-	DeviceManager mngr(transport);
+	DeviceManager mngr(TransportFactory::createUsbTransport());
 	auto streamdecks = mngr.enumerate();
 	
 	for (auto deck : streamdecks)
