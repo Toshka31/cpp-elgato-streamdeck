@@ -101,7 +101,7 @@ void BaseStreamDeck::set_poll_frequency(unsigned int hz)
     read_poll_hz = std::min(std::max(hz, 1U), 1000U);
 }
 
-void BaseStreamDeck::set_key_callback(std::function<void(std::shared_ptr<BaseStreamDeck>, unsigned short, bool)> callback)
+void BaseStreamDeck::set_key_callback(IStreamDeck::KeyCallback callback)
 {
     std::lock_guard<std::mutex> guard(key_state_mutex);
     key_callback = callback;

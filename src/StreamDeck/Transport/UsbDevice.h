@@ -1,7 +1,7 @@
 #pragma once
 
+#include <StreamDeckLib/Transport/IDevice.h>
 #include "LibUsbHidWrapper.h"
-#include "IDevice.h"
 
 #include <memory>
 #include <vector>

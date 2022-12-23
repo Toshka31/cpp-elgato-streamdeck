@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IDevice.h"
+#include <StreamDeckLib/Transport/IDevice.h>
 
 #include <memory>
 #include <vector>
