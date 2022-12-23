@@ -1,8 +1,5 @@
 cmake_minimum_required(VERSION 3.2)
 
-file(GLOB_RECURSE HEADERS_FILES ${CMAKE_CURRENT_LIST_DIR}/*.cpp)
-file(GLOB_RECURSE SOURCE_FILES ${CMAKE_CURRENT_LIST_DIR}/*.h)
-
 set(CMAKE_CXX_STANDARD 17)
 
 add_compile_definitions(SAMPLES_FOLDER="${SAMPLES_FOLDER}")
@@ -13,5 +10,5 @@ if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS}) 
 endif()
 
-add_executable(test ${HEADERS_FILES} ${SOURCE_FILES})
-target_link_libraries(test PUBLIC streamdeck.iface hidapi-libusb pthread jpeg png)
+add_subdirectory(StreamDeck)
+add_subdirectory(cli)
