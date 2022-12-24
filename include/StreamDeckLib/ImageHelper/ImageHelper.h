@@ -1,6 +1,7 @@
 #include <vector>
 #include <string>
 
+
 namespace image::helper {
 
 struct TargetImageParameters 
@@ -19,7 +20,10 @@ enum class EImageFormat
     PNG
 };
 
-std::vector<unsigned char> prepareImageForDeck(std::vector<unsigned char> &image_file_raw_data, EImageFormat format, const TargetImageParameters &image_params);
+std::vector<unsigned char> prepareImageForDeck(
+        std::vector<unsigned char> &image_file_raw_data,
+        EImageFormat format,
+        const TargetImageParameters &image_params);
 
 std::vector<unsigned char> prepareImageForDeck(const std::string &filename, const TargetImageParameters &image_params);
 

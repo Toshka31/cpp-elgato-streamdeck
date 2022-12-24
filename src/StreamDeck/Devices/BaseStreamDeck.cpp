@@ -21,14 +21,13 @@ BaseStreamDeck::BaseStreamDeck(
     KEY_ROWS(KEY_ROWS) ,
     KEY_PIXEL_WIDTH(KEY_PIXEL_WIDTH),
     KEY_PIXEL_HEIGHT(KEY_PIXEL_HEIGHT),
-    KEY_IMAGE_FORMAT(KEY_IMAGE_FORMAT),
+    KEY_IMAGE_FORMAT(std::move(KEY_IMAGE_FORMAT)),
     KEY_FLIP(KEY_FLIP),
     KEY_ROTATION(KEY_ROTATION),
-    DECK_TYPE(DECK_TYPE),
-    DECK_VISUAL(DECK_VISUAL)
-{
-    last_key_stated = std::vector<bool>(KEY_COUNT, false);
-}
+    DECK_TYPE(std::move(DECK_TYPE)),
+    DECK_VISUAL(DECK_VISUAL),
+    last_key_stated(std::vector<bool>(KEY_COUNT, false))
+{}
 
 BaseStreamDeck::~BaseStreamDeck() 
 {
@@ -119,6 +118,7 @@ std::vector<bool> BaseStreamDeck::key_states() const
 void BaseStreamDeck::read()
 {
     using namespace std::chrono_literals;
+
     while (run_read_thread)
     {
         auto new_key_states = read_key_states();

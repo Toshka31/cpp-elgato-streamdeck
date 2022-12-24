@@ -70,7 +70,7 @@ int main()
     for ( ;; )
     {
         bool all_devices_closed = true;
-        for (auto deck : streamdecks)
+        for (auto &deck : streamdecks)
         {
             if (deck->is_open())
             {

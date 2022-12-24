@@ -5,7 +5,7 @@ namespace
 {
 
 template <typename T>
-std::shared_ptr<BaseStreamDeck> createStreamDeckCommon(std::shared_ptr<IDevice> device)
+std::shared_ptr<IStreamDeck> createStreamDeckCommon(std::shared_ptr<IDevice> device)
 {
     return std::make_shared<T>(device);
 }
