@@ -1,7 +1,6 @@
 #include "BaseStreamDeck.h"
 
-#include "../Transport/ITransport.h"
-#include "../Transport/UsbDevice.h"
+#include <StreamDeckLib/Transport/ITransport.h>
 
 
 BaseStreamDeck::BaseStreamDeck(
@@ -16,7 +15,17 @@ BaseStreamDeck::BaseStreamDeck(
     unsigned short KEY_ROTATION,
     std::string DECK_TYPE,
     bool DECK_VISUAL
-) : m_device(device) 
+) : m_device(device),
+    KEY_COUNT(KEY_COUNT),
+    KEY_COLS(KEY_COLS),
+    KEY_ROWS(KEY_ROWS) ,
+    KEY_PIXEL_WIDTH(KEY_PIXEL_WIDTH),
+    KEY_PIXEL_HEIGHT(KEY_PIXEL_HEIGHT),
+    KEY_IMAGE_FORMAT(KEY_IMAGE_FORMAT),
+    KEY_FLIP(KEY_FLIP),
+    KEY_ROTATION(KEY_ROTATION),
+    DECK_TYPE(DECK_TYPE),
+    DECK_VISUAL(DECK_VISUAL)
 {
     last_key_stated = std::vector<bool>(KEY_COUNT, false);
 }
@@ -95,7 +104,7 @@ void BaseStreamDeck::set_poll_frequency(unsigned int hz)
     read_poll_hz = std::min(std::max(hz, 1U), 1000U);
 }
 
-void BaseStreamDeck::set_key_callback(std::function<void(std::shared_ptr<BaseStreamDeck>, unsigned short, bool)> callback)
+void BaseStreamDeck::set_key_callback(IStreamDeck::KeyCallback callback)
 {
     std::lock_guard<std::mutex> guard(key_state_mutex);
     key_callback = callback;

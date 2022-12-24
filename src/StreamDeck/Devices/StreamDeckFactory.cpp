@@ -5,7 +5,7 @@
 
 StreamDeckFactory::map_type * StreamDeckFactory::map = nullptr;
 
-std::shared_ptr<BaseStreamDeck> StreamDeckFactory::createInstance(USBProductIDs s, std::shared_ptr<IDevice> device) 
+std::shared_ptr<IStreamDeck> StreamDeckFactory::createInstance(USBProductIDs s, std::shared_ptr<IDevice> device)
 {
     auto it = getMap()->find(s);
     if (it == getMap()->end())

@@ -1,5 +1,6 @@
 #include "StreamDeckOriginalV2.h"
-#include "../Transport/IDevice.h"
+
+#include <StreamDeckLib/Transport/IDevice.h>
 
 
 StreamDeckOriginalV2::StreamDeckOriginalV2(std::shared_ptr<IDevice> device)
@@ -45,7 +46,7 @@ void StreamDeckOriginalV2::set_key_image(unsigned char key_index, std::vector<un
     if (key_index > KEY_COUNT)
         return;
 
-    //if (image_data.empty())
+    if (image_data.empty())
         image_data = BLANK_KEY_IMAGE;
 
     unsigned short page_number = 0;
@@ -83,7 +84,7 @@ std::vector<bool> StreamDeckOriginalV2::read_key_states()
     if (data.size())
     {
         key_states.resize(KEY_COUNT);
-        std::copy(data.begin() +4, data.end(), key_states.begin());
+        std::copy(data.begin() + 4, data.end(), key_states.begin());
     }
 
     return key_states;

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <StreamDeckLib/Device/IStreamDeck.h>
+
 #include <string>
 #include <memory>
 #include <map>
@@ -11,7 +13,7 @@
 
 class IDevice;
 
-class BaseStreamDeck : public std::enable_shared_from_this<BaseStreamDeck>
+class BaseStreamDeck : public std::enable_shared_from_this<BaseStreamDeck>, public IStreamDeck
 {
 public:
     BaseStreamDeck(
@@ -62,19 +64,11 @@ public:
 
     std::pair<unsigned short, unsigned short> key_layout() const;
 
-    struct KeyImageFormat
-    {
-        std::pair<unsigned short, unsigned short> size;
-        std::string format;
-        std::pair<bool, bool> flip;
-        unsigned short rotation;
-    };
-
     KeyImageFormat key_image_format() const;
 
     void set_poll_frequency(unsigned int hz);
 
-    void set_key_callback(std::function<void(std::shared_ptr<BaseStreamDeck>, unsigned short, bool)> callback);
+    void set_key_callback(IStreamDeck::KeyCallback callback);
 
     std::vector<bool> key_states() const;
 
