@@ -11,4 +11,6 @@ if(Boost_FOUND)
 endif()
 
 add_subdirectory(StreamDeck)
+add_subdirectory(modules)
 add_subdirectory(cli)
+
