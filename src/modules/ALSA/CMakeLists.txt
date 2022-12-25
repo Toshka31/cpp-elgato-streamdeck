@@ -4,4 +4,5 @@ add_library(streamdeck.modules.alsa SHARED main.cpp)
 target_link_libraries(streamdeck.modules.alsa 
     PUBLIC
         streamdeck.iface
+        streamdeck.lib
         asound)
