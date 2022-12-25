@@ -3,29 +3,62 @@
 
 #include <boost/config.hpp> 
 #include <boost/dll/alias.hpp> 
+
 #include <ModuleAPI/IModule.h>
+#include <StreamDeckLib/Device/IStreamDeck.h>
+#include <StreamDeckLib/ImageHelper/ImageHelper.h>
 
 #include <iostream>
 #include <memory>
 
+#include "image_mute.h"
+#include "image_unmute.h"
+
 class MuteComponent : public IComponent
 {
 public:
+    void init(std::shared_ptr<IStreamDeck> deck)
+    {
+        image::helper::TargetImageParameters image_params = { 
+            deck->key_image_format().size.first, 
+            deck->key_image_format().size.second, 
+            deck->key_image_format().flip.first, 
+            deck->key_image_format().flip.second };
+
+        m_img_mute = image::helper::prepareImageForDeck(IMAGE_MUTE, image::helper::EImageFormat::JPEG, image_params);
+        m_img_unmute = image::helper::prepareImageForDeck(IMAGE_UNMUTE, image::helper::EImageFormat::JPEG, image_params);
+    }
+
     std::string name() const override
     {
-        return "AlsaModule:VolumeUp";
+        return "Mute";
     }
 
-    void actionPress() override
+    void actionPress(std::shared_ptr<IStreamDeck> deck, ushort key) override
     {
-        SetAlsaMasterVolume(0);
+        if (m_prev_value)
+            deck->set_key_image(key, m_img_unmute);
+        else
+            deck->set_key_image(key, m_img_mute);
+        SetAlsaMasterVolume(m_prev_value);
     }
 
-    void actionRelease() override
+    void actionRelease(std::shared_ptr<IStreamDeck> deck, ushort key) override
     {
-        SetAlsaMasterVolume(50);
+
+    }
+
+    std::vector<unsigned char> getImage(image::helper::EImageFormat &format) const override
+    {
+        format = image::helper::EImageFormat::JPEG;
+        return IMAGE_UNMUTE;
     }
 private:
+    long m_prev_value = 0;
+
+    std::vector<unsigned char> m_img_mute;
+    std::vector<unsigned char> m_img_unmute;
+
     void SetAlsaMasterVolume(long volume)
     {
         long min, max;
@@ -45,6 +78,10 @@ private:
         snd_mixer_elem_t* elem = snd_mixer_find_selem(handle, sid);
 
         snd_mixer_selem_get_playback_volume_range(elem, &min, &max);
+
+        snd_mixer_selem_get_playback_volume(elem, SND_MIXER_SCHN_MONO, &m_prev_value);
+        m_prev_value /= (max / 100);
+
         snd_mixer_selem_set_playback_volume_all(elem, volume * max / 100);
 
         snd_mixer_close(handle);
