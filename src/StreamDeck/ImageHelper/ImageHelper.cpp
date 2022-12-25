@@ -73,8 +73,11 @@ std::vector<unsigned char> prepareImageForDeck(std::vector<unsigned char> &image
     // TODO: think about possible implementation to support raw RGB 8-bit
     boost::gil::rgb8_image_t img;
 
-    std::stringstream in_buffer( std::ios_base::in | std::ios_base::binary );
-    std::copy(image_file_raw_data.begin(), image_file_raw_data.end(), std::ostream_iterator<unsigned char>(in_buffer));
+    std::stringstream in_buffer( std::ios_base::in | std::ios_base::out | std::ios_base::binary );
+    std::cout << image_file_raw_data.size() << std::endl;
+    for (auto c : image_file_raw_data)
+        in_buffer << c;
+    //std::copy(image_file_raw_data.begin(), image_file_raw_data.end(), std::ostream_iterator<unsigned char>(in_buffer));
     
     switch (format)
     {
