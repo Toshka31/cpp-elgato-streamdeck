@@ -34,6 +34,11 @@ public:
         return "Mute";
     }
 
+    void tick() override
+    {
+        
+    }
+
     void actionPress(std::shared_ptr<IStreamDeck> deck, ushort key) override
     {
         if (m_prev_value)
