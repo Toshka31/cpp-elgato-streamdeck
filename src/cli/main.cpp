@@ -1,18 +1,10 @@
-#include "Engine.h"
-
-#include <StreamDeckLib/DeviceManager.h>
-#include <StreamDeckLib/Transport/TransportFactory.h>
-#include <StreamDeckLib/ImageHelper/ImageHelper.h>
-
-#include <boost/program_options.hpp>
-
 #include <iostream>
+#include <rpc/client.h>
 
 int main()
 {
-    Engine engine;
-
-    engine.start();
-
+    rpc::client client("127.0.0.1", 11925);
+    auto result = client.call("testCall").as<int>();
+    std::cout << "The result is: " << result << std::endl;
     return 0;
 }

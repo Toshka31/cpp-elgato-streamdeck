@@ -14,6 +14,8 @@
 #include <filesystem>
 #include <fstream>
 
+#include <rpc/server.h>
+
 #include <unistd.h>
 #include <sys/types.h>
 #include <pwd.h>
@@ -48,6 +50,12 @@ public:
 
     void start()
     {
+        rpc::server srv(11925);
+
+        srv.bind("testCall", [this](){ return testCall(); });
+
+        srv.async_run();
+
         for ( ;; )
         {
             for (auto device : m_registered_deices)
@@ -61,6 +69,11 @@ public:
             std::this_thread::sleep_for(100ms);
             std::this_thread::yield();
         }
+    }
+
+    int testCall()
+    {
+        return 10;
     }
 protected:
     std::shared_ptr<ModuleLoader> m_module_loader;
