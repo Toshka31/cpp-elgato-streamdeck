@@ -1,3 +1,5 @@
+#pragma once
+
 #include <ModuleAPI/IModule.h>
 
 #include <boost/dll/import.hpp>
@@ -41,7 +43,8 @@ class ModuleLoader
 public:
     ModuleLoader(const boost::dll::fs::path& modules_directory)
     {        
-        std::vector<boost::dll::fs::path> plugins = { "libstreamdeck.modules.alsa.so" };
+        std::vector<boost::dll::fs::path> plugins = {};
+        // TODO collect plugins from directory
         
         for (std::size_t i = 0; i < plugins.size(); ++i) {
             boost::dll::fs::path shared_library_path(modules_directory);
