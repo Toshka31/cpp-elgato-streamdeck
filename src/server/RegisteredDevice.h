@@ -51,21 +51,25 @@ public:
 
     void setBrightness(ushort brightness)
     {
+        // TODO save to profile
         m_streamdeck->set_brightness(brightness);
     }
 
     void setButtonImage(ushort key, std::vector<uint8_t> image, image::helper::EImageFormat format)
     {
+        // TODO save to profile
         image::helper::TargetImageParameters image_params = { 
             m_streamdeck->key_image_format().size.first, 
             m_streamdeck->key_image_format().size.second, 
             m_streamdeck->key_image_format().flip.first, 
             m_streamdeck->key_image_format().flip.second };
+        std::cout << "image.size() = " << image.size() << std::endl;
         m_streamdeck->set_key_image(key, image::helper::prepareImageForDeck(image, format, image_params));
     }
 
     void setButtonComponent(ushort key, std::shared_ptr<IComponent> component)
     {
+        // TODO save to profile
         image::helper::TargetImageParameters image_params = { 
             m_streamdeck->key_image_format().size.first,
             m_streamdeck->key_image_format().size.second,

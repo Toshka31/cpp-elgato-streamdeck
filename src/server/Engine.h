@@ -75,6 +75,7 @@ public:
         srv.bind(
             "setDeviceButtonImage", 
             [this](const std::string &device_id, unsigned char button, std::vector<uint8_t> image, image::helper::EImageFormat format) -> void { 
+                std::cout << "image.size() = " << image.size() << std::endl;
                 setDeviceButtonImage(device_id, button, image, format);
             }
         );
@@ -130,6 +131,7 @@ public:
 
     void setDeviceButtonImage(const std::string &device_id, unsigned char button, std::vector<unsigned char> image, image::helper::EImageFormat format)
     {
+        std::cout << "image.size() = " << image.size() << std::endl;
         auto it = m_registered_deices.find(device_id);
         if (it != m_registered_deices.end())
             return it->second->setButtonImage(button, image, format);
