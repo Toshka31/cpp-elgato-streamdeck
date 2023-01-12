@@ -49,20 +49,35 @@ public:
         return m_streamdeck->is_open();
     }
 
-private:
-    void setKeyComponent(std::shared_ptr<IStreamDeck> deck, ushort key, std::shared_ptr<IComponent> component)
+    void setBrightness(ushort brightness)
+    {
+        m_streamdeck->set_brightness(brightness);
+    }
+
+    void setButtonImage(ushort key, std::vector<uint8_t> image, image::helper::EImageFormat format)
     {
         image::helper::TargetImageParameters image_params = { 
-            deck->key_image_format().size.first, 
-            deck->key_image_format().size.second, 
-            deck->key_image_format().flip.first, 
-            deck->key_image_format().flip.second };
+            m_streamdeck->key_image_format().size.first, 
+            m_streamdeck->key_image_format().size.second, 
+            m_streamdeck->key_image_format().flip.first, 
+            m_streamdeck->key_image_format().flip.second };
+        m_streamdeck->set_key_image(key, image::helper::prepareImageForDeck(image, format, image_params));
+    }
+
+    void setButtonComponent(ushort key, std::shared_ptr<IComponent> component)
+    {
+        image::helper::TargetImageParameters image_params = { 
+            m_streamdeck->key_image_format().size.first,
+            m_streamdeck->key_image_format().size.second,
+            m_streamdeck->key_image_format().flip.first,
+            m_streamdeck->key_image_format().flip.second };
         image::helper::EImageFormat format;
         auto image = component->getImage(format);
-        deck->set_key_image(key, image::helper::prepareImageForDeck(image, format, image_params));
+        m_streamdeck->set_key_image(key, image::helper::prepareImageForDeck(image, format, image_params));
         m_key_mapping[key] = component;
     }
 
+private:
     void callback(std::shared_ptr<IStreamDeck> deck, ushort key, bool val)
     {
         std::lock_guard<std::mutex>  lock(m_mutex);

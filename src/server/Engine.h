@@ -20,6 +20,8 @@
 #include <sys/types.h>
 #include <pwd.h>
 
+MSGPACK_ADD_ENUM(image::helper::EImageFormat);
+
 class Engine
 {
 public:
@@ -52,7 +54,36 @@ public:
     {
         rpc::server srv(11925);
 
-        srv.bind("testCall", [this](){ return testCall(); });
+        srv.bind(
+            "getComponentsList", 
+            [this]() -> std::map<std::string, std::vector<std::string>> { 
+                return getComponentsList();
+            }
+        );
+        srv.bind(
+            "getDevicesList", 
+            [this]() -> std::vector<std::string> { 
+                return getDevicesList();
+            }
+        );
+        srv.bind(
+            "setDeviceBrightness", 
+            [this](const std::string &device_id, unsigned char brightness) -> void {
+                setDeviceBrightness(device_id, brightness);
+            }
+        );
+        srv.bind(
+            "setDeviceButtonImage", 
+            [this](const std::string &device_id, unsigned char button, std::vector<uint8_t> image, image::helper::EImageFormat format) -> void { 
+                setDeviceButtonImage(device_id, button, image, format);
+            }
+        );
+        srv.bind(
+            "setDeviceButtonComponent", 
+            [this](const std::string &device_id, unsigned char button, const std::string &module, const std::string &component) -> void { 
+                setDeviceButtonComponent(device_id, button, module, component);
+            }
+        );
 
         srv.async_run();
 
@@ -71,10 +102,47 @@ public:
         }
     }
 
-    int testCall()
+    std::map<std::string, std::vector<std::string>> getComponentsList()
     {
-        return 10;
+        std::map<std::string, std::vector<std::string>> ret;
+
+        std::vector<std::string> modules = m_module_loader->getModulesList();
+        for (const auto &module_name : modules)
+            ret[module_name] = m_module_loader->getModuleComponentsList(module_name);
+
+        return ret;
     }
+
+    std::vector<std::string> getDevicesList()
+    {
+        std::vector<std::string> devices;
+        for (const auto device : m_registered_deices)
+            devices.push_back(device.first);
+        return devices;
+    }
+
+    void setDeviceBrightness(const std::string &device_id, unsigned char brightness)
+    {
+        auto it = m_registered_deices.find(device_id);
+        if (it != m_registered_deices.end())
+            return it->second->setBrightness(brightness);
+    }
+
+    void setDeviceButtonImage(const std::string &device_id, unsigned char button, std::vector<unsigned char> image, image::helper::EImageFormat format)
+    {
+        auto it = m_registered_deices.find(device_id);
+        if (it != m_registered_deices.end())
+            return it->second->setButtonImage(button, image, format);
+    }
+
+    void setDeviceButtonComponent(const std::string &device_id, unsigned char button, const std::string &module, const std::string &component)
+    {
+        auto comp = m_module_loader->getModuleComponent(module, component);
+        auto it = m_registered_deices.find(device_id);
+        if (it != m_registered_deices.end())
+            return it->second->setButtonComponent(button, comp);
+    }
+
 protected:
     std::shared_ptr<ModuleLoader> m_module_loader;
     std::map<std::string, std::shared_ptr<RegisteredDevice>> m_registered_deices;

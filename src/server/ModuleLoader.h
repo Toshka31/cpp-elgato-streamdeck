@@ -70,14 +70,23 @@ public:
         m_libs.clear();
     }
 
-    void printModules() const
+    std::vector<std::string> getModulesList()
     {
+        std::vector<std::string> modules;
+
         for (const auto &mod : m_modules)
-        {
-            std::cout << mod.second->name() << std::endl;
-            for (const auto &comp : mod.second->getComponentsList())
-                std::cout << "\t " << comp << std::endl;
-        }
+            modules.push_back(mod.first);
+
+        return modules;
+    }
+
+    std::vector<std::string> getModuleComponentsList(const std::string &module)
+    {
+        auto it = m_modules.find(module);
+        if (it != m_modules.end())
+            return it->second->getComponentsList();
+
+        return {};
     }
 
     std::size_t count() const
