@@ -33,6 +33,8 @@ public:
 
     virtual std::string name() const = 0;
 
+    virtual void tick() = 0;
+
     virtual void actionPress(std::shared_ptr<IStreamDeck> deck, ushort key) = 0;
 
     virtual void actionRelease(std::shared_ptr<IStreamDeck> deck, ushort key) = 0;

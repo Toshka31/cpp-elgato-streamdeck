@@ -1,75 +1,84 @@
-#include "ModuleLoader.h"
-#include "CallbackEngine.h"
-
-#include <ModuleAPI/IModule.h>
-#include <StreamDeckLib/DeviceManager.h>
-#include <StreamDeckLib/Transport/TransportFactory.h>
 #include <StreamDeckLib/ImageHelper/ImageHelper.h>
 
-#include <boost/program_options.hpp>
-
 #include <iostream>
-#include <chrono>
-#include <thread>
+#include <fstream>
+#include <rpc/client.h>
 
-using namespace std::chrono_literals;
+// getComponentsList -> std::map<std::string, std::vector<std::string>>
+// getDevicesList -> std::vector<std::string>
+// setDeviceBrightness .. const std::string &device_id, unsigned char brightness
+// setDeviceButtonImage .. const std::string &device_id, unsigned char button, std::vector<uint8_t> image, image::helper::EImageFormat format
+// setDeviceButtonComponent .. const std::string &device_id, unsigned char button, const std::string &module, const std::string &component
 
-int main()
+MSGPACK_ADD_ENUM(image::helper::EImageFormat);
+
+int main(int argc, char *argv[])
 {
-    ModuleLoader module_loader("/home/anton/dev/streamdeck/build/src/modules/ALSA");
-    module_loader.printModules();
-
-    CallbackEngine engine;
-    
-	DeviceManager mngr(TransportFactory::createUsbTransport());
-	auto streamdecks = mngr.enumerate();
-	
-	for (auto deck : streamdecks)
-	{
-		deck->open();
-		deck->reset();
-
-		deck->set_brightness(25);
-
-		deck->set_key_callback(std::bind(&CallbackEngine::callback, &engine, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
-
-        auto component = module_loader.getModuleComponent("AlsaModule", "Mute");
-        component->init(deck);
-        engine.setKeyComponent(deck, 0, component);
-
-        // TODO: refactor Base deck class API, cause this code looks ugly
-        image::helper::TargetImageParameters image_params = { 
-            deck->key_image_format().size.first, 
-            deck->key_image_format().size.second, 
-            deck->key_image_format().flip.first, 
-            deck->key_image_format().flip.second };
-
-		deck->set_key_image(3, image::helper::prepareImageForDeck(
-            std::string(SAMPLES_FOLDER) + "/horse_unscaled.jpg", image_params));
-		deck->set_key_image(7, image::helper::prepareImageForDeck(
-            std::string(SAMPLES_FOLDER) + "/spartak.png", image_params));
-	}
-
-    for ( ;; )
+    if (argc < 2)
     {
-        bool all_devices_closed = true;
-        for (auto deck : streamdecks)
-        {
-            if (deck->is_open())
-            {
-                all_devices_closed = false;
-                break;
-            }
-        }
-
-        if (all_devices_closed)
-        {
-            break;
-        }
-
-        std::this_thread::sleep_for(100ms);
-        std::this_thread::yield();
+        return 0;
     }
 
-    return 0;
+    rpc::client client("127.0.0.1", 11925);
+
+    if (!strcmp(argv[1], "components"))
+    {
+        auto result = client.call("getComponentsList").as<std::map<std::string, std::vector<std::string>>>();
+    
+        for (auto module : result)
+        {
+            std::cout << module.first << std::endl;
+            for(auto comp : module.second)
+                std::cout << "\t" << comp << std::endl;
+        }
+    }
+    else if (!strcmp(argv[1], "devices"))
+    {
+        auto result = client.call("getDevicesList").as<std::vector<std::string>>();
+    
+        for (auto dev : result)
+            std::cout << dev << std::endl;
+    }
+    else if (!strcmp(argv[1], "set_brightness"))
+    {
+        if (argc != 4)
+            return 0;
+
+        client.call("setDeviceBrightness", argv[2], atoi(argv[3]));
+    }
+    else if (!strcmp(argv[1], "set_image"))
+    {
+        std::cout << "set" << std::endl;
+
+        std::string filename(argv[4]);
+        image::helper::EImageFormat format;
+        auto point_pos = filename.rfind(".") + 1;
+        std::string ext_str = filename.substr(point_pos);
+        if(ext_str== "jpg")
+            format = image::helper::EImageFormat::JPEG;
+        else if (ext_str== "png")
+            format = image::helper::EImageFormat::PNG;
+       
+        std::ifstream file(argv[4], std::ios::binary | std::ios::ate);
+        if (file)
+        {
+            std::streamsize size = file.tellg();
+            file.seekg(0, std::ios::beg);
+
+            std::vector<char> buffer(size);
+            file.read(buffer.data(), size);
+            std::cout << "size = " << size << std::endl;
+            std::cout << "image.size() = " << buffer.size() << std::endl;
+
+            if (buffer.size())
+                client.call("setDeviceButtonImage", argv[2], atoi(argv[3]), buffer, format);
+        }
+    }
+    else if (!strcmp(argv[1], "set_component"))
+    {
+        if (argc != 6)
+            return 0;
+
+        client.call("setDeviceButtonComponent", argv[2], atoi(argv[3]), argv[4], argv[5]);
+    }
 }

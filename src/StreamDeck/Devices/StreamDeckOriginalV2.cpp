@@ -29,7 +29,9 @@ void StreamDeckOriginalV2::set_brightness(unsigned char percent)
 std::string StreamDeckOriginalV2::get_serial_number()
 {
     std::vector<unsigned char> data = m_device->read_feature(0x06, 32);
-    std::string serial(data.begin() + 1, data.end());
+    std::string serial(data.begin() + 2, data.end());
+    serial.erase(std::find_if(serial.rbegin(), serial.rend(),
+            std::not_fn(std::bind<int(int)>(std::iscntrl, std::placeholders::_1))).base(), serial.end());
     return serial;
 }
 

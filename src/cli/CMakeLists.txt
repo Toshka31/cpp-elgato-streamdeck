@@ -4,11 +4,4 @@ file(GLOB_RECURSE HEADERS_FILES ${CMAKE_CURRENT_LIST_DIR}/*.cpp)
 file(GLOB_RECURSE SOURCE_FILES ${CMAKE_CURRENT_LIST_DIR}/*.h)
 
 add_executable(streamdeck.cli ${HEADERS_FILES} ${SOURCE_FILES})
-target_link_libraries(streamdeck.cli 
-    PUBLIC
-        boost_system
-        boost_filesystem
-        streamdeck.iface
-        streamdeck.lib)
-
-add_dependencies(streamdeck.cli streamdeck.modules.alsa)
+target_link_libraries(streamdeck.cli streamdeck.iface rpc)
