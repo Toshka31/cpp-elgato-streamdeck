@@ -1,7 +1,7 @@
 #include "ModuleLoader.h"
-#include "Profile.h"
 #include "RegisteredDevice.h"
 #include "ConfigLoader.h"
+#include "util.h"
 
 #include <StreamDeckLib/DeviceManager.h>
 #include <StreamDeckLib/Transport/TransportFactory.h>
@@ -27,8 +27,7 @@ class Engine
 public:
     Engine()
     {
-        struct passwd *pw = getpwuid(getuid());
-        std::filesystem::path homedir(pw->pw_dir);
+        std::filesystem::path homedir = util::getHomeDirectory();
 
         std::filesystem::path modules_path = homedir / FOLDER_STREAMDECK / FOLDER_MODULES;
         m_module_loader = std::make_shared<ModuleLoader>(modules_path.string());
@@ -36,17 +35,13 @@ public:
         DeviceManager mngr(TransportFactory::createUsbTransport());
 	    auto streamdecks = mngr.enumerate();
 
-        for (auto deck : streamdecks)
+        for (auto &deck : streamdecks)
         {
             deck->open();
             deck->reset();
 
-            std::string deck_serial = deck->get_serial_number();
-            std::filesystem::path configs_path = homedir / FOLDER_STREAMDECK;
-            Profile profile = loadDeckConfiguration(deck_serial, configs_path);
-            auto reg_device = std::make_shared<RegisteredDevice>(deck, profile);
-            reg_device->init(m_module_loader);
-            m_registered_deices.insert({deck_serial, reg_device});
+            auto reg_device = std::make_shared<RegisteredDevice>(deck, m_module_loader);
+            m_registered_deices.insert({deck->get_serial_number(), reg_device});
         }
     }
 
@@ -126,7 +121,7 @@ public:
     {
         auto it = m_registered_deices.find(device_id);
         if (it != m_registered_deices.end())
-            return it->second->setBrightness(brightness);
+            it->second->setBrightness(brightness);
     }
 
     void setDeviceButtonImage(const std::string &device_id, unsigned char button, std::vector<unsigned char> image, image::helper::EImageFormat format)
@@ -134,15 +129,30 @@ public:
         std::cout << "image.size() = " << image.size() << std::endl;
         auto it = m_registered_deices.find(device_id);
         if (it != m_registered_deices.end())
-            return it->second->setButtonImage(button, image, format);
+            it->second->setButtonImage(button, image, format);
     }
 
     void setDeviceButtonComponent(const std::string &device_id, unsigned char button, const std::string &module, const std::string &component)
     {
-        auto comp = m_module_loader->getModuleComponent(module, component);
         auto it = m_registered_deices.find(device_id);
         if (it != m_registered_deices.end())
-            return it->second->setButtonComponent(button, comp);
+            it->second->setButtonComponent(button, module, component);
+    }
+
+    std::vector<std::string> getDeviceProfiles(const std::string &device_id)
+    {
+        auto it = m_registered_deices.find(device_id);
+        if (it != m_registered_deices.end())
+            return it->second->getProfiles();
+        return {};
+    }
+
+    std::vector<std::string> getDevicePages(const std::string &device_id)
+    {
+        auto it = m_registered_deices.find(device_id);
+        if (it != m_registered_deices.end())
+            return it->second->getPages();
+        return {};
     }
 
 protected:

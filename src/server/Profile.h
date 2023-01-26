@@ -23,11 +23,12 @@ public:
             Page page;
             std::string page_name;
             json_page.at("name").get_to(page_name);
-            for (auto json_key : json_page.at("keys"))
+            for (auto &json_key : json_page.at("keys"))
             {
                 Key key;
                 ushort key_number;
                 json_data.at("number").get_to(key_number);
+                json_data.at("image").get_to(key.m_custom_image);
                 json_data.at("module").get_to(key.m_module_name);
                 json_data.at("component").get_to(key.m_component_name);
                 page.m_keys.insert({key_number, key});
@@ -36,7 +37,52 @@ public:
     }
     void save()
     {
+        nlohmann::json json_data;
 
+        json_data["brightness"] = m_brightness;
+        json_data["page"] = m_current_page->m_name;
+        nlohmann::json arr_pages = nlohmann::json::array();
+        for (const auto &page : m_pages)
+        {
+            nlohmann::json json_page = nlohmann::json::object();
+            json_page["name"] = page.first;
+            nlohmann::json arr_keys = nlohmann::json::array();
+            for (const auto &key : page.second->m_keys)
+            {
+                nlohmann::json json_key = nlohmann::json::object();
+                json_key["number"] = key.first;
+                json_key["image"]  = key.second.m_custom_image;
+                json_key["module"] = key.second.m_module_name;
+                json_key["component"] = key.second.m_component_name;
+            }
+            json_page["keys"] = arr_keys;
+
+            json_page.push_back(json_page);
+        }
+        json_data["pages"] = arr_pages;
+    }
+
+    void setBrightness(const ushort value)
+    {
+        m_brightness = value;
+    }
+
+    void setButtonImage(ushort button, const std::string &cached_image_path)
+    {
+        m_current_page->m_keys[button] = {cached_image_path};
+    }
+
+    void setButtonComponent(ushort button, const std::string &module_name, const std::string &component_name)
+    {
+        m_current_page->m_keys[button] = {module_name, component_name};
+    }
+
+    std::vector<std::string> getPages()
+    {
+        std::vector<std::string> result;
+        for (const auto &page : m_pages)
+            result.push_back(page.first);
+        return result;
     }
 
 private:
@@ -44,12 +90,26 @@ private:
     ushort m_brightness;
 
     struct Key {
+        Key() = default;
+
+        Key(std::string custom_image)
+            : m_custom_image(custom_image)
+        {}
+
+        Key(std::string module_name,
+            std::string component_name)
+            : m_module_name(module_name),
+              m_component_name(component_name)
+        {}
+
+        std::string m_custom_image;
         std::string m_module_name;
         std::string m_component_name;
     };
     struct Page {
+        std::string m_name;
         std::map<ushort, Key> m_keys;
     };
-    std::map<std::string, std::shared_ptr<Page>> m_pages;
+    std::map<std::string, std::shared_ptr<Page>> m_pages; // <page name, page buttons>
     std::shared_ptr<Page> m_current_page;
 };
