@@ -56,6 +56,30 @@ Engine::Engine()
         }
     );
     srv.bind(
+            "getDeviceProfiles",
+            [this](const std::string &device_id) -> std::vector<std::string> {
+                return getDeviceProfiles(device_id);
+            }
+    );
+    srv.bind(
+            "getDevicePages",
+            [this](const std::string &device_id) -> std::vector<std::string> {
+                return getDevicePages(device_id);
+            }
+    );
+    srv.bind(
+            "getDeviceCurrentPage",
+            [this](const std::string &device_id) -> std::string {
+                return getDeviceCurrentPage(device_id);
+            }
+    );
+    srv.bind(
+            "getDeviceCurrentProfile",
+            [this](const std::string &device_id) -> std::string {
+                return getDeviceCurrentProfile(device_id);
+            }
+    );
+    srv.bind(
         "setDeviceBrightness", 
         [this](const std::string &device_id, unsigned char brightness) -> void {
             setDeviceBrightness(device_id, brightness);
@@ -134,12 +158,26 @@ void Engine::setDeviceButtonComponent(const std::string &device_id, unsigned cha
         it->second->setButtonComponent(button, module, component);
 }
 
+std::string Engine::getDeviceCurrentProfile(const std::string &device_id) const
+{
+    auto it = m_registered_deices.find(device_id);
+    if (it != m_registered_deices.end())
+        return it->second->getCurrentProfileName();
+}
+
 std::vector<std::string> Engine::getDeviceProfiles(const std::string &device_id) const
 {
     auto it = m_registered_deices.find(device_id);
     if (it != m_registered_deices.end())
         return it->second->getProfiles();
     return {};
+}
+
+std::string Engine::getDeviceCurrentPage(const std::string &device_id) const
+{
+    auto it = m_registered_deices.find(device_id);
+    if (it != m_registered_deices.end())
+        return it->second->getCurrentPageName();
 }
 
 std::vector<std::string> Engine::getDevicePages(const std::string &device_id) const

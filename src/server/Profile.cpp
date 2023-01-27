@@ -17,9 +17,8 @@ Profile::Profile(const std::filesystem::path &path)
     json_data.at("page").get_to(current_page_name);
     for (auto json_page : json_data.at("pages"))
     {
-        Page page;
-        std::string page_name;
-        json_page.at("name").get_to(page_name);
+        auto page = std::make_shared<Page>();
+        json_page.at("name").get_to(page->m_name);
         for (auto &json_key : json_page.at("keys"))
         {
             Key key;
@@ -28,8 +27,9 @@ Profile::Profile(const std::filesystem::path &path)
             json_data.at("image").get_to(key.m_custom_image);
             json_data.at("module").get_to(key.m_module_name);
             json_data.at("component").get_to(key.m_component_name);
-            page.m_keys.insert({key_number, key});
+            page->m_keys.insert({key_number, key});
         }
+        m_pages.insert({page->m_name, page});
     }
 }
 
@@ -81,4 +81,12 @@ std::vector<std::string> Profile::getPages() const
     for (const auto &page : m_pages)
         result.push_back(page.first);
     return result;
+}
+
+std::string Profile::getName() const {
+    return m_profile_name;
+}
+
+std::string Profile::getCurrentPageName() const {
+    return m_current_page->m_name;
 }

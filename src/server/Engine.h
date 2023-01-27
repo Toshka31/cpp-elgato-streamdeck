@@ -10,6 +10,7 @@ public:
 
     [[noreturn]] void start();
 
+private:
     std::map<std::string, std::vector<std::string>> getComponentsList() const;
 
     std::vector<std::string> getDevicesList() const;
@@ -20,7 +21,11 @@ public:
 
     void setDeviceButtonComponent(const std::string &device_id, unsigned char button, const std::string &module, const std::string &component);
 
+    std::string getDeviceCurrentProfile(const std::string &device_id) const;
+
     std::vector<std::string> getDeviceProfiles(const std::string &device_id) const;
+
+    std::string getDeviceCurrentPage(const std::string &device_id) const;
 
     std::vector<std::string> getDevicePages(const std::string &device_id) const;
 

@@ -15,4 +15,5 @@ add_subdirectory(StreamDeck)
 add_subdirectory(modules)
 add_subdirectory(server)
 add_subdirectory(cli)
+add_subdirectory(UI)
 

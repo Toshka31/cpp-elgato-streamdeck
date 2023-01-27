@@ -21,6 +21,10 @@ public:
 
     [[nodiscard]] std::vector<std::string> getPages() const;
 
+    [[nodiscard]] std::string getName() const;
+
+    [[nodiscard]] std::string getCurrentPageName() const;
+
 private:
     std::string m_profile_name;
     ushort m_brightness;

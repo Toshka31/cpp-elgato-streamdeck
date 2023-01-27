@@ -91,9 +91,19 @@ public:
         m_current_profile.setButtonComponent(key, module, component);
     }
 
+    std::string getCurrentProfileName() const
+    {
+        return m_current_profile.getName();
+    }
+
     std::vector<std::string> getProfiles()
     {
         return getDeckProfiles(m_streamdeck->get_serial_number());
+    }
+
+    std::string getCurrentPageName() const
+    {
+        return m_current_profile.getCurrentPageName();
     }
 
     std::vector<std::string> getPages()
