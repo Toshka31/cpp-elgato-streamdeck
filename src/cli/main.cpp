@@ -77,6 +77,7 @@ int main(int argc, char *argv[])
         std::cout << "set" << std::endl;
 
         std::string filename(argv[4]);
+
         std::ifstream file(argv[4], std::ios::binary | std::ios::ate);
         if (file)
         {

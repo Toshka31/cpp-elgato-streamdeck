@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include "ModuleLoader.h"
@@ -30,6 +31,7 @@ private:
     std::string getDeviceCurrentPage(const std::string &device_id) const;
 
     std::vector<std::string> getDevicePages(const std::string &device_id) const;
+
 
 protected:
     std::shared_ptr<ModuleLoader> m_module_loader;
