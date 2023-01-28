@@ -52,6 +52,14 @@ namespace image::helper {
               flip_horizontaly(_flip_horizontaly)
     { }
 
+    std::vector<unsigned char> loadRawImage(const std::string &filename)
+    {
+        cv::Mat image = cv::imread(filename, cv::IMREAD_COLOR);
+        std::vector<unsigned char> out;
+        cv::imencode(".jpg", image, out);
+        return out;
+    }
+
     std::vector<unsigned char> prepareImageForDeck(cv::Mat &image,
                                                    const image::helper::TargetImageParameters &image_params)
     {
@@ -82,19 +90,20 @@ namespace image::helper {
         return prepareImageForDeck(image, image_params);
     }
 
-    void applyLabelOnImage(std::vector<unsigned char> &image_file_raw_data, const std::string &label)
+    std::vector<unsigned char> applyLabelOnImage(const std::vector<unsigned char> &image_file_raw_data, const std::string &label)
     {
         cv::Mat image = cv::imdecode(cv::Mat(image_file_raw_data), cv::IMREAD_COLOR);
 
         cv::putText(image, label,
                     cv::Point(10, image.rows / 2), //top-left position
-                    cv::FONT_HERSHEY_DUPLEX,
-                    1.0,
+                    cv::FONT_HERSHEY_SIMPLEX,
+                    0.5,
                     CV_RGB(255, 255, 255), //font color
-                    2);
+                    1);
 
-        image_file_raw_data.clear();
-        cv::imencode(".jpg", image, image_file_raw_data);
+        std::vector<unsigned char> out;
+        cv::imencode(".jpg", image, out);
+        return out;
     }
 
     std::vector<unsigned char> createEmptyImage(const TargetImageParameters &image_params)

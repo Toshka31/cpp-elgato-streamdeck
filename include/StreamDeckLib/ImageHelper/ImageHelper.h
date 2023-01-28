@@ -22,11 +22,13 @@ enum class EImageFormat
     PNG
 };
 
+std::vector<unsigned char> loadRawImage(const std::string &filename);
+
 std::vector<unsigned char> prepareImageForDeck(std::vector<unsigned char> &image_file_raw_data, const TargetImageParameters &image_params);
 
 std::vector<unsigned char> prepareImageForDeck(const std::string &filename, const TargetImageParameters &image_params);
 
-void applyLabelOnImage(std::vector<unsigned char> &image, const std::string &label);
+std::vector<unsigned char> applyLabelOnImage(const std::vector<unsigned char> &image, const std::string &label);
 
 std::vector<unsigned char> createEmptyImage(const TargetImageParameters &image_params);
 } // nameapce image::helper

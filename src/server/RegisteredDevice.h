@@ -34,11 +34,20 @@ public:
             auto key_profile = m_current_profile.getCurrentKeyProfile(key);
             if (!key_profile.m_module_name.empty() && !key_profile.m_component_name.empty())
                 setButtonComponent(key, key_profile.m_module_name, key_profile.m_component_name);
-            if (!key_profile.m_custom_image.empty()) {
-                auto image_data = image::helper::prepareImageForDeck(key_profile.m_custom_image, m_image_params);
-                if (!key_profile.m_custom_label.empty())
-                    image::helper::applyLabelOnImage(image_data, key_profile.m_custom_label);
-                setButtonImage(key, image_data);
+
+            std::vector<unsigned char> image_data;
+            if (!key_profile.m_custom_image.empty())
+                image_data = image::helper::loadRawImage(key_profile.m_custom_image);
+
+            if (!key_profile.m_custom_label.empty()) {
+                if (image_data.empty())
+                    image_data = image::helper::createEmptyImage(m_image_params);
+                image_data = image::helper::applyLabelOnImage(image_data, key_profile.m_custom_label);
+            }
+
+            if (!image_data.empty()) {
+                image_data = image::helper::prepareImageForDeck(image_data, m_image_params);
+                m_streamdeck->set_key_image(key, image_data);
             }
         }
     }
@@ -80,10 +89,10 @@ public:
 
     void setButtonImage(ushort key, std::vector<uint8_t> &image)
     {
-        auto prepared_image = image::helper::prepareImageForDeck(image, m_image_params);
-
         // cache image
-        auto saved_path = saveButtonImageForDeck(m_streamdeck->get_serial_number(), prepared_image);
+        auto saved_path = saveButtonImageForDeck(m_streamdeck->get_serial_number(), image);
+
+        auto prepared_image = image::helper::prepareImageForDeck(image, m_image_params);
 
         m_streamdeck->set_key_image(key, prepared_image);
 
@@ -95,13 +104,14 @@ public:
     {
         auto key_profile = m_current_profile.getCurrentKeyProfile(key);
         std::vector<uint8_t> image_data;
-        if (key_profile.m_custom_image.empty())
-            image_data = image::helper::createEmptyImage(m_image_params);
+        if (!key_profile.m_custom_image.empty())
+            image_data = image::helper::loadRawImage(key_profile.m_custom_image);
         else
-            image_data = image::helper::prepareImageForDeck(key_profile.m_custom_image, m_image_params);
+            image_data = image::helper::createEmptyImage(m_image_params);
 
-        image::helper::applyLabelOnImage(image_data, key_profile.m_custom_label);
+        image_data = image::helper::applyLabelOnImage(image_data, label);
 
+        image_data = image::helper::prepareImageForDeck(image_data, m_image_params);
         m_streamdeck->set_key_image(key, image_data);
 
         // save to profile
