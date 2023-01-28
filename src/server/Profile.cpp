@@ -30,6 +30,8 @@ Profile::Profile(const std::filesystem::path &path)
             page->m_keys.insert({key_number, key});
         }
         m_pages.insert({page->m_name, page});
+        if (page->m_name == current_page_name)
+            m_current_page = page;
     }
 }
 

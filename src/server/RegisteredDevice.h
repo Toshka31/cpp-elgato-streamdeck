@@ -66,7 +66,7 @@ public:
         auto prepared_image = image::helper::prepareImageForDeck(image, format, image_params);
 
         // cache image
-        auto saved_path = saveButtonImageForDeck(m_streamdeck->get_serial_number(), image);
+        auto saved_path = saveButtonImageForDeck(m_streamdeck->get_serial_number(), prepared_image);
 
         m_streamdeck->set_key_image(key, prepared_image);
 
