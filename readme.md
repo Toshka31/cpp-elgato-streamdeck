@@ -8,10 +8,11 @@ Development inspired by [python-elgato-streamdeck](https://github.com/abcminiuse
 
 - ### StreamDeck Library
   - [x] Work fine with stream deck original v2 
-  - [ ] Make support for other streamdecks
-  - [ ] Make more helper functions for ImageHelper like a text on image (maybe make this as separate library)
+  - [x] Make more helper functions for ImageHelper like a text on image 
+  - [ ] Maybe make image helpers as separate library
   - [ ] Make error handling
   - [ ] Make logging
+  - [ ] Make support for other streamdecks
 - ### Modules SDK
   - [x] Base SDK for modules development
   - [ ] Make better soulution for SDK
@@ -19,9 +20,11 @@ Development inspired by [python-elgato-streamdeck](https://github.com/abcminiuse
 - ### Server side
   - [x] Engine with event loop
   - [x] Base RPC server-side implementation
+  - [x] Make profile support (save and load)
+  - [x] Make pages support
+  - [x] Placing label on button (also saved to profile)
+  - [ ] More customisation for label (color, alignment, size)
   - [ ] Make header with constants
-  - [ ] Make profile support (save and load)
-  - [ ] Make pages support
   - [ ] Make error handling
   - [ ] Make logging
 - ### Command Line Tool
@@ -40,6 +43,8 @@ Development inspired by [python-elgato-streamdeck](https://github.com/abcminiuse
 - rpclib
 - libjpeg
 - libpng
+- openSSL
+- openCV
 
 ## Build 
 > TODO
