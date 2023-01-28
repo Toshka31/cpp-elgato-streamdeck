@@ -56,28 +56,28 @@ Engine::Engine()
         }
     );
     srv.bind(
-            "getDeviceProfiles",
-            [this](const std::string &device_id) -> std::vector<std::string> {
-                return getDeviceProfiles(device_id);
-            }
+        "getDeviceProfiles",
+        [this](const std::string &device_id) -> std::vector<std::string> {
+            return getDeviceProfiles(device_id);
+        }
     );
     srv.bind(
-            "getDevicePages",
-            [this](const std::string &device_id) -> std::vector<std::string> {
-                return getDevicePages(device_id);
-            }
+        "getDevicePages",
+        [this](const std::string &device_id) -> std::vector<std::string> {
+            return getDevicePages(device_id);
+        }
     );
     srv.bind(
-            "getDeviceCurrentPage",
-            [this](const std::string &device_id) -> std::string {
-                return getDeviceCurrentPage(device_id);
-            }
+        "getDeviceCurrentPage",
+        [this](const std::string &device_id) -> std::string {
+            return getDeviceCurrentPage(device_id);
+        }
     );
     srv.bind(
-            "getDeviceCurrentProfile",
-            [this](const std::string &device_id) -> std::string {
-                return getDeviceCurrentProfile(device_id);
-            }
+        "getDeviceCurrentProfile",
+        [this](const std::string &device_id) -> std::string {
+            return getDeviceCurrentProfile(device_id);
+        }
     );
     srv.bind(
         "setDeviceBrightness", 
@@ -88,8 +88,13 @@ Engine::Engine()
     srv.bind(
         "setDeviceButtonImage", 
         [this](const std::string &device_id, unsigned char button, std::vector<uint8_t>& image) -> void {
-            std::cout << "image.size() = " << image.size() << std::endl;
             setDeviceButtonImage(device_id, button, image);
+        }
+    );
+    srv.bind(
+        "setDeviceButtonLabel",
+        [this](const std::string &device_id, unsigned char button, std::string &label) -> void {
+            setDeviceButtonLabel(device_id, button, label);
         }
     );
     srv.bind(
@@ -149,6 +154,13 @@ void Engine::setDeviceButtonImage(const std::string &device_id, unsigned char bu
     auto it = m_registered_deices.find(device_id);
     if (it != m_registered_deices.end())
         it->second->setButtonImage(button, image);
+}
+
+void Engine::setDeviceButtonLabel(const std::string &device_id, unsigned char button, const std::string &label)
+{
+    auto it = m_registered_deices.find(device_id);
+    if (it != m_registered_deices.end())
+        it->second->setButtonLabel(button, label);
 }
 
 void Engine::setDeviceButtonComponent(const std::string &device_id, unsigned char button, const std::string &module, const std::string &component)

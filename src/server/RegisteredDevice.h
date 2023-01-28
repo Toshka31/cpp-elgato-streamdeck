@@ -92,7 +92,19 @@ public:
 
     void setButtonLabel(ushort key, const std::string &label)
     {
-        // TODO
+        auto key_profile = m_current_profile.getCurrentKeyProfile(key);
+        std::vector<uint8_t> image_data;
+        if (key_profile.m_custom_image.empty())
+            image_data = image::helper::createEmptyImage(m_image_params);
+        else
+            image_data = image::helper::prepareImageForDeck(key_profile.m_custom_image, m_image_params);
+
+        image::helper::applyLabelOnImage(image_data, key_profile.m_custom_label);
+
+        m_streamdeck->set_key_image(key, image_data);
+
+        // save to profile
+        m_current_profile.setButtonLabel(key, label);
     }
 
     void setButtonComponent(ushort key, const std::string &module, const std::string &component)

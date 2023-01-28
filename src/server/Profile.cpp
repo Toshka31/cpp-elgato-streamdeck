@@ -4,6 +4,26 @@
 
 #include <filesystem>
 #include <fstream>
+#include <utility>
+
+KeyProfile KeyProfile::createKeyProfileWithImage(std::string custom_image) {
+    KeyProfile key_profile;
+    key_profile.m_custom_image = std::move(custom_image);
+    return key_profile;
+}
+
+KeyProfile KeyProfile::createKeyProfileWithComponent(std::string module_name, std::string component_name) {
+    KeyProfile key_profile;
+    key_profile.m_module_name = std::move(module_name);
+    key_profile.m_component_name = std::move(component_name);
+    return key_profile;
+}
+
+KeyProfile KeyProfile::createKeyProfileWithLabel(std::string label) {
+    KeyProfile key_profile;
+    key_profile.m_custom_label = std::move(label);
+    return key_profile;
+}
 
 Profile::Profile(const std::filesystem::path &path)
     : m_path(path)
@@ -77,13 +97,34 @@ void Profile::setBrightness(const ushort value)
 
 void Profile::setButtonImage(ushort button, const std::string &cached_image_path)
 {
-    m_current_page->m_keys[button] = {cached_image_path};
+    const auto it =  m_current_page->m_keys.find(button);
+    if (it != m_current_page->m_keys.end())
+        it->second.m_custom_image = cached_image_path;
+    else
+        m_current_page->m_keys[button] = KeyProfile::createKeyProfileWithImage(cached_image_path);
+    save();
+}
+
+void Profile::setButtonLabel(ushort button, const std::string &label)
+{
+    const auto it =  m_current_page->m_keys.find(button);
+    if (it != m_current_page->m_keys.end())
+        it->second.m_custom_label = label;
+    else
+        m_current_page->m_keys[button] = KeyProfile::createKeyProfileWithLabel(label);
     save();
 }
 
 void Profile::setButtonComponent(ushort button, const std::string &module_name, const std::string &component_name)
 {
-    m_current_page->m_keys[button] = {module_name, component_name};
+    const auto it =  m_current_page->m_keys.find(button);
+    if (it != m_current_page->m_keys.end())
+    {
+        it->second.m_module_name = module_name;
+        it->second.m_component_name = component_name;
+    }
+    else
+        m_current_page->m_keys[button] = KeyProfile::createKeyProfileWithComponent(module_name, component_name);
     save();
 }
 

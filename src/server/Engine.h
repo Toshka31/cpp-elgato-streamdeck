@@ -19,6 +19,8 @@ private:
 
     void setDeviceButtonImage(const std::string &device_id, unsigned char button, std::vector<unsigned char>& image);
 
+    void setDeviceButtonLabel(const std::string &device_id, unsigned char button, const std::string &label);
+
     void setDeviceButtonComponent(const std::string &device_id, unsigned char button, const std::string &module, const std::string &component);
 
     std::string getDeviceCurrentProfile(const std::string &device_id) const;

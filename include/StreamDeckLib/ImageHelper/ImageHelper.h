@@ -28,4 +28,5 @@ std::vector<unsigned char> prepareImageForDeck(const std::string &filename, cons
 
 void applyLabelOnImage(std::vector<unsigned char> &image, const std::string &label);
 
+std::vector<unsigned char> createEmptyImage(const TargetImageParameters &image_params);
 } // nameapce image::helper

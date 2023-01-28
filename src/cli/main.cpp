@@ -36,8 +36,34 @@ int main(int argc, char *argv[])
     {
         auto result = client.call("getDevicesList").as<std::vector<std::string>>();
     
-        for (auto dev : result)
+        for (const auto& dev : result)
             std::cout << dev << std::endl;
+    }
+    else if (!strcmp(argv[1], "get_profiles"))
+    {
+        auto result = client.call("getDeviceProfiles", argv[2]).as<std::vector<std::string>>();
+
+        for (const auto& prof : result)
+            std::cout << prof << std::endl;
+    }
+    else if (!strcmp(argv[1], "get_pages"))
+    {
+        auto result = client.call("getDevicePages", argv[2]).as<std::vector<std::string>>();
+
+        for (const auto& page : result)
+            std::cout << page << std::endl;
+    }
+    else if (!strcmp(argv[1], "page"))
+    {
+        auto result = client.call("getDeviceCurrentPage", argv[2]).as<std::string>();
+
+        std::cout << result << std::endl;
+    }
+    else if (!strcmp(argv[1], "profile"))
+    {
+        auto result = client.call("getDeviceCurrentProfile", argv[2]).as<std::string>();
+
+        std::cout << result << std::endl;
     }
     else if (!strcmp(argv[1], "set_brightness"))
     {
@@ -62,9 +88,14 @@ int main(int argc, char *argv[])
             std::cout << "size = " << size << std::endl;
             std::cout << "image.size() = " << buffer.size() << std::endl;
 
-            if (buffer.size())
+            if (!buffer.empty())
                 client.call("setDeviceButtonImage", argv[2], atoi(argv[3]), buffer);
         }
+    }
+    else if (!strcmp(argv[1], "set_label"))
+    {
+        std::string label = argv[4];
+        client.call("setDeviceButtonLabel", argv[2], atoi(argv[3]), label);
     }
     else if (!strcmp(argv[1], "set_component"))
     {

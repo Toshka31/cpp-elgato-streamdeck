@@ -21,9 +21,9 @@
 #include <opencv2/imgproc.hpp>
 
 namespace {
-    void resizeImage(cv::Mat &image)
+    void resizeImage(cv::Mat &image, int width, int height)
     {
-        cv::Mat out(cv::Size(72, 72), CV_8UC1);
+        cv::Mat out(cv::Size(width, height), CV_8UC1);
         cv::resize(image, out, out.size());
         image = out;
     }
@@ -56,7 +56,7 @@ namespace image::helper {
                                                    const image::helper::TargetImageParameters &image_params)
     {
         if (image.size().width != image_params.width || image.size().height != image_params.height)
-            resizeImage(image);
+            resizeImage(image, image_params.width, image_params.height);
 
         flipImage(image, image_params.flip_verticaly, image_params.flip_horizontaly);
 
@@ -90,10 +90,20 @@ namespace image::helper {
                     cv::Point(10, image.rows / 2), //top-left position
                     cv::FONT_HERSHEY_DUPLEX,
                     1.0,
-                    CV_RGB(118, 185, 0), //font color
+                    CV_RGB(255, 255, 255), //font color
                     2);
 
         image_file_raw_data.clear();
         cv::imencode(".jpg", image, image_file_raw_data);
+    }
+
+    std::vector<unsigned char> createEmptyImage(const TargetImageParameters &image_params)
+    {
+        cv::Mat image(cv::Size(image_params.width, image_params.height), CV_8UC1, cv::Scalar(0, 0, 0));
+
+        std::vector<unsigned char> out;
+        cv::imencode(".jpg", image, out);
+
+        return out;
     }
 }
