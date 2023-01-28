@@ -7,6 +7,7 @@ namespace image::helper {
 
 struct TargetImageParameters 
 {
+    TargetImageParameters() = default;
     TargetImageParameters(unsigned short _width, unsigned short _height, bool _flip_verticaly, bool _flip_horizontaly);
 
     unsigned short width;
@@ -21,8 +22,11 @@ enum class EImageFormat
     PNG
 };
 
-std::vector<unsigned char> prepareImageForDeck(std::vector<unsigned char> &image_file_raw_data, EImageFormat format, const TargetImageParameters &image_params);
+std::vector<unsigned char> prepareImageForDeck(std::vector<unsigned char> &image_file_raw_data, const TargetImageParameters &image_params);
 
 std::vector<unsigned char> prepareImageForDeck(const std::string &filename, const TargetImageParameters &image_params);
 
+void applyLabelOnImage(std::vector<unsigned char> &image, const std::string &label);
+
+std::vector<unsigned char> createEmptyImage(const TargetImageParameters &image_params);
 } // nameapce image::helper

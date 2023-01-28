@@ -10,6 +10,7 @@ target_link_libraries(streamdeck.server
         boost_filesystem
         streamdeck.iface
         streamdeck.lib
+        OpenSSL::Crypto
         rpc)
 
 add_dependencies(streamdeck.server streamdeck.modules.alsa)

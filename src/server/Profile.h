@@ -1,55 +1,60 @@
 #pragma once
 
-#include <3rdparty/nlohmann/json.hpp>
-
+#include <utility>
+#include <vector>
+#include <string>
+#include <map>
+#include <memory>
 #include <filesystem>
-#include <fstream>
+
+struct KeyProfile {
+    KeyProfile() = default;
+
+    static KeyProfile createKeyProfileWithImage(std::string custom_image);
+
+    static KeyProfile createKeyProfileWithComponent(std::string module_name,
+                                                    std::string component_name);
+
+    static KeyProfile createKeyProfileWithLabel(std::string label);
+
+    std::string m_custom_image;
+    std::string m_custom_label;
+    std::string m_module_name;
+    std::string m_component_name;
+};
 
 class Profile
 {
 public:
-    Profile(const std::filesystem::path &path)
-    {
-        m_profile_name = path.stem().string();
+    explicit Profile(const std::filesystem::path &path);
+    void save();
 
-        std::ifstream f(path);
-        nlohmann::json json_data = nlohmann::json::parse(f);
+    void setBrightness(ushort value);
 
-        json_data.at("brightness").get_to(m_brightness);
-        std::string current_page_name;
-        json_data.at("page").get_to(current_page_name);
-        for (auto json_page : json_data.at("pages"))
-        {
-            Page page;
-            std::string page_name;
-            json_page.at("name").get_to(page_name);
-            for (auto json_key : json_page.at("keys"))
-            {
-                Key key;
-                ushort key_number;
-                json_data.at("number").get_to(key_number);
-                json_data.at("module").get_to(key.m_module_name);
-                json_data.at("component").get_to(key.m_component_name);
-                page.m_keys.insert({key_number, key});
-            }
-        }
-    }
-    void save()
-    {
+    void setButtonImage(ushort button, const std::string &cached_image_path);
 
-    }
+    void setButtonLabel(ushort button, const std::string &label);
+
+    void setButtonComponent(ushort button, const std::string &module_name, const std::string &component_name);
+
+    KeyProfile getCurrentKeyProfile(ushort key);
+
+    [[nodiscard]] std::vector<std::string> getPages() const;
+
+    [[nodiscard]] std::string getName() const;
+
+    [[nodiscard]] std::string getCurrentPageName() const;
 
 private:
-    std::string m_profile_name;
-    ushort m_brightness;
+    std::filesystem::path m_path;
 
-    struct Key {
-        std::string m_module_name;
-        std::string m_component_name;
-    };
+    std::string m_profile_name;
+    ushort m_brightness{};
+
     struct Page {
-        std::map<ushort, Key> m_keys;
+        std::string m_name;
+        std::map<ushort, KeyProfile> m_keys;
     };
-    std::map<std::string, std::shared_ptr<Page>> m_pages;
+    std::map<std::string, std::shared_ptr<Page>> m_pages; // <page name, page buttons>
     std::shared_ptr<Page> m_current_page;
 };

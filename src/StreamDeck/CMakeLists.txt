@@ -6,9 +6,9 @@ file(GLOB_RECURSE SOURCE_FILES ${CMAKE_CURRENT_LIST_DIR}/*.h)
 add_library(streamdeck.lib SHARED ${HEADERS_FILES} ${SOURCE_FILES})
 target_link_libraries(streamdeck.lib 
     PUBLIC 
-        streamdeck.iface 
-    PRIVATE
+        streamdeck.iface
         hidapi-libusb 
         pthread
+        ${OpenCV_LIBS}
         jpeg
         png )

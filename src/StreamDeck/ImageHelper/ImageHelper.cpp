@@ -16,106 +16,94 @@
 #include <typeinfo>
 #include <iostream> 
 
+#include <opencv2/core.hpp>
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/imgproc.hpp>
+
 namespace {
+    void resizeImage(cv::Mat &image, int width, int height)
+    {
+        cv::Mat out(cv::Size(width, height), CV_8UC1);
+        cv::resize(image, out, out.size());
+        image = out;
+    }
 
-void resizeImage(boost::gil::rgb8_image_t &img)
-{
-    boost::gil::rgb8_image_t sized(72, 72);
-    boost::gil::resize_view(boost::gil::view(img), boost::gil::view(sized), boost::gil::bilinear_sampler{});
-    img = sized;
+    void flipImage(cv::Mat &image, bool vertically, bool horizontally)
+    {
+        cv::Mat out = image;
+        if (vertically && horizontally)
+            cv::flip(image, out, -1);
+        else if (vertically)
+            cv::flip(image, out, 0);
+        else if (horizontally)
+            cv::flip(image, out, 1);
+        image = out;
+    }
 }
-
-auto flipImage(boost::gil::rgb8_image_t &img, bool vertically, bool horizontally)
-{
-    // did not find the proper way to create dynamic view, so rotate
-    auto view = boost::gil::rotated90ccw_view(boost::gil::rotated90cw_view(boost::gil::const_view(img)));
-    if (vertically)
-        view = boost::gil::flipped_left_right_view(view);
-    if (horizontally)
-        view =  boost::gil::flipped_up_down_view(view);
-    return view;
-}
-
-} // unnamed namespace
-
 namespace image::helper {
 
-TargetImageParameters::TargetImageParameters(unsigned short _width, unsigned short _height, bool _flip_verticaly, bool _flip_horizontaly)
-    : width(_width),  height(_height), flip_verticaly(_flip_verticaly), flip_horizontaly(_flip_horizontaly) {}
+    TargetImageParameters::TargetImageParameters(unsigned short _width,
+                                                 unsigned short _height,
+                                                 bool _flip_verticaly,
+                                                 bool _flip_horizontaly)
+            : width(_width),
+              height(_height),
+              flip_verticaly(_flip_verticaly),
+              flip_horizontaly(_flip_horizontaly)
+    { }
 
-std::vector<unsigned char> prepareImageForDeck(boost::gil::rgb8_image_t &img, const TargetImageParameters &image_params)
-{
-    if (img.width() != image_params.width || img.height() != image_params.height)
-        resizeImage(img);
-
-    auto flippedView = flipImage(img, image_params.flip_verticaly, image_params.flip_horizontaly);
-
-    std::stringstream out_buffer(std::ios_base::in | std::ios_base::out | std::ios_base::binary);
-
-    boost::gil::write_view( out_buffer, flippedView, boost::gil::jpeg_tag() );
-
-    std::streampos size;
-    out_buffer.seekg(0, std::ios::end);
-    size = out_buffer.tellg();
-    out_buffer.seekg(0, std::ios::beg);
-
-    std::vector<unsigned char> vec;
-    vec.reserve(size);
-
-    while (!out_buffer.eof())
-        vec.push_back(out_buffer.get());
-
-    return vec;
-}
-
-std::vector<unsigned char> prepareImageForDeck(std::vector<unsigned char> &image_file_raw_data, EImageFormat format, const TargetImageParameters &image_params)
-{
-    // TODO: think about possible implementation to support raw RGB 8-bit
-    boost::gil::rgb8_image_t img;
-
-    std::stringstream in_buffer( std::ios_base::in | std::ios_base::out | std::ios_base::binary );
-    std::cout << image_file_raw_data.size() << std::endl;
-    for (auto c : image_file_raw_data)
-        in_buffer << c;
-    //std::copy(image_file_raw_data.begin(), image_file_raw_data.end(), std::ostream_iterator<unsigned char>(in_buffer));
-    
-    switch (format)
+    std::vector<unsigned char> prepareImageForDeck(cv::Mat &image,
+                                                   const image::helper::TargetImageParameters &image_params)
     {
-    case EImageFormat::JPEG:
-        boost::gil::read_image( in_buffer, img, boost::gil::jpeg_tag() );
-        break;
-    case EImageFormat::PNG:
-        boost::gil::read_image( in_buffer, img, boost::gil::png_tag() );
-        break;
-    default:
-        throw std::runtime_error("Format not supported");
-        break;
+        if (image.size().width != image_params.width || image.size().height != image_params.height)
+            resizeImage(image, image_params.width, image_params.height);
+
+        flipImage(image, image_params.flip_verticaly, image_params.flip_horizontaly);
+
+        std::vector<unsigned char> out;
+        cv::imencode(".jpg", image, out);
+
+        return out;
     }
 
-    return prepareImageForDeck(img, image_params);
-}
-
-std::vector<unsigned char> prepareImageForDeck(const std::string &filename, const TargetImageParameters &image_params)
-{
-    boost::gil::rgb8_image_t img;
-
-    // deduce format by extension
-    auto point_pos = filename.rfind(".") + 1;
-    std::string ext_str = filename.substr(point_pos);
-    if(ext_str== "jpg")
-        boost::gil::read_image(filename, img, boost::gil::jpeg_tag{});
-    else if (ext_str== "png")
+    std::vector<unsigned char> prepareImageForDeck(const std::string &filename,
+                                                   const image::helper::TargetImageParameters &image_params)
     {
-        boost::gil::rgba8_image_t png_img;
-        boost::gil::read_image(filename, png_img, boost::gil::png_tag{});
-        img = boost::gil::rgb8_image_t(png_img.width(),png_img.height());
-        boost::gil::copy_and_convert_pixels(
-            boost::gil::const_view(png_img),
-            boost::gil::view(img)
-        );
+        cv::Mat image = cv::imread(filename, cv::IMREAD_COLOR);
+
+        return prepareImageForDeck(image, image_params);
     }
 
-    return prepareImageForDeck(img, image_params);
-}
+    std::vector<unsigned char> prepareImageForDeck(std::vector<unsigned char> &image_file_raw_data,
+                                                   const ::image::helper::TargetImageParameters &image_params)
+    {
+        cv::Mat image = cv::imdecode(cv::Mat(image_file_raw_data), cv::IMREAD_COLOR);
 
-} // nameapce image::helper
+        return prepareImageForDeck(image, image_params);
+    }
+
+    void applyLabelOnImage(std::vector<unsigned char> &image_file_raw_data, const std::string &label)
+    {
+        cv::Mat image = cv::imdecode(cv::Mat(image_file_raw_data), cv::IMREAD_COLOR);
+
+        cv::putText(image, label,
+                    cv::Point(10, image.rows / 2), //top-left position
+                    cv::FONT_HERSHEY_DUPLEX,
+                    1.0,
+                    CV_RGB(255, 255, 255), //font color
+                    2);
+
+        image_file_raw_data.clear();
+        cv::imencode(".jpg", image, image_file_raw_data);
+    }
+
+    std::vector<unsigned char> createEmptyImage(const TargetImageParameters &image_params)
+    {
+        cv::Mat image(cv::Size(image_params.width, image_params.height), CV_8UC1, cv::Scalar(0, 0, 0));
+
+        std::vector<unsigned char> out;
+        cv::imencode(".jpg", image, out);
+
+        return out;
+    }
+}
