@@ -17,7 +17,7 @@ private:
 
     void setDeviceBrightness(const std::string &device_id, unsigned char brightness);
 
-    void setDeviceButtonImage(const std::string &device_id, unsigned char button, const std::vector<unsigned char>& image, image::helper::EImageFormat format);
+    void setDeviceButtonImage(const std::string &device_id, unsigned char button, std::vector<unsigned char>& image);
 
     void setDeviceButtonComponent(const std::string &device_id, unsigned char button, const std::string &module, const std::string &component);
 

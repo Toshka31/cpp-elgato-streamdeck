@@ -51,14 +51,6 @@ int main(int argc, char *argv[])
         std::cout << "set" << std::endl;
 
         std::string filename(argv[4]);
-        image::helper::EImageFormat format;
-        auto point_pos = filename.rfind(".") + 1;
-        std::string ext_str = filename.substr(point_pos);
-        if(ext_str== "jpg")
-            format = image::helper::EImageFormat::JPEG;
-        else if (ext_str== "png")
-            format = image::helper::EImageFormat::PNG;
-       
         std::ifstream file(argv[4], std::ios::binary | std::ios::ate);
         if (file)
         {
@@ -71,7 +63,7 @@ int main(int argc, char *argv[])
             std::cout << "image.size() = " << buffer.size() << std::endl;
 
             if (buffer.size())
-                client.call("setDeviceButtonImage", argv[2], atoi(argv[3]), buffer, format);
+                client.call("setDeviceButtonImage", argv[2], atoi(argv[3]), buffer);
         }
     }
     else if (!strcmp(argv[1], "set_component"))

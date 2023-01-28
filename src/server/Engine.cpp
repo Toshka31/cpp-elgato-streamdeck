@@ -87,9 +87,9 @@ Engine::Engine()
     );
     srv.bind(
         "setDeviceButtonImage", 
-        [this](const std::string &device_id, unsigned char button, const std::vector<uint8_t>& image, image::helper::EImageFormat format) -> void {
+        [this](const std::string &device_id, unsigned char button, std::vector<uint8_t>& image) -> void {
             std::cout << "image.size() = " << image.size() << std::endl;
-            setDeviceButtonImage(device_id, button, image, format);
+            setDeviceButtonImage(device_id, button, image);
         }
     );
     srv.bind(
@@ -143,12 +143,12 @@ void Engine::setDeviceBrightness(const std::string &device_id, unsigned char bri
         it->second->setBrightness(brightness);
 }
 
-void Engine::setDeviceButtonImage(const std::string &device_id, unsigned char button, const std::vector<unsigned char>& image, image::helper::EImageFormat format)
+void Engine::setDeviceButtonImage(const std::string &device_id, unsigned char button, std::vector<unsigned char>& image)
 {
     std::cout << "image.size() = " << image.size() << std::endl;
     auto it = m_registered_deices.find(device_id);
     if (it != m_registered_deices.end())
-        it->second->setButtonImage(button, image, format);
+        it->second->setButtonImage(button, image);
 }
 
 void Engine::setDeviceButtonComponent(const std::string &device_id, unsigned char button, const std::string &module, const std::string &component)
@@ -163,6 +163,7 @@ std::string Engine::getDeviceCurrentProfile(const std::string &device_id) const
     auto it = m_registered_deices.find(device_id);
     if (it != m_registered_deices.end())
         return it->second->getCurrentProfileName();
+    return {};
 }
 
 std::vector<std::string> Engine::getDeviceProfiles(const std::string &device_id) const
@@ -178,6 +179,7 @@ std::string Engine::getDeviceCurrentPage(const std::string &device_id) const
     auto it = m_registered_deices.find(device_id);
     if (it != m_registered_deices.end())
         return it->second->getCurrentPageName();
+    return {};
 }
 
 std::vector<std::string> Engine::getDevicePages(const std::string &device_id) const

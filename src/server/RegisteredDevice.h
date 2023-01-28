@@ -19,6 +19,27 @@ public:
           m_module_loader(module_loader)
     {
         m_streamdeck->set_key_callback(std::bind(&RegisteredDevice::callback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+
+        m_image_params = {
+                m_streamdeck->key_image_format().size.first,
+                m_streamdeck->key_image_format().size.second,
+                m_streamdeck->key_image_format().flip.first,
+                m_streamdeck->key_image_format().flip.second };
+
+        // apply profile
+        unsigned short key_count = m_streamdeck->key_count();
+        for (auto key = 0; key < key_count; ++key)
+        {
+            auto key_profile = m_current_profile.getCurrentKeyProfile(key);
+            if (!key_profile.m_module_name.empty() && !key_profile.m_component_name.empty())
+                setButtonComponent(key, key_profile.m_module_name, key_profile.m_component_name);
+            if (!key_profile.m_custom_image.empty()) {
+                auto image_data = image::helper::prepareImageForDeck(key_profile.m_custom_image, m_image_params);
+                if (!key_profile.m_custom_label.empty())
+                    image::helper::applyLabelOnImage(image_data, key_profile.m_custom_label);
+                setButtonImage(key, image_data);
+            }
+        }
     }
 
     void tick()
@@ -56,14 +77,9 @@ public:
         m_streamdeck->set_brightness(brightness);
     }
 
-    void setButtonImage(ushort key, std::vector<uint8_t> image, image::helper::EImageFormat format)
+    void setButtonImage(ushort key, std::vector<uint8_t> &image)
     {
-        image::helper::TargetImageParameters image_params = { 
-            m_streamdeck->key_image_format().size.first, 
-            m_streamdeck->key_image_format().size.second, 
-            m_streamdeck->key_image_format().flip.first, 
-            m_streamdeck->key_image_format().flip.second };
-        auto prepared_image = image::helper::prepareImageForDeck(image, format, image_params);
+        auto prepared_image = image::helper::prepareImageForDeck(image, m_image_params);
 
         // cache image
         auto saved_path = saveButtonImageForDeck(m_streamdeck->get_serial_number(), prepared_image);
@@ -74,17 +90,16 @@ public:
         m_current_profile.setButtonImage(key, saved_path);
     }
 
+    void setButtonLabel(ushort key, const std::string &label)
+    {
+        // TODO
+    }
+
     void setButtonComponent(ushort key, const std::string &module, const std::string &component)
     {
         auto comp = m_module_loader->getModuleComponent(module, component);
-        image::helper::TargetImageParameters image_params = { 
-            m_streamdeck->key_image_format().size.first,
-            m_streamdeck->key_image_format().size.second,
-            m_streamdeck->key_image_format().flip.first,
-            m_streamdeck->key_image_format().flip.second };
-        image::helper::EImageFormat format;
-        auto image = comp->getImage(format);
-        m_streamdeck->set_key_image(key, image::helper::prepareImageForDeck(image, format, image_params));
+        auto image = comp->getImage();
+        m_streamdeck->set_key_image(key, image::helper::prepareImageForDeck(image, m_image_params));
         m_key_mapping[key] = comp;
 
         // save to profile
@@ -119,6 +134,7 @@ private:
     }
 
 protected:
+    image::helper::TargetImageParameters m_image_params;
     std::shared_ptr<IStreamDeck> m_streamdeck;
     std::shared_ptr<ModuleLoader> m_module_loader;
     Profile m_current_profile;

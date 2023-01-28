@@ -25,8 +25,8 @@ public:
             deck->key_image_format().flip.first, 
             deck->key_image_format().flip.second };
 
-        m_img_mute = image::helper::prepareImageForDeck(IMAGE_MUTE, image::helper::EImageFormat::JPEG, image_params);
-        m_img_unmute = image::helper::prepareImageForDeck(IMAGE_UNMUTE, image::helper::EImageFormat::JPEG, image_params);
+        m_img_mute = image::helper::prepareImageForDeck(IMAGE_MUTE, image_params);
+        m_img_unmute = image::helper::prepareImageForDeck(IMAGE_UNMUTE, image_params);
     }
 
     std::string name() const override
@@ -53,9 +53,8 @@ public:
 
     }
 
-    std::vector<unsigned char> getImage(image::helper::EImageFormat &format) const override
+    std::vector<unsigned char> getImage() const override
     {
-        format = image::helper::EImageFormat::JPEG;
         return IMAGE_UNMUTE;
     }
 private:

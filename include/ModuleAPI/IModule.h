@@ -39,7 +39,7 @@ public:
 
     virtual void actionRelease(std::shared_ptr<IStreamDeck> deck, ushort key) = 0;
 
-    virtual std::vector<unsigned char> getImage(image::helper::EImageFormat &format) const = 0;
+    virtual std::vector<unsigned char> getImage() const = 0;
 
     virtual ~IComponent() {}
 };

@@ -42,6 +42,16 @@ namespace {
 }
 namespace image::helper {
 
+    TargetImageParameters::TargetImageParameters(unsigned short _width,
+                                                 unsigned short _height,
+                                                 bool _flip_verticaly,
+                                                 bool _flip_horizontaly)
+            : width(_width),
+              height(_height),
+              flip_verticaly(_flip_verticaly),
+              flip_horizontaly(_flip_horizontaly)
+    { }
+
     std::vector<unsigned char> prepareImageForDeck(cv::Mat &image,
                                                    const image::helper::TargetImageParameters &image_params)
     {
@@ -65,21 +75,25 @@ namespace image::helper {
     }
 
     std::vector<unsigned char> prepareImageForDeck(std::vector<unsigned char> &image_file_raw_data,
-                                                   image::helper::EImageFormat format,
                                                    const ::image::helper::TargetImageParameters &image_params)
     {
-        cv::Mat image = cv::imdecode(cv::Mat(image_file_raw_data), cv::IMREAD_UNCHANGED);
+        cv::Mat image = cv::imdecode(cv::Mat(image_file_raw_data), cv::IMREAD_COLOR);
 
         return prepareImageForDeck(image, image_params);
     }
 
-    TargetImageParameters::TargetImageParameters(unsigned short _width,
-                                                 unsigned short _height,
-                                                 bool _flip_verticaly,
-                                                 bool _flip_horizontaly)
-                                                 : width(_width),
-                                                 height(_height),
-                                                 flip_verticaly(_flip_verticaly),
-                                                 flip_horizontaly(_flip_horizontaly)
-    { }
+    void applyLabelOnImage(std::vector<unsigned char> &image_file_raw_data, const std::string &label)
+    {
+        cv::Mat image = cv::imdecode(cv::Mat(image_file_raw_data), cv::IMREAD_COLOR);
+
+        cv::putText(image, label,
+                    cv::Point(10, image.rows / 2), //top-left position
+                    cv::FONT_HERSHEY_DUPLEX,
+                    1.0,
+                    CV_RGB(118, 185, 0), //font color
+                    2);
+
+        image_file_raw_data.clear();
+        cv::imencode(".jpg", image, image_file_raw_data);
+    }
 }
