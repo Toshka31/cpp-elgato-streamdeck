@@ -90,18 +90,27 @@ namespace image::helper {
         return prepareImageForDeck(image, image_params);
     }
 
-    std::vector<unsigned char> applyLabelOnImage(const std::vector<unsigned char> &image_file_raw_data, const std::string &label)
+    std::vector<unsigned char> applyLabelOnImage(const std::vector<unsigned char> &image_file_raw_data, const std::string &label, int font_size = 12)
     {
         cv::Mat image = cv::imdecode(cv::Mat(image_file_raw_data), cv::IMREAD_COLOR);
 
-        int y;
-        auto label_size = cv::getTextSize(label, cv::FONT_HERSHEY_SIMPLEX, 0.5, 1, &y);
+        cv::HersheyFonts font = cv::FONT_HERSHEY_DUPLEX;
+        double font_scale = cv::getFontScaleFromHeight(font, font_size, 1);
+        auto label_size = cv::getTextSize(label, font, font_scale, 1, nullptr);
+
+        auto position = cv::Point(image.cols / 2 - label_size.width / 2, image.rows / 2 + label_size.height / 2);
 
         cv::putText(image, label,
-                    cv::Point(image.cols / 2 - label_size.width / 2, image.rows / 2 + label_size.height / 2), //top-left position
-                    cv::FONT_HERSHEY_SIMPLEX,
-                    0.5,
-                    CV_RGB(255, 255, 255), //font color
+                    position,
+                    font,
+                    font_scale,
+                    CV_RGB(0, 0, 0),
+                    2);
+        cv::putText(image, label,
+                    position,
+                    font,
+                    font_scale,
+                    CV_RGB(255, 255, 255),
                     1);
 
         std::vector<unsigned char> out;
