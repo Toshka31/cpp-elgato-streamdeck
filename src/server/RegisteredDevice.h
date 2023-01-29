@@ -31,24 +31,7 @@ public:
         unsigned short key_count = m_streamdeck->key_count();
         for (auto key = 0; key < key_count; ++key)
         {
-            auto key_profile = m_current_profile.getCurrentKeyProfile(key);
-            if (!key_profile.m_module_name.empty() && !key_profile.m_component_name.empty())
-                setButtonComponent(key, key_profile.m_module_name, key_profile.m_component_name);
-
-            std::vector<unsigned char> image_data;
-            if (!key_profile.m_custom_image.empty())
-                image_data = image::helper::loadRawImage(key_profile.m_custom_image);
-
-            if (!key_profile.m_custom_label.empty()) {
-                if (image_data.empty())
-                    image_data = image::helper::createEmptyImage(m_image_params);
-                image_data = image::helper::applyLabelOnImage(image_data, key_profile.m_custom_label);
-            }
-
-            if (!image_data.empty()) {
-                image_data = image::helper::prepareImageForDeck(image_data, m_image_params);
-                m_streamdeck->set_key_image(key, image_data);
-            }
+            updateButton(key);
         }
     }
 
@@ -89,44 +72,23 @@ public:
 
     void setButtonImage(ushort key, std::vector<uint8_t> &image)
     {
-        // cache image
         auto saved_path = saveButtonImageForDeck(m_streamdeck->get_serial_number(), image);
-
-        auto prepared_image = image::helper::prepareImageForDeck(image, m_image_params);
-
-        m_streamdeck->set_key_image(key, prepared_image);
-
-        // save to profile
         m_current_profile.setButtonImage(key, saved_path);
+        updateButton(key);
     }
 
     void setButtonLabel(ushort key, const std::string &label)
     {
-        auto key_profile = m_current_profile.getCurrentKeyProfile(key);
-        std::vector<uint8_t> image_data;
-        if (!key_profile.m_custom_image.empty())
-            image_data = image::helper::loadRawImage(key_profile.m_custom_image);
-        else
-            image_data = image::helper::createEmptyImage(m_image_params);
-
-        image_data = image::helper::applyLabelOnImage(image_data, label);
-
-        image_data = image::helper::prepareImageForDeck(image_data, m_image_params);
-        m_streamdeck->set_key_image(key, image_data);
-
-        // save to profile
         m_current_profile.setButtonLabel(key, label);
+        updateButton(key);
     }
 
     void setButtonComponent(ushort key, const std::string &module, const std::string &component)
     {
-        auto comp = m_module_loader->getModuleComponent(module, component);
-        auto image = comp->getImage();
-        m_streamdeck->set_key_image(key, image::helper::prepareImageForDeck(image, m_image_params));
-        m_key_mapping[key] = comp;
-
-        // save to profile
         m_current_profile.setButtonComponent(key, module, component);
+        auto comp = m_module_loader->getModuleComponent(module, component);
+        m_key_mapping[key] = comp;
+        updateButton(key);
     }
 
     std::string getCurrentProfileName() const
@@ -154,6 +116,29 @@ private:
     {
         std::lock_guard<std::mutex> lock(m_mutex);
         m_events.emplace_back(key, val);
+    }
+
+    void updateButton(ushort key)
+    {
+        auto key_profile = m_current_profile.getCurrentKeyProfile(key);
+
+        std::vector<unsigned char> image_data;
+        if (!key_profile.m_module_name.empty() && !key_profile.m_component_name.empty())
+            image_data = m_key_mapping[key]->getImage();
+
+        if (!key_profile.m_custom_image.empty())
+            image_data = image::helper::loadRawImage(key_profile.m_custom_image);
+
+        if (!key_profile.m_custom_label.empty()) {
+            if (image_data.empty())
+                image_data = image::helper::createEmptyImage(m_image_params);
+            image_data = image::helper::applyLabelOnImage(image_data, key_profile.m_custom_label);
+        }
+
+        if (!image_data.empty()) {
+            image_data = image::helper::prepareImageForDeck(image_data, m_image_params);
+            m_streamdeck->set_key_image(key, image_data);
+        }
     }
 
 protected:
