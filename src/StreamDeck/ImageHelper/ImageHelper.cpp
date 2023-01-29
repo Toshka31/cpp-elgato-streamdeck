@@ -94,8 +94,11 @@ namespace image::helper {
     {
         cv::Mat image = cv::imdecode(cv::Mat(image_file_raw_data), cv::IMREAD_COLOR);
 
+        int y;
+        auto label_size = cv::getTextSize(label, cv::FONT_HERSHEY_SIMPLEX, 0.5, 1, &y);
+
         cv::putText(image, label,
-                    cv::Point(10, image.rows / 2), //top-left position
+                    cv::Point(image.cols / 2 - label_size.width / 2, image.rows / 2 + label_size.height / 2), //top-left position
                     cv::FONT_HERSHEY_SIMPLEX,
                     0.5,
                     CV_RGB(255, 255, 255), //font color
