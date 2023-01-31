@@ -60,7 +60,7 @@ class PulseSystem
     {
       std::cout << dev.second.name << ":" << std::endl;
       for (auto i = 0; i < dev.second.volume.channels; ++i)
-        std::cout << i << " = "<< (dev.second.volume.values[i] / PA_VOLUME_NORM) * 100 << std::endl;
+        std::cout << i << " = "<< (dev.second.volume.values[i] / (double)PA_VOLUME_NORM) * 100 << std::endl;
     }
   }
  private:
