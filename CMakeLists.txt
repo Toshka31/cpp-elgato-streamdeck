@@ -8,3 +8,5 @@ add_library(streamdeck.iface INTERFACE)
 target_include_directories(streamdeck.iface INTERFACE include)
 
 add_subdirectory(src)
+
+add_subdirectory(PoC/ModulesConcept)

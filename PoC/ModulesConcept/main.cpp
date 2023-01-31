@@ -28,7 +28,7 @@ std::vector<fs::path> get_all(fs::path const & root, std::string const & ext)
 class LoadedModule
 {
 public:
-    LoadedModule(std::shared_ptr<ModuleCore> module) : m_module(module) 
+    LoadedModule(std::shared_ptr<IModule> module) : m_module(module)
     {
         m_components = module->getComponentList();
     }
@@ -48,7 +48,7 @@ public:
         return m_module->createComponent(name);
     }
 private:
-    std::shared_ptr<ModuleCore> m_module;
+    std::shared_ptr<IModule> m_module;
     std::vector<std::string> m_components;
 };
 
@@ -67,9 +67,9 @@ public:
                 continue;
             }
 
-            typedef std::shared_ptr<ModuleCore> (pluginapi_create_t)();
+            typedef std::shared_ptr<IModule> (pluginapi_create_t)();
             std::function<pluginapi_create_t> creator = boost::dll::import_alias<pluginapi_create_t>(boost::move(lib), "create");
-            std::shared_ptr<ModuleCore> plugin = creator();
+            std::shared_ptr<IModule> plugin = creator();
 
             m_libs.push_back(std::make_shared<boost::dll::shared_library>(shared_library_path)); // this is way to prevent unload
 
@@ -112,8 +112,7 @@ private:
 
 int main()
 {
-    ModuleLoader module_loader("/home/anton/dev/experiments/build/lib/");
-
+    ModuleLoader module_loader("/home/anton/Dev/cpp-elgato-streamdeck/cmake-build-debug/lib/");
     std::cout << module_loader.count() << std::endl;
     module_loader.printModules();
 
