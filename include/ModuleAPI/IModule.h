@@ -1,45 +1,17 @@
 #pragma once
 
-#include <boost/config.hpp>
 #include <string>
 #include <vector>
 #include <memory>
 
-class IStreamDeck; 
 class IComponent;
-namespace image::helper {
-    enum class EImageFormat;
-}
 
-#define MAKE_MODULE_FACTORY(ModuleName) \
-    static std::shared_ptr<IModule> create() { \
-        return std::make_shared<ModuleName>(); \
-    }
-
-class BOOST_SYMBOL_VISIBLE IModule 
+class IModule
 {
-public:
-    virtual std::string name() const = 0;
+ public:
+  virtual std::string getName() const = 0;
 
-    virtual std::vector<std::shared_ptr<IComponent>> getComponents() const = 0;
+  virtual std::shared_ptr<IComponent> createComponent(const std::string& name) = 0;
 
-    virtual ~IModule() {}
-};
-
-class IComponent
-{
-public:
-    virtual void init(std::shared_ptr<IStreamDeck> deck) = 0;
-
-    virtual std::string name() const = 0;
-
-    virtual void tick() = 0;
-
-    virtual void actionPress(std::shared_ptr<IStreamDeck> deck, ushort key) = 0;
-
-    virtual void actionRelease(std::shared_ptr<IStreamDeck> deck, ushort key) = 0;
-
-    virtual std::vector<unsigned char> getImage() const = 0;
-
-    virtual ~IComponent() {}
+  virtual std::vector<std::string> getComponentList() const = 0;
 };
