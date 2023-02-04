@@ -1,6 +1,7 @@
 #include <IModule.h>
 
 DECLARE_MODULE(module1)
+DEFINE_MODULE(module1)
 
 class Component1 : public IComponent
 {

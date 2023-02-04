@@ -1,6 +1,4 @@
-#include <IModule.h>
-
-DECLARE_MODULE(module2)
+#include "module.h"
 
 class Component2 : public IComponent
 {
