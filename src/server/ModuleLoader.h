@@ -1,55 +1,48 @@
 #pragma once
 
 #include <ModuleAPI/IModule.h>
+#include <ModuleAPI/IComponent.h>
 
 #include <boost/dll/import.hpp>
 
 #include <map>
 #include <iostream>
+#include <filesystem>
 
 class LoadedModule
 {
 public:
-    LoadedModule(std::shared_ptr<IModule> module) : m_module(module) 
-    {
-        for (auto component : module->getComponents())
-            m_components[component->name()] = component;
-    }
+    LoadedModule(std::shared_ptr<IModule> module) : m_module(module) {}
 
     std::string name()
     {
-        return m_module->name();
+        return m_module->getName();
     }
 
     std::vector<std::string> getComponentsList()
     {
-        std::vector<std::string> res;
-        for (auto comp : m_components)
-            res.push_back(comp.first);
-        return res;
+        return m_module->getComponentList();
     }
 
     std::shared_ptr<IComponent> getComponent(const std::string &name)
     {
-        return m_components[name];
+        return m_module->createComponent(name);
     }
 private:
     std::shared_ptr<IModule> m_module;
-    std::map<std::string, std::shared_ptr<IComponent>> m_components;
 };
 
 class ModuleLoader 
 {
 public:
-    ModuleLoader(const boost::dll::fs::path& modules_directory)
-    {        
+    ModuleLoader(const std::string &modules_directory)
+    {
         std::vector<boost::dll::fs::path> plugins = {};
-        // TODO collect plugins from directory
-        
-        for (std::size_t i = 0; i < plugins.size(); ++i) {
-            boost::dll::fs::path shared_library_path(modules_directory);
-            shared_library_path /= plugins[i];
-            boost::dll::shared_library lib(shared_library_path, boost::dll::load_mode::append_decorations);
+        for (auto const& dir_entry : std::filesystem::directory_iterator{modules_directory})
+          plugins.emplace_back(dir_entry.path().string());
+
+        for (const auto & plugin_path : plugins) {
+            boost::dll::shared_library lib(plugin_path, boost::dll::load_mode::append_decorations);
             if (!lib.has("create")) {
                 continue;
             }
@@ -58,9 +51,9 @@ public:
             std::function<pluginapi_create_t> creator = boost::dll::import_alias<pluginapi_create_t>(boost::move(lib), "create");
             std::shared_ptr<IModule> plugin = creator();
 
-            m_libs.push_back(std::make_shared<boost::dll::shared_library>(shared_library_path)); // this is way to prevent unload
+            m_libs.push_back(std::make_shared<boost::dll::shared_library>(plugin_path)); // this is way to prevent unload
 
-            m_modules[plugin->name()] = std::make_shared<LoadedModule>(plugin);
+            m_modules[plugin->getName()] = std::make_shared<LoadedModule>(plugin);
         }
     }
 

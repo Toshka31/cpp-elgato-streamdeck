@@ -1,28 +1,31 @@
 #include <alsa/asoundlib.h>
 #include <alsa/mixer.h>
 
-#include <boost/config.hpp> 
-#include <boost/dll/alias.hpp> 
-
 #include <ModuleAPI/IModule.h>
+#include <ModuleAPI/IComponent.h>
+#include <ModuleAPI/Module.h>
 #include <StreamDeckLib/Device/IStreamDeck.h>
 #include <StreamDeckLib/ImageHelper/ImageHelper.h>
 
 #include <iostream>
 #include <memory>
 
+DECLARE_MODULE(AlsaModule)
+DEFINE_MODULE(AlsaModule)
+
 #include "image_mute.h"
 #include "image_unmute.h"
 
 class MuteComponent : public IComponent
 {
+  DECLARE_MODULE_COMPONENT(AlsaModule, MuteComponent)
 public:
     void init(std::shared_ptr<IStreamDeck> deck)
     {
-        image::helper::TargetImageParameters image_params = { 
-            deck->key_image_format().size.first, 
-            deck->key_image_format().size.second, 
-            deck->key_image_format().flip.first, 
+        image::helper::TargetImageParameters image_params = {
+            deck->key_image_format().size.first,
+            deck->key_image_format().size.second,
+            deck->key_image_format().flip.first,
             deck->key_image_format().flip.second };
 
         m_img_mute = image::helper::prepareImageForDeck(IMAGE_MUTE, image_params);
@@ -36,7 +39,7 @@ public:
 
     void tick() override
     {
-        
+
     }
 
     void actionPress(std::shared_ptr<IStreamDeck> deck, ushort key) override
@@ -91,30 +94,6 @@ private:
         snd_mixer_close(handle);
     }
 };
-
-class AlsaModule : public IModule 
-{
-public:
-    AlsaModule() = default;
-
-    std::string name() const override
-    {
-        return "AlsaModule";
-    }
-
-    std::vector<std::shared_ptr<IComponent>> getComponents() const override
-    {
-        std::vector<std::shared_ptr<IComponent>> components;
-        components.push_back(std::make_shared<MuteComponent>());
-        return components;
-    }
-
-    MAKE_MODULE_FACTORY(AlsaModule)
-};
-
-BOOST_DLL_ALIAS(
-    AlsaModule::create,
-    create
-)
+REGISTER_MODULE_COMPONENT(AlsaModule, MuteComponent)
 
 
