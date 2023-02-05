@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ModuleAPI/IModule.h>
+#include <ModuleAPI/IComponent.h>
 
 #include <boost/dll/import.hpp>
 
@@ -10,32 +11,24 @@
 class LoadedModule
 {
 public:
-    LoadedModule(std::shared_ptr<IModule> module) : m_module(module) 
-    {
-        for (auto component : module->getComponents())
-            m_components[component->name()] = component;
-    }
+    LoadedModule(std::shared_ptr<IModule> module) : m_module(module) {}
 
     std::string name()
     {
-        return m_module->name();
+        return m_module->getName();
     }
 
     std::vector<std::string> getComponentsList()
     {
-        std::vector<std::string> res;
-        for (auto comp : m_components)
-            res.push_back(comp.first);
-        return res;
+        return m_module->getComponentList();
     }
 
     std::shared_ptr<IComponent> getComponent(const std::string &name)
     {
-        return m_components[name];
+        return m_module->createComponent(name);
     }
 private:
     std::shared_ptr<IModule> m_module;
-    std::map<std::string, std::shared_ptr<IComponent>> m_components;
 };
 
 class ModuleLoader 
@@ -60,7 +53,7 @@ public:
 
             m_libs.push_back(std::make_shared<boost::dll::shared_library>(shared_library_path)); // this is way to prevent unload
 
-            m_modules[plugin->name()] = std::make_shared<LoadedModule>(plugin);
+            m_modules[plugin->getName()] = std::make_shared<LoadedModule>(plugin);
         }
     }
 

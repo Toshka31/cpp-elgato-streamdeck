@@ -90,7 +90,7 @@ namespace image::helper {
         return prepareImageForDeck(image, image_params);
     }
 
-    std::vector<unsigned char> applyLabelOnImage(const std::vector<unsigned char> &image_file_raw_data, const std::string &label, int font_size = 12)
+    std::vector<unsigned char> applyLabelOnImage(const std::vector<unsigned char> &image_file_raw_data, const std::string &label, int font_size)
     {
         cv::Mat image = cv::imdecode(cv::Mat(image_file_raw_data), cv::IMREAD_COLOR);
 

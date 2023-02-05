@@ -6,3 +6,5 @@ target_link_libraries(streamdeck.modules.alsa
         streamdeck.iface
         streamdeck.lib
         asound)
+
+install(TARGETS streamdeck.modules.alsa DESTINATION $ENV{HOME}/.streamdeck/modules)
