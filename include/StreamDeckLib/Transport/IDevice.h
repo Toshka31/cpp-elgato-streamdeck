@@ -14,14 +14,14 @@ public:
     /*
     Opens the device for input/output. This must be called prior to
     sending or receiving any reports.
-    .. seealso:: See :func:`~Transport.Device.close` for the
+    .. seealso:: See :func:`MediatorDevice.close` for the
                     corresponding close method.
     */
     virtual void open() = 0;
 
     /*
     Closes the device for input/output.
-    .. seealso:: See :func:`~~Transport.Device.open` for the
+    .. seealso:: See :func:`~MediatorDevice.open` for the
                     corresponding open method.
     */
     virtual void close() = 0;

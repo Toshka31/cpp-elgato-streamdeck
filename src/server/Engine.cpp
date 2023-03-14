@@ -26,7 +26,7 @@ Engine::Engine()
     std::filesystem::path modules_path = homedir / FOLDER_STREAMDECK / FOLDER_MODULES;
     m_module_loader = std::make_shared<ModuleLoader>(modules_path.string());
 
-    DeviceManager mngr(TransportFactory::createUsbTransport());
+    DeviceManager mngr(TransportFactory::createDebugTransport());
     auto streamdecks = mngr.enumerate();
 
     for (auto &deck : streamdecks)
