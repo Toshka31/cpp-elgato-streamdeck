@@ -11,4 +11,5 @@ target_link_libraries(streamdeck.lib
         pthread
         ${OpenCV_LIBS}
         jpeg
-        png )
+        png
+        cppzmq)

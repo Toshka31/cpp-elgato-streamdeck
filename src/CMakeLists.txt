@@ -8,6 +8,7 @@ find_package(Boost)
 find_package(OpenCV REQUIRED)
 find_package(rpclib REQUIRED)
 find_package(OpenSSL REQUIRED)
+find_package(cppzmq)
 
 if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
@@ -22,4 +23,5 @@ add_subdirectory(modules)
 add_subdirectory(server)
 add_subdirectory(cli)
 add_subdirectory(UI)
+add_subdirectory(DeckEmulator)
 

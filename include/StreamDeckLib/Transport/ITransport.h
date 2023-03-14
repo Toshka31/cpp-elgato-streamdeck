@@ -20,7 +20,7 @@ public:
                     device list should not be filtered by vendor.
     :param int pid: USB Product ID to filter all devices by, `None` if the
                     device list should not be filtered by product.
-    :rtype: list(Transport.Device)
+    :rtype: list(Mediator.Device)
     :return: List of discovered devices that are available through this
                 transport back-end.
     */
