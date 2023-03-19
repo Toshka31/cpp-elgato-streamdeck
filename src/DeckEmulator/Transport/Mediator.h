@@ -61,10 +61,10 @@ template <typename DeckWidget>
 Mediator<DeckWidget>::~Mediator()
 {
     m_is_running = false;
-    m_sock_in.close();
-    m_sock_out.close();
     m_worker_sender.join();
     m_worker_receiver.join();
+    m_sock_in.close();
+    m_sock_out.close();
 }
 
 template <typename DeckWidget>
