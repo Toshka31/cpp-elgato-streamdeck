@@ -102,6 +102,7 @@ void Mediator<DeckWidget>::receiveLoop()
                 if (msg.data<uchar>()[3])
                 {
                     emit buttonImage(msg.data<uchar>()[2], m_cached_data);
+                    m_cached_data.clear();
                 }
             }
         }
