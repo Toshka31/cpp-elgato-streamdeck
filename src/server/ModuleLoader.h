@@ -12,7 +12,10 @@
 class LoadedModule
 {
 public:
-    LoadedModule(std::shared_ptr<IModule> module) : m_module(module) {}
+    LoadedModule(std::shared_ptr<IModule> module) : m_module(module)
+    {
+
+    }
 
     std::string name()
     {
@@ -28,6 +31,11 @@ public:
     {
         return m_module->createComponent(name);
     }
+
+    std::optional<ProvidedProfile> getProfile()
+    {
+        return m_module->getProvidedProfile();
+    }
 private:
     std::shared_ptr<IModule> m_module;
 };
@@ -42,18 +50,25 @@ public:
           plugins.emplace_back(dir_entry.path().string());
 
         for (const auto & plugin_path : plugins) {
-            boost::dll::shared_library lib(plugin_path, boost::dll::load_mode::append_decorations);
-            if (!lib.has("create")) {
-                continue;
+            try {
+                boost::dll::shared_library lib(plugin_path, boost::dll::load_mode::append_decorations);
+                if (!lib.has("create")) {
+                    continue;
+                }
+
+                typedef std::shared_ptr<IModule> (pluginapi_create_t)();
+                std::function<pluginapi_create_t>
+                    creator = boost::dll::import_alias<pluginapi_create_t>(boost::move(lib), "create");
+                std::shared_ptr<IModule> plugin = creator();
+
+                m_libs
+                    .push_back(std::make_shared<boost::dll::shared_library>(plugin_path)); // this is way to prevent unload
+
+                m_modules[plugin->getName()] = std::make_shared<LoadedModule>(plugin);
             }
-
-            typedef std::shared_ptr<IModule> (pluginapi_create_t)();
-            std::function<pluginapi_create_t> creator = boost::dll::import_alias<pluginapi_create_t>(boost::move(lib), "create");
-            std::shared_ptr<IModule> plugin = creator();
-
-            m_libs.push_back(std::make_shared<boost::dll::shared_library>(plugin_path)); // this is way to prevent unload
-
-            m_modules[plugin->getName()] = std::make_shared<LoadedModule>(plugin);
+            catch (...) {
+                std::cout << "Failed to load " + plugin_path.string() << std::endl;
+            }
         }
     }
 
@@ -90,6 +105,11 @@ public:
     std::shared_ptr<IComponent> getModuleComponent(const std::string &module_name, const std::string &component_name)
     {
         return m_modules[module_name]->getComponent(component_name);
+    }
+
+    std::optional<ProvidedProfile> getModuleProfile(const std::string &module_name)
+    {
+        return m_modules[module_name]->getProfile();
     }
 private:
     boost::dll::fs::path plugins_directory_;
