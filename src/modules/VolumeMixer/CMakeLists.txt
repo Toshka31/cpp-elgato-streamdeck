@@ -9,6 +9,11 @@ pkg_check_modules (GTK3 REQUIRED gtk+-3.0)
 include_directories (${GTK3_INCLUDE_DIRS})
 link_directories (${GTK3_LIBRARY_DIRS})
 
-add_executable(streamdeck.modules.mixer ${HEADERS_FILES} ${SOURCE_FILES})
+add_library(streamdeck.modules.mixer SHARED ${HEADERS_FILES} ${SOURCE_FILES})
 target_link_libraries(streamdeck.modules.mixer
-        pulse ${GTK3_LIBRARIES})
+        pulse
+        ${GTK3_LIBRARIES}
+        streamdeck.iface
+        streamdeck.lib)
+
+install(TARGETS streamdeck.modules.mixer DESTINATION $ENV{HOME}/.streamdeck/modules)
