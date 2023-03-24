@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RegisteredDevice.h"
+#include "RestrictedDevice.h"
 
 RegisteredDevice::RegisteredDevice(std::shared_ptr<IStreamDeck> deck, std::shared_ptr<ModuleLoader> module_loader)
       : m_streamdeck(deck),
@@ -35,9 +36,9 @@ void RegisteredDevice::tick()
       if (it != m_key_mapping.end())
       {
         if (event.value)
-          it->second->actionPress(m_streamdeck, event.key);
+          it->second->actionPress();
         else
-          it->second->actionRelease(m_streamdeck, event.key);
+          it->second->actionRelease();
       }
     }
     m_events.clear();
@@ -75,6 +76,7 @@ void RegisteredDevice::setButtonComponent(ushort key, const std::string &module,
 {
   m_current_profile.setButtonComponent(key, module, component);
   auto comp = m_module_loader->getModuleComponent(module, component);
+  comp->init(std::make_shared<RestrictedDevice>(key, shared_from_this()));
   auto profile = m_module_loader->getModuleProfile(module);
   if (profile.has_value())
       addProfileFromModule(module, profile.value());
@@ -85,6 +87,11 @@ void RegisteredDevice::setButtonComponent(ushort key, const std::string &module,
 std::string RegisteredDevice::getCurrentProfileName() const
 {
   return m_current_profile.getName();
+}
+
+void RegisteredDevice::setProfile(const std::string &profile_name)
+{
+    // TODO
 }
 
 std::vector<std::string> RegisteredDevice::getProfiles()
@@ -100,6 +107,15 @@ std::string RegisteredDevice::getCurrentPageName() const
 std::vector<std::string> RegisteredDevice::getPages()
 {
   return m_current_profile.getPages();
+}
+
+image::helper::TargetImageParameters RegisteredDevice::getImageFormat()
+{
+    return {
+        m_streamdeck->key_image_format().size.first,
+        m_streamdeck->key_image_format().size.second,
+        m_streamdeck->key_image_format().flip.first,
+        m_streamdeck->key_image_format().flip.second};
 }
 
 void RegisteredDevice::callback(std::shared_ptr<IStreamDeck> deck, ushort key, bool val)
@@ -130,7 +146,6 @@ void RegisteredDevice::updateButton(ushort key)
     m_streamdeck->set_key_image(key, image_data);
   }
 }
-
 void RegisteredDevice::addProfileFromModule(const std::string &module, const ProvidedProfile &provided_profile)
 {
     auto profile = createNewProfile(m_streamdeck->get_serial_number(),module);

@@ -20,13 +20,11 @@ class MuteComponent : public IComponent
 {
   DECLARE_MODULE_COMPONENT(AlsaModule, MuteComponent)
 public:
-    void init(std::shared_ptr<IStreamDeck> deck)
+    void init(std::shared_ptr<IDeviceButtonRestricted> deck) override
     {
-        image::helper::TargetImageParameters image_params = {
-            deck->key_image_format().size.first,
-            deck->key_image_format().size.second,
-            deck->key_image_format().flip.first,
-            deck->key_image_format().flip.second };
+        m_deck = deck;
+
+        image::helper::TargetImageParameters image_params = m_deck->getImageFormat();
 
         m_img_mute = image::helper::prepareImageForDeck(IMAGE_MUTE, image_params);
         m_img_unmute = image::helper::prepareImageForDeck(IMAGE_UNMUTE, image_params);
@@ -42,16 +40,16 @@ public:
 
     }
 
-    void actionPress(std::shared_ptr<IStreamDeck> deck, ushort key) override
+    void actionPress() override
     {
         if (m_prev_value)
-            deck->set_key_image(key, m_img_unmute);
+            m_deck->setButtonImage(m_img_unmute);
         else
-            deck->set_key_image(key, m_img_mute);
+            m_deck->setButtonImage(m_img_mute);
         SetAlsaMasterVolume(m_prev_value);
     }
 
-    void actionRelease(std::shared_ptr<IStreamDeck> deck, ushort key) override
+    void actionRelease() override
     {
 
     }
@@ -62,6 +60,8 @@ public:
     }
 private:
     long m_prev_value = 0;
+
+    std::shared_ptr<IDeviceButtonRestricted> m_deck;
 
     std::vector<unsigned char> m_img_mute;
     std::vector<unsigned char> m_img_unmute;
