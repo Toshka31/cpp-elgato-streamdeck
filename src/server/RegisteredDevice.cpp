@@ -4,7 +4,7 @@
 
 RegisteredDevice::RegisteredDevice(std::shared_ptr<IStreamDeck> deck, std::shared_ptr<ModuleLoader> module_loader)
       : m_streamdeck(deck),
-        m_current_profile(loadDeckProfile(deck->get_serial_number())),
+        m_current_profile(loadDeckProfile(deck->get_serial_number(), getDefaultProfileName(deck->get_serial_number()))),
         m_module_loader(module_loader)
 {
   m_streamdeck->set_key_callback(std::bind(&RegisteredDevice::callback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
@@ -77,6 +77,9 @@ void RegisteredDevice::setButtonComponent(ushort key, const std::string &module,
   auto comp = m_module_loader->getModuleComponent(module, component);
   if (comp)
   {
+      auto profile = m_module_loader->getModuleProfile(module);
+      if (profile.has_value())
+          addProfileFromModule(module, profile.value());
       comp->init(m_streamdeck);
       m_key_mapping[key] = comp;
       updateButton(key);
@@ -139,4 +142,14 @@ void RegisteredDevice::updateButton(ushort key)
         image_data = image::helper::prepareImageForDeck(image_data, m_image_params);
         m_streamdeck->set_key_image(key, image_data);
     }
+}
+
+void RegisteredDevice::addProfileFromModule(const std::string &module, const ProvidedProfile &provided_profile)
+{
+    auto profile = createNewProfile(m_streamdeck->get_serial_number(),module);
+
+    for (const auto &btn : provided_profile.key_mapping)
+        profile.setButtonComponent(btn.first, module, btn.second);
+
+    profile.save();
 }
