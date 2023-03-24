@@ -11,7 +11,7 @@
 #include <memory>
 #include <functional>
 
-class RegisteredDevice
+class RegisteredDevice : public std::enable_shared_from_this<RegisteredDevice>
 {
 public:
     RegisteredDevice(std::shared_ptr<IStreamDeck> deck, std::shared_ptr<ModuleLoader> module_loader);
@@ -30,11 +30,15 @@ public:
 
     std::string getCurrentProfileName() const;
 
+    void setProfile(const std::string &profile_name);
+
     std::vector<std::string> getProfiles();
 
     std::string getCurrentPageName() const;
 
     std::vector<std::string> getPages();
+
+    image::helper::TargetImageParameters getImageFormat();
 
 private:
     void callback(std::shared_ptr<IStreamDeck> deck, ushort key, bool val);

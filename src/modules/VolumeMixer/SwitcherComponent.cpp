@@ -2,14 +2,8 @@
 #include "module.h"
 #include "SwitcherComponent.h"
 
-void MixerSwitchComponent::init(std::shared_ptr<IStreamDeck> deck)
+void MixerSwitchComponent::init(std::shared_ptr<IDeviceButtonRestricted> device)
     {
-        image::helper::TargetImageParameters image_params = {
-            deck->key_image_format().size.first,
-            deck->key_image_format().size.second,
-            deck->key_image_format().flip.first,
-            deck->key_image_format().flip.second };
-
     }
 
     std::string MixerSwitchComponent::name() const
@@ -22,12 +16,12 @@ void MixerSwitchComponent::init(std::shared_ptr<IStreamDeck> deck)
 
     }
 
-    void MixerSwitchComponent::actionPress(std::shared_ptr<IStreamDeck> deck, ushort key)
+    void MixerSwitchComponent::actionPress()
     {
 
     }
 
-    void MixerSwitchComponent::actionRelease(std::shared_ptr<IStreamDeck> deck, ushort key)
+    void MixerSwitchComponent::actionRelease()
     {
 
     }

@@ -35,9 +35,9 @@ void RegisteredDevice::tick()
       if (it != m_key_mapping.end())
       {
         if (event.value)
-          it->second->actionPress(m_streamdeck, event.key);
+          it->second->actionPress();
         else
-          it->second->actionRelease(m_streamdeck, event.key);
+          it->second->actionRelease();
       }
     }
     m_events.clear();
@@ -77,10 +77,10 @@ void RegisteredDevice::setButtonComponent(ushort key, const std::string &module,
   auto comp = m_module_loader->getModuleComponent(module, component);
   if (comp)
   {
+      comp->init(std::make_shared<RestrictedDevice>(key, shared_from_this()));
       auto profile = m_module_loader->getModuleProfile(module);
       if (profile.has_value())
           addProfileFromModule(module, profile.value());
-      comp->init(m_streamdeck);
       m_key_mapping[key] = comp;
       updateButton(key);
   }
@@ -89,6 +89,11 @@ void RegisteredDevice::setButtonComponent(ushort key, const std::string &module,
 std::string RegisteredDevice::getCurrentProfileName() const
 {
   return m_current_profile.getName();
+}
+
+void RegisteredDevice::setProfile(const std::string &profile_name)
+{
+    // TODO
 }
 
 std::vector<std::string> RegisteredDevice::getProfiles()
@@ -106,6 +111,15 @@ std::vector<std::string> RegisteredDevice::getPages()
   return m_current_profile.getPages();
 }
 
+image::helper::TargetImageParameters RegisteredDevice::getImageFormat()
+{
+    return {
+        m_streamdeck->key_image_format().size.first,
+        m_streamdeck->key_image_format().size.second,
+        m_streamdeck->key_image_format().flip.first,
+        m_streamdeck->key_image_format().flip.second};
+}
+
 void RegisteredDevice::callback(std::shared_ptr<IStreamDeck> deck, ushort key, bool val)
 {
   std::lock_guard<std::mutex> lock(m_mutex);
@@ -116,26 +130,18 @@ void RegisteredDevice::updateButton(ushort key)
 {
     auto key_profile = m_current_profile.getCurrentKeyProfile(key);
 
-    if (!m_key_mapping.count(key) || !key_profile.has_value())
-    {
-        return;
-    }
+  std::vector<unsigned char> image_data;
+  if (!key_profile.m_module_name.empty() && !key_profile.m_component_name.empty())
+    image_data = m_key_mapping[key]->getImage();
 
-    auto image_data = m_key_mapping[key]->getImage();
+  if (!key_profile.m_custom_image.empty())
+    image_data = image::helper::loadRawImage(key_profile.m_custom_image);
 
-    if (!key_profile->m_custom_image.empty())
-    {
-        image_data = image::helper::loadRawImage(key_profile->m_custom_image);
-    }
-
-    if (!key_profile->m_custom_label.empty())
-    {
-        if (image_data.empty())
-        {
-            image_data = image::helper::createEmptyImage(m_image_params);
-        }
-        image_data = image::helper::applyLabelOnImage(image_data, key_profile->m_custom_label);
-    }
+  if (!key_profile.m_custom_label.empty()) {
+    if (image_data.empty())
+      image_data = image::helper::createEmptyImage(m_image_params);
+    image_data = image::helper::applyLabelOnImage(image_data, key_profile.m_custom_label);
+  }
 
     if (!image_data.empty())
     {

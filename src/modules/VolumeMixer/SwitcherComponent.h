@@ -6,13 +6,14 @@ class MixerSwitchComponent : public IComponent
 {
   DECLARE_MODULE_COMPONENT(MixerModule, MixerSwitchComponent)
  public:
-    void init(std::shared_ptr<IStreamDeck> deck);
+    void init(std::shared_ptr<IDeviceButtonRestricted> device) override;
 
     std::string name() const override;
     void tick() override;
 
-    void actionPress(std::shared_ptr<IStreamDeck> deck, ushort key) override;
+    void actionPress() override;
 
-    void actionRelease(std::shared_ptr<IStreamDeck> deck, ushort key) override;
+    void actionRelease() override;
+
     std::vector<unsigned char> getImage() const override;
 };
