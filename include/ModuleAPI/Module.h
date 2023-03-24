@@ -1,8 +1,5 @@
 #pragma once
 
-#include "IModule.h"
-#include "IComponent.h"
-
 #include <boost/config.hpp>
 #include <boost/dll/alias.hpp>
 

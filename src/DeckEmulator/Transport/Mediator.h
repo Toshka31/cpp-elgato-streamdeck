@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MediatorInterface.h"
+#include "../Defines.h"
 
 #include <zmq.hpp>
 
@@ -80,7 +81,7 @@ void Mediator<DeckWidget>::sendStateLoop()
             msg = zmq::message_t(m_button_states.begin(), m_button_states.end());
         }
         m_sock_out.send(msg, zmq::send_flags::none);
-        std::this_thread::sleep_for(100ms);
+        std::this_thread::sleep_for(defines::UPDATE_TIMEOUT);
     }
 }
 
@@ -106,7 +107,7 @@ void Mediator<DeckWidget>::receiveLoop()
                 }
             }
         }
-        std::this_thread::sleep_for(100ms);
+        std::this_thread::sleep_for(defines::UPDATE_TIMEOUT);
     }
 }
 

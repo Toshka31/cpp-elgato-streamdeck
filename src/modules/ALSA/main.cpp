@@ -7,7 +7,6 @@
 #include <StreamDeckLib/Device/IStreamDeck.h>
 #include <StreamDeckLib/ImageHelper/ImageHelper.h>
 
-#include <iostream>
 #include <memory>
 
 DECLARE_MODULE(AlsaModule)
@@ -18,15 +17,18 @@ DEFINE_MODULE(AlsaModule)
 
 class MuteComponent : public IComponent
 {
-  DECLARE_MODULE_COMPONENT(AlsaModule, MuteComponent)
+    DECLARE_MODULE_COMPONENT(AlsaModule, MuteComponent)
+
 public:
-    void init(std::shared_ptr<IStreamDeck> deck)
+    void init(std::shared_ptr<IStreamDeck> deck) override
     {
-        image::helper::TargetImageParameters image_params = {
+        image::helper::TargetImageParameters image_params =
+        {
             deck->key_image_format().size.first,
             deck->key_image_format().size.second,
             deck->key_image_format().flip.first,
-            deck->key_image_format().flip.second };
+            deck->key_image_format().flip.second
+        };
 
         m_img_mute = image::helper::prepareImageForDeck(IMAGE_MUTE, image_params);
         m_img_unmute = image::helper::prepareImageForDeck(IMAGE_UNMUTE, image_params);
@@ -44,10 +46,7 @@ public:
 
     void actionPress(std::shared_ptr<IStreamDeck> deck, ushort key) override
     {
-        if (m_prev_value)
-            deck->set_key_image(key, m_img_unmute);
-        else
-            deck->set_key_image(key, m_img_mute);
+        deck->set_key_image(key, m_prev_value ? m_img_mute : m_img_unmute);
         SetAlsaMasterVolume(m_prev_value);
     }
 
@@ -58,8 +57,9 @@ public:
 
     std::vector<unsigned char> getImage() const override
     {
-        return IMAGE_UNMUTE;
+        return IMAGE_MUTE;
     }
+
 private:
     long m_prev_value = 0;
 
@@ -68,9 +68,9 @@ private:
 
     void SetAlsaMasterVolume(long volume)
     {
-        long min, max;
-        snd_mixer_t *handle;
-        snd_mixer_selem_id_t *sid;
+        long min{}, max{};
+        snd_mixer_t *handle = nullptr;
+        snd_mixer_selem_id_t *sid = nullptr;
         const char *card = "default";
         const char *selem_name = "Master";
 
@@ -82,7 +82,7 @@ private:
         snd_mixer_selem_id_alloca(&sid);
         snd_mixer_selem_id_set_index(sid, 0);
         snd_mixer_selem_id_set_name(sid, selem_name);
-        snd_mixer_elem_t* elem = snd_mixer_find_selem(handle, sid);
+        snd_mixer_elem_t *elem = snd_mixer_find_selem(handle, sid);
 
         snd_mixer_selem_get_playback_volume_range(elem, &min, &max);
 
@@ -90,10 +90,8 @@ private:
         m_prev_value /= (max / 100);
 
         snd_mixer_selem_set_playback_volume_all(elem, volume * max / 100);
-
         snd_mixer_close(handle);
     }
 };
+
 REGISTER_MODULE_COMPONENT(AlsaModule, MuteComponent)
-
-
