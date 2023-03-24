@@ -41,6 +41,8 @@ private:
 
     void updateButton(ushort key);
 
+    void addProfileFromModule(const std::string &module, const ProvidedProfile &profile);
+
 protected:
     image::helper::TargetImageParameters m_image_params;
     std::shared_ptr<IStreamDeck> m_streamdeck;
