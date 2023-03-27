@@ -16,6 +16,8 @@ class RegisteredDevice : public std::enable_shared_from_this<RegisteredDevice>
 public:
     RegisteredDevice(std::shared_ptr<IStreamDeck> deck, std::shared_ptr<ModuleLoader> module_loader);
 
+    void init();
+
     void tick();
 
     bool is_device_open();
@@ -43,7 +45,11 @@ public:
 private:
     void callback(std::shared_ptr<IStreamDeck> deck, ushort key, bool val);
 
-    void updateButton(ushort key);
+    void refresh();
+
+    void updateButtonImage(ushort key);
+
+    void updateButtonComponent(ushort key);
 
     void addProfileFromModule(const std::string &module, const ProvidedProfile &profile);
 

@@ -7,20 +7,21 @@ RegisteredDevice::RegisteredDevice(std::shared_ptr<IStreamDeck> deck, std::share
         m_current_profile(loadDeckProfile(deck->get_serial_number(), getDefaultProfileName(deck->get_serial_number()))),
         m_module_loader(module_loader)
 {
-  m_streamdeck->set_key_callback(std::bind(&RegisteredDevice::callback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
 
-  m_image_params = {
-      m_streamdeck->key_image_format().size.first,
-      m_streamdeck->key_image_format().size.second,
-      m_streamdeck->key_image_format().flip.first,
-      m_streamdeck->key_image_format().flip.second };
+}
 
-  // apply profile
-  unsigned short key_count = m_streamdeck->key_count();
-  for (auto key = 0; key < key_count; ++key)
-  {
-    updateButton(key);
-  }
+void RegisteredDevice::init()
+{
+    m_streamdeck->set_key_callback(std::bind(&RegisteredDevice::callback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+
+    m_image_params = {
+        m_streamdeck->key_image_format().size.first,
+        m_streamdeck->key_image_format().size.second,
+        m_streamdeck->key_image_format().flip.first,
+        m_streamdeck->key_image_format().flip.second };
+
+    // apply profile
+    refresh();
 }
 
 void RegisteredDevice::tick()
@@ -62,28 +63,19 @@ void RegisteredDevice::setButtonImage(ushort key, std::vector<uint8_t> &image)
 {
   auto saved_path = saveButtonImageForDeck(m_streamdeck->get_serial_number(), image);
   m_current_profile.setButtonImage(key, saved_path);
-  updateButton(key);
+    updateButtonImage(key);
 }
 
 void RegisteredDevice::setButtonLabel(ushort key, const std::string &label)
 {
   m_current_profile.setButtonLabel(key, label);
-  updateButton(key);
+    updateButtonImage(key);
 }
 
 void RegisteredDevice::setButtonComponent(ushort key, const std::string &module, const std::string &component)
 {
   m_current_profile.setButtonComponent(key, module, component);
-  auto comp = m_module_loader->getModuleComponent(module, component);
-  if (comp)
-  {
-      comp->init(std::make_shared<RestrictedDevice>(key, shared_from_this()));
-      auto profile = m_module_loader->getModuleProfile(module);
-      if (profile.has_value())
-          addProfileFromModule(module, profile.value());
-      m_key_mapping[key] = comp;
-      updateButton(key);
-  }
+    updateButtonComponent(key);
 }
 
 std::string RegisteredDevice::getCurrentProfileName() const
@@ -93,7 +85,9 @@ std::string RegisteredDevice::getCurrentProfileName() const
 
 void RegisteredDevice::setProfile(const std::string &profile_name)
 {
-    // TODO
+    m_current_profile.save();
+    m_current_profile = loadDeckProfile(m_streamdeck->get_serial_number(), profile_name);
+    refresh();
 }
 
 std::vector<std::string> RegisteredDevice::getProfiles()
@@ -126,27 +120,54 @@ void RegisteredDevice::callback(std::shared_ptr<IStreamDeck> deck, ushort key, b
   m_events.emplace_back(key, val);
 }
 
-void RegisteredDevice::updateButton(ushort key)
+void RegisteredDevice::refresh()
+{
+    m_streamdeck->reset();
+    m_key_mapping.clear();
+
+    unsigned short key_count = m_streamdeck->key_count();
+    for (auto key = 0; key < key_count; ++key)
+    {
+        updateButtonComponent(key);
+        updateButtonImage(key);
+    }
+}
+
+void RegisteredDevice::updateButtonImage(ushort key)
 {
     auto key_profile = m_current_profile.getCurrentKeyProfile(key);
 
-  std::vector<unsigned char> image_data;
-  if (!key_profile.m_module_name.empty() && !key_profile.m_component_name.empty())
-    image_data = m_key_mapping[key]->getImage();
+    std::vector<unsigned char> image_data;
+    if (!key_profile.m_module_name.empty() && !key_profile.m_component_name.empty())
+        image_data = m_key_mapping[key]->getImage();
 
-  if (!key_profile.m_custom_image.empty())
-    image_data = image::helper::loadRawImage(key_profile.m_custom_image);
+    if (!key_profile.m_custom_image.empty())
+        image_data = image::helper::loadRawImage(key_profile.m_custom_image);
 
-  if (!key_profile.m_custom_label.empty()) {
-    if (image_data.empty())
-      image_data = image::helper::createEmptyImage(m_image_params);
-    image_data = image::helper::applyLabelOnImage(image_data, key_profile.m_custom_label);
-  }
+    if (!key_profile.m_custom_label.empty()) {
+        if (image_data.empty())
+            image_data = image::helper::createEmptyImage(m_image_params);
+        image_data = image::helper::applyLabelOnImage(image_data, key_profile.m_custom_label);
+    }
 
     if (!image_data.empty())
     {
         image_data = image::helper::prepareImageForDeck(image_data, m_image_params);
         m_streamdeck->set_key_image(key, image_data);
+    }
+}
+
+void RegisteredDevice::updateButtonComponent(ushort key)
+{
+    auto key_profile = m_current_profile.getCurrentKeyProfile(key);
+
+    if (!key_profile.m_module_name.empty() && !key_profile.m_component_name.empty()) {
+        auto comp = m_module_loader->getModuleComponent(key_profile.m_module_name, key_profile.m_component_name);
+        comp->init(std::make_shared<RestrictedDevice>(key, shared_from_this()));
+        auto profile = m_module_loader->getModuleProfile(key_profile.m_module_name);
+        if (profile.has_value())
+            addProfileFromModule(key_profile.m_module_name, profile.value());
+        m_key_mapping[key] = comp;
     }
 }
 

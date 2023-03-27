@@ -10,7 +10,7 @@ static constexpr const char*const FOLDER_MODULES = "modules";
 static constexpr const char*const FOLDER_IMAGES = "images";
 static constexpr const char*const FOLDER_PROFILES = "profiles";
 static constexpr const char*const FILENAME_CONFIG = ".config";
-static constexpr const char*const FILENAME_DEFAULT_PROFILE = "default.profile";
+static constexpr const char*const FILENAME_DEFAULT_PROFILE_NAME = "default";
 static constexpr const char*const EXTENSION_PROFILE = ".profile";
 
 void createDefaultConfigs(const std::filesystem::path &path);

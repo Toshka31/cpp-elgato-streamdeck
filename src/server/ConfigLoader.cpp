@@ -22,18 +22,20 @@ using namespace std::chrono_literals;
 
 void createEmptyProfile(const std::filesystem::path &path)
 {
-    std::ofstream file_profile(path);
+    std::string str_path = path.string();
+    std::ofstream file_profile(str_path);
     file_profile << DEFAULT_PROFILE;
     file_profile.close();
 }
 
 void createDefaultConfigs(const std::filesystem::path &path)
 {
-    createEmptyProfile(path / FILENAME_DEFAULT_PROFILE);
+    std::string filename(std::string() + FILENAME_DEFAULT_PROFILE_NAME + EXTENSION_PROFILE);
+    createEmptyProfile(path / filename);
 
     std::filesystem::path path_default_config = path / FILENAME_CONFIG;
     std::ofstream file_config(path_default_config);
-    file_config << FILENAME_DEFAULT_PROFILE;
+    file_config << FILENAME_DEFAULT_PROFILE_NAME;
     file_config.close();
 }
 
@@ -71,7 +73,7 @@ Profile loadDeckProfile(const std::string &deck_serial, const std::string &profi
         createDefaultConfigs(deck_folder_path);
     }
 
-    Profile profile(deck_folder_path / profile_name);
+    Profile profile(deck_folder_path / (profile_name + EXTENSION_PROFILE));
     return profile;
 }
 
@@ -80,9 +82,9 @@ Profile createNewProfile(const std::string &deck_serial, const std::string &prof
     auto deck_folder_path = getStreamDeckFolderPath(deck_serial);
 
     // TODO check if exist and throw error
-    createEmptyProfile(deck_folder_path / profile_name);
+    createEmptyProfile(deck_folder_path / (profile_name + EXTENSION_PROFILE) );
 
-    Profile profile(deck_folder_path / profile_name);
+    Profile profile(deck_folder_path / (profile_name + EXTENSION_PROFILE) );
     return profile;
 }
 

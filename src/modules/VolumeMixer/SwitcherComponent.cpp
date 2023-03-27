@@ -3,30 +3,31 @@
 #include "SwitcherComponent.h"
 
 void MixerSwitchComponent::init(std::shared_ptr<IDeviceButtonRestricted> device)
-    {
-    }
+{
+    m_device = device;
+}
 
-    std::string MixerSwitchComponent::name() const
-    {
-        return "Show Mixer";
-    }
+std::string MixerSwitchComponent::name() const
+{
+    return "Show Mixer";
+}
 
-    void MixerSwitchComponent::tick()
-    {
+void MixerSwitchComponent::tick()
+{
 
-    }
+}
 
-    void MixerSwitchComponent::actionPress()
-    {
+void MixerSwitchComponent::actionPress()
+{
+    m_device->setProfile("MixerModule");
+}
 
-    }
+void MixerSwitchComponent::actionRelease()
+{
 
-    void MixerSwitchComponent::actionRelease()
-    {
+}
 
-    }
-
-    std::vector<unsigned char> MixerSwitchComponent::getImage() const
-    {
-
-    }
+std::vector<unsigned char> MixerSwitchComponent::getImage() const
+{
+    return {};
+}
