@@ -13,4 +13,6 @@ target_link_libraries(streamdeck.server
         OpenSSL::Crypto
         rpc)
 
-add_dependencies(streamdeck.server streamdeck.modules.alsavolume)
+if (USE_EMULATOR)
+    target_compile_definitions(streamdeck.server PUBLIC EMULATOR)
+endif()
