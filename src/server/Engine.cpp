@@ -35,6 +35,7 @@ Engine::Engine()
         deck->reset();
 
         auto reg_device = std::make_shared<RegisteredDevice>(deck, m_module_loader);
+        reg_device->init();
         m_registered_deices.insert({deck->get_serial_number(), reg_device});
     }
 }

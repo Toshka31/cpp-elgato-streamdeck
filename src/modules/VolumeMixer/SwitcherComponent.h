@@ -16,4 +16,6 @@ class MixerSwitchComponent : public IComponent
     void actionRelease() override;
 
     std::vector<unsigned char> getImage() const override;
+private:
+    std::shared_ptr<IDeviceButtonRestricted> m_device;
 };
