@@ -14,8 +14,7 @@ std::string MixerComponent::name() const
 void MixerComponent::tick()
 {
     m_manager->tickButton(m_device->getOwnedKey());
-    if (m_manager->needImageUpdate(m_device->getOwnedKey()))
-        m_device->updateButtonImage();
+    m_device->updateButtonImage();
 }
 
 void MixerComponent::actionPress()

@@ -16,8 +16,6 @@ public:
 
     void pressButton(unsigned short key);
 
-    bool needImageUpdate(unsigned short key);
-
     std::vector<unsigned char> getButtonImage(unsigned short key);
 
 private:
@@ -26,6 +24,7 @@ private:
 private:
     PulseSystem m_pulse_system;
 
+    unsigned short m_current_page = 1;
     std::map<unsigned short, PulseSystem::AppVolume> m_key_apps;
 
     static std::map<std::string, std::shared_ptr<MixerButtonManager>> m_map_manager;
