@@ -20,11 +20,15 @@ public:
 
     void tick();
 
+    std::string getID();
+
     bool is_device_open();
 
     void setBrightness(ushort brightness);
 
     void setButtonImage(ushort key, std::vector<uint8_t> &image);
+
+    void updateButtonImage(ushort key);
 
     void setButtonLabel(ushort key, const std::string &label);
 
@@ -46,8 +50,6 @@ private:
     void callback(std::shared_ptr<IStreamDeck> deck, ushort key, bool val);
 
     void refresh();
-
-    void updateButtonImage(ushort key);
 
     void updateButtonComponent(ushort key);
 

@@ -66,8 +66,8 @@ public:
 
                 m_modules[plugin->getName()] = std::make_shared<LoadedModule>(plugin);
             }
-            catch (...) {
-                std::cout << "Failed to load " + plugin_path.string() << std::endl;
+            catch (std::runtime_error &e) {
+                std::cout << "Failed to load " + plugin_path.string() << " with error:" << e.what() << std::endl;
             }
         }
     }

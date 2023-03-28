@@ -2,6 +2,8 @@
 #include "module.h"
 #include "SwitcherComponent.h"
 
+#include "images/mixer.h"
+
 void MixerSwitchComponent::init(std::shared_ptr<IDeviceButtonRestricted> device)
 {
     m_device = device;
@@ -29,5 +31,5 @@ void MixerSwitchComponent::actionRelease()
 
 std::vector<unsigned char> MixerSwitchComponent::getImage() const
 {
-    return {};
+    return IMAGE_MIXER;
 }
