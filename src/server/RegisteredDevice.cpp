@@ -1,5 +1,3 @@
-#pragma once
-
 #include "RegisteredDevice.h"
 #include "RestrictedDevice.h"
 

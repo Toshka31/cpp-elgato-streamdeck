@@ -129,10 +129,6 @@ public:
         return m_modules[module_name]->getProfile();
     }
 
-    std::optional<ProvidedProfile> getModuleProfile(const std::string &module_name)
-    {
-        return m_modules[module_name]->getProfile();
-    }
 private:
     boost::dll::fs::path plugins_directory_;
     // Name => Module
