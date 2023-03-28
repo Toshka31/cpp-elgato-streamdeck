@@ -3,22 +3,26 @@
 #include "RegisteredDevice.h"
 
 RegisteredDevice::RegisteredDevice(std::shared_ptr<IStreamDeck> deck, std::shared_ptr<ModuleLoader> module_loader)
-      : m_streamdeck(deck),
-        m_current_profile(loadDeckProfile(deck->get_serial_number(), getDefaultProfileName(deck->get_serial_number()))),
-        m_module_loader(module_loader)
+    : m_streamdeck(deck),
+      m_current_profile(loadDeckProfile(deck->get_serial_number(), getDefaultProfileName(deck->get_serial_number()))),
+      m_module_loader(module_loader)
 {
 
 }
 
 void RegisteredDevice::init()
 {
-    m_streamdeck->set_key_callback(std::bind(&RegisteredDevice::callback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+    m_streamdeck->set_key_callback(std::bind(&RegisteredDevice::callback,
+                                             this,
+                                             std::placeholders::_1,
+                                             std::placeholders::_2,
+                                             std::placeholders::_3));
 
     m_image_params = {
         m_streamdeck->key_image_format().size.first,
         m_streamdeck->key_image_format().size.second,
         m_streamdeck->key_image_format().flip.first,
-        m_streamdeck->key_image_format().flip.second };
+        m_streamdeck->key_image_format().flip.second};
 
     // apply profile
     refresh();
@@ -26,26 +30,25 @@ void RegisteredDevice::init()
 
 void RegisteredDevice::tick()
 {
-  {
-    std::scoped_lock<std::mutex> lock(m_mutex);
-    for (auto event : m_events)
     {
-      std::cout << "["<< m_streamdeck->get_serial_number() << "]:" << "\t" << event.key << "\t" << event.value << std::endl;
+        std::scoped_lock<std::mutex> lock(m_mutex);
+        for (auto event: m_events) {
+            std::cout << "[" << m_streamdeck->get_serial_number() << "]:" << "\t" << event.key << "\t" << event.value
+                      << std::endl;
 
-      auto it = m_key_mapping.find(event.key);
-      if (it != m_key_mapping.end())
-      {
-        if (event.value)
-          it->second->actionPress();
-        else
-          it->second->actionRelease();
-      }
+            auto it = m_key_mapping.find(event.key);
+            if (it != m_key_mapping.end()) {
+                if (event.value)
+                    it->second->actionPress();
+                else
+                    it->second->actionRelease();
+            }
+        }
+        m_events.clear();
     }
-    m_events.clear();
-  }
 
-  for (auto &key : m_key_mapping)
-    key.second->tick();
+    for (auto &key: m_key_mapping)
+        key.second->tick();
 }
 
 std::string RegisteredDevice::getID()
@@ -55,37 +58,37 @@ std::string RegisteredDevice::getID()
 
 bool RegisteredDevice::is_device_open()
 {
-  return m_streamdeck->is_open();
+    return m_streamdeck->is_open();
 }
 
 void RegisteredDevice::setBrightness(ushort brightness)
 {
-  m_current_profile.setBrightness(brightness);
-  m_streamdeck->set_brightness(brightness);
+    m_current_profile.setBrightness(brightness);
+    m_streamdeck->set_brightness(brightness);
 }
 
 void RegisteredDevice::setButtonImage(ushort key, std::vector<uint8_t> &image)
 {
-  auto saved_path = saveButtonImageForDeck(m_streamdeck->get_serial_number(), image);
-  m_current_profile.setButtonImage(key, saved_path);
+    auto saved_path = saveButtonImageForDeck(m_streamdeck->get_serial_number(), image);
+    m_current_profile.setButtonImage(key, saved_path);
     updateButtonImage(key);
 }
 
 void RegisteredDevice::setButtonLabel(ushort key, const std::string &label)
 {
-  m_current_profile.setButtonLabel(key, label);
+    m_current_profile.setButtonLabel(key, label);
     updateButtonImage(key);
 }
 
 void RegisteredDevice::setButtonComponent(ushort key, const std::string &module, const std::string &component)
 {
-  m_current_profile.setButtonComponent(key, module, component);
+    m_current_profile.setButtonComponent(key, module, component);
     updateButtonComponent(key);
 }
 
 std::string RegisteredDevice::getCurrentProfileName() const
 {
-  return m_current_profile.getName();
+    return m_current_profile.getName();
 }
 
 void RegisteredDevice::setProfile(const std::string &profile_name)
@@ -97,17 +100,17 @@ void RegisteredDevice::setProfile(const std::string &profile_name)
 
 std::vector<std::string> RegisteredDevice::getProfiles()
 {
-  return getDeckProfiles(m_streamdeck->get_serial_number());
+    return getDeckProfiles(m_streamdeck->get_serial_number());
 }
 
 std::string RegisteredDevice::getCurrentPageName() const
 {
-  return m_current_profile.getCurrentPageName();
+    return m_current_profile.getCurrentPageName();
 }
 
 std::vector<std::string> RegisteredDevice::getPages()
 {
-  return m_current_profile.getPages();
+    return m_current_profile.getPages();
 }
 
 image::helper::TargetImageParameters RegisteredDevice::getImageFormat()
@@ -121,8 +124,8 @@ image::helper::TargetImageParameters RegisteredDevice::getImageFormat()
 
 void RegisteredDevice::callback(std::shared_ptr<IStreamDeck> deck, ushort key, bool val)
 {
-  std::lock_guard<std::mutex> lock(m_mutex);
-  m_events.emplace_back(key, val);
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_events.emplace_back(key, val);
 }
 
 void RegisteredDevice::refresh()
@@ -131,8 +134,7 @@ void RegisteredDevice::refresh()
     m_key_mapping.clear();
 
     unsigned short key_count = m_streamdeck->key_count();
-    for (auto key = 0; key < key_count; ++key)
-    {
+    for (auto key = 0; key < key_count; ++key) {
         updateButtonComponent(key);
         updateButtonImage(key);
     }
@@ -155,11 +157,12 @@ void RegisteredDevice::updateButtonImage(ushort key)
         image_data = image::helper::applyLabelOnImage(image_data, key_profile.m_custom_label);
     }
 
-    if (!image_data.empty())
-    {
+    if (!image_data.empty()) {
         image_data = image::helper::prepareImageForDeck(image_data, m_image_params);
         m_streamdeck->set_key_image(key, image_data);
     }
+    else
+        m_streamdeck->set_key_image(key, {});
 }
 
 void RegisteredDevice::updateButtonComponent(ushort key)
@@ -178,9 +181,9 @@ void RegisteredDevice::updateButtonComponent(ushort key)
 
 void RegisteredDevice::addProfileFromModule(const std::string &module, const ProvidedProfile &provided_profile)
 {
-    auto profile = createNewProfile(m_streamdeck->get_serial_number(),module);
+    auto profile = createNewProfile(m_streamdeck->get_serial_number(), module);
 
-    for (const auto &btn : provided_profile.key_mapping)
+    for (const auto &btn: provided_profile.key_mapping)
         profile.setButtonComponent(btn.first, module, btn.second);
 
     profile.save();

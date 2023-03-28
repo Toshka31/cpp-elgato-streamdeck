@@ -1,6 +1,7 @@
 
 #include "module.h"
 #include "SwitcherComponent.h"
+#include "MixerButtonManager.h"
 
 #include "images/mixer.h"
 
@@ -21,6 +22,8 @@ void MixerSwitchComponent::tick()
 
 void MixerSwitchComponent::actionPress()
 {
+    std::string cur_profile_name = m_device->getCurrentProfileName();
+    MixerButtonManager::getManager(m_device)->setPreviousProfileName(cur_profile_name);
     m_device->setProfile("MixerModule");
 }
 

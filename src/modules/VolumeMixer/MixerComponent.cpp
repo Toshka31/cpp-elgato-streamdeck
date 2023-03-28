@@ -3,7 +3,7 @@
 void MixerComponent::init(std::shared_ptr<IDeviceButtonRestricted> device)
 {
     m_device = device;
-    m_manager = MixerButtonManager::getManager(m_device->getID());
+    m_manager = MixerButtonManager::getManager(m_device);
 }
 
 std::string MixerComponent::name() const

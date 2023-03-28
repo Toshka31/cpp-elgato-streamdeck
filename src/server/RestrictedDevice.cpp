@@ -22,6 +22,11 @@ void RestrictedDevice::setBrightness(unsigned short brightness)
     m_device->setBrightness(brightness);
 }
 
+std::string RestrictedDevice::getCurrentProfileName()
+{
+    return m_device->getCurrentProfileName();
+}
+
 void RestrictedDevice::setProfile(const std::string &profile_name)
 {
     m_device->setProfile(profile_name);
