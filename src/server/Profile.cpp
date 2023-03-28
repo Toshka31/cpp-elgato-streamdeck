@@ -128,7 +128,8 @@ void Profile::setButtonComponent(ushort button, const std::string &module_name, 
     save();
 }
 
-KeyProfile Profile::getCurrentKeyProfile(ushort key) {
+std::optional<KeyProfile> Profile::getCurrentKeyProfile(ushort key)
+{
     const auto it =  m_current_page->m_keys.find(key);
     if (it != m_current_page->m_keys.end())
         return it->second;

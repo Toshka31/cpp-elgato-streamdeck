@@ -89,7 +89,11 @@ public:
 
     std::shared_ptr<IComponent> getModuleComponent(const std::string &module_name, const std::string &component_name)
     {
-        return m_modules[module_name]->getComponent(component_name);
+        if (m_modules.count(module_name))
+        {
+            return m_modules[module_name]->getComponent(component_name);
+        }
+        return {};
     }
 private:
     boost::dll::fs::path plugins_directory_;

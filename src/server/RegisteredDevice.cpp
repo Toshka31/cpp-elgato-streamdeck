@@ -75,8 +75,12 @@ void RegisteredDevice::setButtonComponent(ushort key, const std::string &module,
 {
   m_current_profile.setButtonComponent(key, module, component);
   auto comp = m_module_loader->getModuleComponent(module, component);
-  m_key_mapping[key] = comp;
-  updateButton(key);
+  if (comp)
+  {
+      comp->init(m_streamdeck);
+      m_key_mapping[key] = comp;
+      updateButton(key);
+  }
 }
 
 std::string RegisteredDevice::getCurrentProfileName() const
@@ -107,23 +111,32 @@ void RegisteredDevice::callback(std::shared_ptr<IStreamDeck> deck, ushort key, b
 
 void RegisteredDevice::updateButton(ushort key)
 {
-  auto key_profile = m_current_profile.getCurrentKeyProfile(key);
+    auto key_profile = m_current_profile.getCurrentKeyProfile(key);
 
-  std::vector<unsigned char> image_data;
-  if (!key_profile.m_module_name.empty() && !key_profile.m_component_name.empty())
-    image_data = m_key_mapping[key]->getImage();
+    if (!m_key_mapping.count(key) || !key_profile.has_value())
+    {
+        return;
+    }
 
-  if (!key_profile.m_custom_image.empty())
-    image_data = image::helper::loadRawImage(key_profile.m_custom_image);
+    auto image_data = m_key_mapping[key]->getImage();
 
-  if (!key_profile.m_custom_label.empty()) {
-    if (image_data.empty())
-      image_data = image::helper::createEmptyImage(m_image_params);
-    image_data = image::helper::applyLabelOnImage(image_data, key_profile.m_custom_label);
-  }
+    if (!key_profile->m_custom_image.empty())
+    {
+        image_data = image::helper::loadRawImage(key_profile->m_custom_image);
+    }
 
-  if (!image_data.empty()) {
-    image_data = image::helper::prepareImageForDeck(image_data, m_image_params);
-    m_streamdeck->set_key_image(key, image_data);
-  }
+    if (!key_profile->m_custom_label.empty())
+    {
+        if (image_data.empty())
+        {
+            image_data = image::helper::createEmptyImage(m_image_params);
+        }
+        image_data = image::helper::applyLabelOnImage(image_data, key_profile->m_custom_label);
+    }
+
+    if (!image_data.empty())
+    {
+        image_data = image::helper::prepareImageForDeck(image_data, m_image_params);
+        m_streamdeck->set_key_image(key, image_data);
+    }
 }

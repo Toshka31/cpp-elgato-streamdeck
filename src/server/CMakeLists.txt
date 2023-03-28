@@ -13,4 +13,4 @@ target_link_libraries(streamdeck.server
         OpenSSL::Crypto
         rpc)
 
-add_dependencies(streamdeck.server streamdeck.modules.alsa)
+add_dependencies(streamdeck.server streamdeck.modules.alsavolume)
