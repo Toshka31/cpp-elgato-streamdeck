@@ -26,7 +26,7 @@ private:
 private:
     PulseSystem m_pulse_system;
 
-    std::map<unsigned short, std::string> m_key_apps;
+    std::map<unsigned short, PulseSystem::AppVolume> m_key_apps;
 
     static std::map<std::string, std::shared_ptr<MixerButtonManager>> m_map_manager;
 };
