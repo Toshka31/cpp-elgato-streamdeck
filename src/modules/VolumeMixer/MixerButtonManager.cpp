@@ -45,31 +45,29 @@ void MixerButtonManager::pressButton(unsigned short key)
     }
 }
 
-bool MixerButtonManager::needImageUpdate(unsigned short key)
-{
-    if ( key >= 6 && key <= 9)
-        return true;
-    else
-        return false;
-}
-
 std::vector<unsigned char> MixerButtonManager::getButtonImage(unsigned short key)
 {
     if (key == 0)
         return IMAGE_HOME;
-    else if (key == 5)
-        return IMAGE_FORWARD;
-    else if (key == 10)
-        return IMAGE_BACK;
-    else if ( key >= 1 && key <= 4)
-        return IMAGE_PLUS;
-    else if ( key >= 11 && key <= 14)
-        return IMAGE_MINUS;
+    else if (key == 5) {
+        if (m_key_apps.size() > 4 * m_current_page)
+            return IMAGE_FORWARD;
+    }
+    else if (key == 10) {
+        if (m_current_page != 1)
+            return IMAGE_BACK;
+    }
+    else if ( key >= 1 && key <= 4) {
+        if (m_key_apps.find(key) != m_key_apps.end())
+            return IMAGE_PLUS;
+    }
+    else if ( key >= 11 && key <= 14) {
+        if (m_key_apps.find(key % 5) != m_key_apps.end())
+            return IMAGE_MINUS;
+    }
     else if ( key >= 6 && key <= 9) {
         if (m_key_apps.find(key - 5) != m_key_apps.end())
             return PulseSystem::getIcon(m_key_apps[key - 5].icon);
-        else
-            return {};
     }
     return {};
 }
