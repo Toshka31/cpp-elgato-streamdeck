@@ -7,6 +7,7 @@
 #include <StreamDeckLib/Device/IStreamDeck.h>
 #include <StreamDeckLib/ImageHelper/ImageHelper.h>
 
+#include <iostream>
 #include <memory>
 
 DECLARE_MODULE(AlsaModule)
