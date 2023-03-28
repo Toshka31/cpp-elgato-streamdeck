@@ -67,7 +67,7 @@ std::vector<unsigned char> MixerButtonManager::getButtonImage(unsigned short key
         return IMAGE_MINUS;
     else if ( key >= 6 && key <= 9) {
         if (m_key_apps.find(key - 5) != m_key_apps.end())
-            return PulseSystem::getIcon(m_key_apps[key - 5]);
+            return PulseSystem::getIcon(m_key_apps[key - 5].icon);
         else
             return {};
     }
@@ -78,11 +78,11 @@ void MixerButtonManager::update()
 {
     m_key_apps.clear();
 
-    const auto volumes = m_pulse_system.getVolumes();
+    auto volumes = m_pulse_system.getVolumes();
     unsigned short col = 1;
-    for (const auto &vol : volumes)
+    for (auto &vol : volumes)
     {
-        m_key_apps[col] = vol.first;
+        m_key_apps[col] = vol;
         col++;
     }
 }

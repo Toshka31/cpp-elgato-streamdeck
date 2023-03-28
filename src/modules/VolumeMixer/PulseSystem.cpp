@@ -1,4 +1,7 @@
+#include <iostream>
 #include "PulseSystem.h"
+
+#include "images/default_app.h"
 
 static constexpr int VOLUME_DELTA = 5;
 
@@ -7,7 +10,7 @@ PulseSystem::PulseSystem()
     pa_ml = pa_threaded_mainloop_new();
     pa_api = pa_threaded_mainloop_get_api(pa_ml);
 
-    pa_Context = pa_context_new(pa_api, "deepin");
+    pa_Context = pa_context_new(pa_api, "MixerModule");
     pa_context_connect(pa_Context, nullptr, static_cast<pa_context_flags_t>(0), nullptr);
     pa_context_set_state_callback(pa_Context, pa_state_cb, this);
 
@@ -31,9 +34,19 @@ void PulseSystem::volumeDown(const std::string &sink_name)
     changeVolume(sink_name, -VOLUME_DELTA);
 }
 
-std::vector<std::pair<std::string, unsigned short>> PulseSystem::getVolumes()
+std::vector<PulseSystem::AppVolume> PulseSystem::getVolumes()
 {
-    return std::vector<std::pair<std::string, unsigned short>>();
+    std::vector<AppVolume> volumes;
+
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        for (const auto &sink: m_sinkinputs)
+            volumes.emplace_back(sink.second.name, sink.second.icon, 0); // TODO volume pass
+    }
+
+    updateSinkInputs();
+
+    return volumes;
 }
 
 void PulseSystem::addSinkInput(const SinkInput& si)
@@ -78,13 +91,22 @@ void PulseSystem::changeVolume(const std::string &sink_name, int value)
 std::vector<unsigned char> PulseSystem::getIcon(const std::string &icon) // TODO move it to util
 {
     gtk_init(nullptr, nullptr);
-    GdkPixbuf *pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (), icon.c_str(), 128, GTK_ICON_LOOKUP_NO_SVG, nullptr);
-    gchar * jpg_data;
-    gsize jpg_data_len;
-    gdk_pixbuf_save_to_buffer(pixbuf, &jpg_data, &jpg_data_len, "jpeg", nullptr, nullptr);
 
-    std::vector<unsigned char> ret(jpg_data, jpg_data + jpg_data_len);
-    return ret;
+    GError *error = nullptr;
+    GdkPixbuf *pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default(), icon.c_str(), 128, GTK_ICON_LOOKUP_NO_SVG, &error);
+    if (pixbuf) {
+        gchar *jpg_data;
+        gsize jpg_data_len;
+        gdk_pixbuf_save_to_buffer(pixbuf, &jpg_data, &jpg_data_len, "jpeg", nullptr, nullptr);
+
+        std::vector<unsigned char> ret(jpg_data, jpg_data + jpg_data_len);
+        return ret;
+    }
+    else {
+        g_error_free(error);
+        std::cout << "Couldn't load" << icon.c_str() << " icon: " << error->message << std::endl;
+    }
+    return IMAGE_DEFAULT_APP;
 }
 
 void PulseSystem::pa_state_cb(pa_context *c, void *userdata)
@@ -133,3 +155,6 @@ void PulseSystem::pa_sink_input_cb(pa_context *c, const pa_sink_input_info *i, i
     auto *ps = static_cast<PulseSystem *>(userdata);
     ps->addSinkInput(input);
 }
+
+PulseSystem::AppVolume::AppVolume(std::string _name, std::string _icon, unsigned short _volume)
+    : name(_name), icon(_icon), volume(_volume) {}

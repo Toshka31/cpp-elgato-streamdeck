@@ -20,7 +20,16 @@ public:
 
     void volumeDown(const std::string &sink_name);
 
-    std::vector<std::pair<std::string, unsigned short>> getVolumes();
+    struct AppVolume {
+        AppVolume() = default;
+        AppVolume(std::string _name, std::string _icon, unsigned short _volume);
+
+        std::string name;
+        std::string icon;
+        unsigned short volume = 0;
+    };
+
+    std::vector<AppVolume> getVolumes();
 
     static std::vector<unsigned char> getIcon(const std::string &icon);
 
