@@ -43,9 +43,9 @@ public:
     void actionPress() override
     {
         if (m_prev_value)
-            m_deck->setButtonImage(m_img_unmute);
+            m_deck->updateButtonImage();
         else
-            m_deck->setButtonImage(m_img_mute);
+            m_deck->updateButtonImage();
         SetAlsaMasterVolume(m_prev_value);
     }
 

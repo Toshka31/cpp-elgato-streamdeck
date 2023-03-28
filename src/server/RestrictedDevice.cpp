@@ -7,6 +7,16 @@ RestrictedDevice::RestrictedDevice(unsigned short key, std::shared_ptr<Registere
 
 }
 
+std::string RestrictedDevice::getID()
+{
+    return m_device->getID();
+}
+
+unsigned short RestrictedDevice::getOwnedKey()
+{
+    return m_key;
+}
+
 void RestrictedDevice::setBrightness(unsigned short brightness)
 {
     m_device->setBrightness(brightness);
@@ -17,9 +27,9 @@ void RestrictedDevice::setProfile(const std::string &profile_name)
     m_device->setProfile(profile_name);
 }
 
-void RestrictedDevice::setButtonImage(std::vector<uint8_t> &image)
+void RestrictedDevice::updateButtonImage()
 {
-    m_device->setButtonImage(m_key, image);
+    m_device->updateButtonImage(m_key);
 }
 
 image::helper::TargetImageParameters RestrictedDevice::getImageFormat()

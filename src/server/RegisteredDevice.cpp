@@ -49,6 +49,11 @@ void RegisteredDevice::tick()
     key.second->tick();
 }
 
+std::string RegisteredDevice::getID()
+{
+    return m_streamdeck->id();
+}
+
 bool RegisteredDevice::is_device_open()
 {
   return m_streamdeck->is_open();
