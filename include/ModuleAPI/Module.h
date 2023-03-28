@@ -14,7 +14,8 @@ class BOOST_SYMBOL_VISIBLE Module##name : public IModule { \
  public:\
     static std::shared_ptr<IModule> create();\
     std::string getName() const override;\
-    std::shared_ptr<IComponent> createComponent(const std::string& name) override;\
+    std::shared_ptr<IComponent> createComponent(const std::string& name) override; \
+    bool hasComponent(const std::string& name) override;                         \
     std::vector<std::string> getComponentList() const override;                   \
     std::optional<ProvidedProfile> getProvidedProfile() const override;           \
     struct ProfileRegistrator {\
@@ -33,7 +34,12 @@ BOOST_DLL_ALIAS(Module##name::create, create);
 #define DEFINE_MODULE(name) \
 std::shared_ptr<IModule> Module##name::create() { return std::make_shared<Module##name>(); }\
 std::string Module##name::getName() const { return #name; }\
-std::shared_ptr<IComponent> Module##name::createComponent(const std::string& name) { return Module##name::components[name](); }\
+std::shared_ptr<IComponent> Module##name::createComponent(const std::string& name) {        \
+    return Module##name::components[name]();                                                \
+}                           \
+bool Module##name::hasComponent(const std::string& name) {                                  \
+    return Module##name::components.count(name);                        \
+}                       \
 std::vector<std::string> Module##name::getComponentList() const {\
   std::vector<std::string> res;\
   for (const auto &comp : Module##name::components)\

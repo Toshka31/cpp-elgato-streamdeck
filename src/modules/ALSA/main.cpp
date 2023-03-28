@@ -45,7 +45,7 @@ public:
 
     void actionPress() override
     {
-        m_deck->setButtonImage(m_prev_value ? m_img_mute : m_img_unmute);
+        m_deck->updateButtonImage();
         SetAlsaMasterVolume(m_prev_value);
     }
 
@@ -56,7 +56,7 @@ public:
 
     std::vector<unsigned char> getImage() const override
     {
-        return IMAGE_MUTE;
+        return m_prev_value ? m_img_mute : m_img_unmute;
     }
 
 private:
@@ -102,15 +102,9 @@ class VolumeDownComponent : public IComponent
     DECLARE_MODULE_COMPONENT(AlsaModule, VolumeDownComponent)
 
 public:
-    void init(std::shared_ptr<IStreamDeck> deck) override
+    void init(std::shared_ptr<IDeviceButtonRestricted> deck) override
     {
-        image::helper::TargetImageParameters image_params =
-        {
-            deck->key_image_format().size.first,
-            deck->key_image_format().size.second,
-            deck->key_image_format().flip.first,
-            deck->key_image_format().flip.second
-        };
+        image::helper::TargetImageParameters image_params = deck->getImageFormat();
         m_image = image::helper::prepareImageForDeck(IMAGE_VOLUME_DOWN, image_params);
     }
 
@@ -124,12 +118,12 @@ public:
 
     }
 
-    void actionPress(std::shared_ptr<IStreamDeck> deck, ushort key) override
+    void actionPress() override
     {
         SetVolumeDown(ALSA_VOLUME_DOWN_STEP);
     }
 
-    void actionRelease(std::shared_ptr<IStreamDeck> deck, ushort key) override
+    void actionRelease() override
     {
 
     }
@@ -181,15 +175,9 @@ class VolumeUpComponent : public IComponent
     DECLARE_MODULE_COMPONENT(AlsaModule, VolumeUpComponent)
 
 public:
-    void init(std::shared_ptr<IStreamDeck> deck) override
+    void init(std::shared_ptr<IDeviceButtonRestricted> deck) override
     {
-        image::helper::TargetImageParameters image_params =
-        {
-            deck->key_image_format().size.first,
-            deck->key_image_format().size.second,
-            deck->key_image_format().flip.first,
-            deck->key_image_format().flip.second
-        };
+        image::helper::TargetImageParameters image_params = deck->getImageFormat();
         m_image = image::helper::prepareImageForDeck(IMAGE_VOLUME_UP, image_params);
     }
 
@@ -203,12 +191,12 @@ public:
 
     }
 
-    void actionPress(std::shared_ptr<IStreamDeck> deck, ushort key) override
+    void actionPress() override
     {
         SetVolumeUp(ALSA_VOLUME_UP_STEP);
     }
 
-    void actionRelease(std::shared_ptr<IStreamDeck> deck, ushort key) override
+    void actionRelease() override
     {
 
     }

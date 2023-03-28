@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RegisteredDevice.h"
+#include "RestrictedDevice.h"
 
 RegisteredDevice::RegisteredDevice(std::shared_ptr<IStreamDeck> deck, std::shared_ptr<ModuleLoader> module_loader)
     : m_streamdeck(deck),
@@ -82,8 +83,11 @@ void RegisteredDevice::setButtonLabel(ushort key, const std::string &label)
 
 void RegisteredDevice::setButtonComponent(ushort key, const std::string &module, const std::string &component)
 {
-    m_current_profile.setButtonComponent(key, module, component);
-    updateButtonComponent(key);
+    if (m_module_loader->hasModuleComponent(module, component)) {
+        m_current_profile.setButtonComponent(key, module, component);
+        updateButtonComponent(key);
+        updateButtonImage(key);
+    }
 }
 
 std::string RegisteredDevice::getCurrentProfileName() const
@@ -142,24 +146,26 @@ void RegisteredDevice::refresh()
 
 void RegisteredDevice::updateButtonImage(ushort key)
 {
-    auto key_profile = m_current_profile.getCurrentKeyProfile(key);
+    auto opt_key_profile = m_current_profile.getCurrentKeyProfile(key);
+    if (opt_key_profile.has_value()) {
+        auto key_profile = opt_key_profile.value();
+        std::vector<unsigned char> image_data;
+        if (!key_profile.m_module_name.empty() && !key_profile.m_component_name.empty())
+            image_data = m_key_mapping[key]->getImage();
 
-    std::vector<unsigned char> image_data;
-    if (!key_profile.m_module_name.empty() && !key_profile.m_component_name.empty())
-        image_data = m_key_mapping[key]->getImage();
+        if (!key_profile.m_custom_image.empty())
+            image_data = image::helper::loadRawImage(key_profile.m_custom_image);
 
-    if (!key_profile.m_custom_image.empty())
-        image_data = image::helper::loadRawImage(key_profile.m_custom_image);
+        if (!key_profile.m_custom_label.empty()) {
+            if (image_data.empty())
+                image_data = image::helper::createEmptyImage(m_image_params);
+            image_data = image::helper::applyLabelOnImage(image_data, key_profile.m_custom_label);
+        }
 
-    if (!key_profile.m_custom_label.empty()) {
-        if (image_data.empty())
-            image_data = image::helper::createEmptyImage(m_image_params);
-        image_data = image::helper::applyLabelOnImage(image_data, key_profile.m_custom_label);
-    }
-
-    if (!image_data.empty()) {
-        image_data = image::helper::prepareImageForDeck(image_data, m_image_params);
-        m_streamdeck->set_key_image(key, image_data);
+        if (!image_data.empty()) {
+            image_data = image::helper::prepareImageForDeck(image_data, m_image_params);
+            m_streamdeck->set_key_image(key, image_data);
+        }
     }
     else
         m_streamdeck->set_key_image(key, {});
@@ -167,15 +173,22 @@ void RegisteredDevice::updateButtonImage(ushort key)
 
 void RegisteredDevice::updateButtonComponent(ushort key)
 {
-    auto key_profile = m_current_profile.getCurrentKeyProfile(key);
+    if (auto it = m_key_mapping.find(key) != m_key_mapping.end())
+        m_key_mapping.erase(it);
 
-    if (!key_profile.m_module_name.empty() && !key_profile.m_component_name.empty()) {
-        auto comp = m_module_loader->getModuleComponent(key_profile.m_module_name, key_profile.m_component_name);
-        comp->init(std::make_shared<RestrictedDevice>(key, shared_from_this()));
-        auto profile = m_module_loader->getModuleProfile(key_profile.m_module_name);
-        if (profile.has_value())
-            addProfileFromModule(key_profile.m_module_name, profile.value());
-        m_key_mapping[key] = comp;
+    auto opt_key_profile = m_current_profile.getCurrentKeyProfile(key);
+    if (opt_key_profile.has_value()) {
+        auto key_profile = opt_key_profile.value();
+        if (!key_profile.m_module_name.empty() && !key_profile.m_component_name.empty()) {
+            auto comp = m_module_loader->getModuleComponent(key_profile.m_module_name, key_profile.m_component_name);
+            if (comp) {
+                comp->init(std::make_shared<RestrictedDevice>(key, shared_from_this()));
+                auto profile = m_module_loader->getModuleProfile(key_profile.m_module_name);
+                if (profile.has_value())
+                    addProfileFromModule(key_profile.m_module_name, profile.value());
+                m_key_mapping[key] = comp;
+            }
+        }
     }
 }
 

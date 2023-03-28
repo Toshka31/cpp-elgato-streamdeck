@@ -27,6 +27,11 @@ public:
         return m_module->getComponentList();
     }
 
+    bool hasComponent(const std::string &name)
+    {
+        return m_module->hasComponent(name);
+    }
+
     std::shared_ptr<IComponent> getComponent(const std::string &name)
     {
         return m_module->createComponent(name);
@@ -100,6 +105,14 @@ public:
     std::size_t count() const
     {
         return m_modules.size();
+    }
+
+    bool hasModuleComponent(const std::string &module_name, const std::string &component_name)
+    {
+        if (m_modules.count(module_name)) {
+            return m_modules[module_name]->hasComponent(component_name);
+        }
+        return false;
     }
 
     std::shared_ptr<IComponent> getModuleComponent(const std::string &module_name, const std::string &component_name)

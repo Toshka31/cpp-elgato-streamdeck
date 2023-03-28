@@ -57,10 +57,13 @@ std::string getDefaultProfileName(const std::string &deck_serial)
 
     std::filesystem::path path_default_config = deck_folder_path / FILENAME_CONFIG;
     std::ifstream file_config(path_default_config);
-    std::string config_name;
-    file_config >> config_name;
-
-    return config_name;
+    if (file_config) {
+        std::string config_name;
+        file_config >> config_name;
+        return config_name;
+    }
+    else
+        return FILENAME_DEFAULT_PROFILE_NAME;
 }
 
 Profile loadDeckProfile(const std::string &deck_serial, const std::string &profile_name)
