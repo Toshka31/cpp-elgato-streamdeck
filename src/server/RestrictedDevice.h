@@ -17,6 +17,8 @@ public:
 
     void setBrightness(unsigned short brightness) override;
 
+    std::string getCurrentProfileName() override;
+
     void setProfile(const std::string &profile_name) override;
 
     void updateButtonImage() override;

@@ -14,6 +14,8 @@ public:
 
     virtual void setBrightness(unsigned short brightness) = 0;
 
+    virtual std::string getCurrentProfileName() = 0;
+
     virtual void setProfile(const std::string &profile_name) = 0;
 
     virtual void updateButtonImage() = 0;
