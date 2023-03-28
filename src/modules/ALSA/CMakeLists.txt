@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.2)
 
-add_library(streamdeck.modules.alsa SHARED main.cpp)
-target_link_libraries(streamdeck.modules.alsa 
+add_library(streamdeck.modules.alsavolume SHARED main.cpp)
+target_link_libraries(streamdeck.modules.alsavolume
     PUBLIC
         streamdeck.iface
         streamdeck.lib
         asound)
 
-install(TARGETS streamdeck.modules.alsa DESTINATION $ENV{HOME}/.streamdeck/modules)
+install(TARGETS streamdeck.modules.alsavolume DESTINATION $ENV{HOME}/.streamdeck/modules)

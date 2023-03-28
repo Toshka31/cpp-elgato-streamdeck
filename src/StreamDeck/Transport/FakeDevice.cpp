@@ -1,5 +1,3 @@
-
-
 #include "FakeDevice.h"
 
 FakeDevice::FakeDevice() {
