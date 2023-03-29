@@ -175,19 +175,24 @@ void RegisteredDevice::updateButtonComponent(ushort key)
         m_key_mapping.erase(it);
 
     auto opt_key_profile = m_current_profile.getCurrentKeyProfile(key);
-    if (opt_key_profile.has_value()) {
-        auto key_profile = opt_key_profile.value();
-        if (!key_profile.m_module_name.empty() && !key_profile.m_component_name.empty()) {
-            auto comp = m_module_loader->getModuleComponent(key_profile.m_module_name, key_profile.m_component_name);
-            if (comp) {
-                comp->init(std::make_shared<RestrictedDevice>(key, shared_from_this()));
-                auto profile = m_module_loader->getModuleProfile(key_profile.m_module_name);
-                if (profile.has_value())
-                    addProfileFromModule(key_profile.m_module_name, profile.value());
-                m_key_mapping[key] = comp;
-            }
-        }
-    }
+    if (!opt_key_profile.has_value())
+        return;
+
+    auto key_profile = opt_key_profile.value();
+
+    if (key_profile.m_module_name.empty() || key_profile.m_component_name.empty())
+        return;
+
+    auto comp = m_module_loader->getModuleComponent(key_profile.m_module_name, key_profile.m_component_name);
+    if (!comp)
+        return;
+    comp->init(std::make_shared<RestrictedDevice>(key, shared_from_this()));
+
+    auto profile = m_module_loader->getModuleProfile(key_profile.m_module_name);
+    if (profile.has_value())
+        addProfileFromModule(key_profile.m_module_name, profile.value());
+
+    m_key_mapping[key] = comp;
 }
 
 void RegisteredDevice::addProfileFromModule(const std::string &module, const ProvidedProfile &provided_profile)
