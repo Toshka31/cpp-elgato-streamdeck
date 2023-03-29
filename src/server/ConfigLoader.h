@@ -10,12 +10,16 @@ static constexpr const char*const FOLDER_MODULES = "modules";
 static constexpr const char*const FOLDER_IMAGES = "images";
 static constexpr const char*const FOLDER_PROFILES = "profiles";
 static constexpr const char*const FILENAME_CONFIG = ".config";
-static constexpr const char*const FILENAME_DEFAULT_PROFILE = "default.profile";
+static constexpr const char*const FILENAME_DEFAULT_PROFILE_NAME = "default";
 static constexpr const char*const EXTENSION_PROFILE = ".profile";
 
 void createDefaultConfigs(const std::filesystem::path &path);
 
-Profile loadDeckProfile(const std::string &deck_serial);
+std::string getDefaultProfileName(const std::string &deck_serial);
+
+Profile loadDeckProfile(const std::string &deck_serial, const std::string &profile_name);
+
+Profile createNewProfile(const std::string &deck_serial, const std::string &profile_name);
 
 std::vector<std::string> getDeckProfiles(const std::string &deck_serial);
 

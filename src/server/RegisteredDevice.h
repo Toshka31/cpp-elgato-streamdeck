@@ -11,12 +11,16 @@
 #include <memory>
 #include <functional>
 
-class RegisteredDevice
+class RegisteredDevice : public std::enable_shared_from_this<RegisteredDevice>
 {
 public:
     RegisteredDevice(std::shared_ptr<IStreamDeck> deck, std::shared_ptr<ModuleLoader> module_loader);
 
+    void init();
+
     void tick();
+
+    std::string getID();
 
     bool is_device_open();
 
@@ -24,11 +28,15 @@ public:
 
     void setButtonImage(ushort key, std::vector<uint8_t> &image);
 
+    void updateButtonImage(ushort key);
+
     void setButtonLabel(ushort key, const std::string &label);
 
     void setButtonComponent(ushort key, const std::string &module, const std::string &component);
 
     std::string getCurrentProfileName() const;
+
+    void setProfile(const std::string &profile_name);
 
     std::vector<std::string> getProfiles();
 
@@ -36,10 +44,16 @@ public:
 
     std::vector<std::string> getPages();
 
+    image::helper::TargetImageParameters getImageFormat();
+
 private:
     void callback(std::shared_ptr<IStreamDeck> deck, ushort key, bool val);
 
-    void updateButton(ushort key);
+    void refresh();
+
+    void updateButtonComponent(ushort key);
+
+    void addProfileFromModule(const std::string &module, const ProvidedProfile &profile);
 
 protected:
     image::helper::TargetImageParameters m_image_params;

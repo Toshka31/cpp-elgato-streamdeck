@@ -20,20 +20,26 @@ static const nlohmann::json DEFAULT_PROFILE = R"(
 
 using namespace std::chrono_literals;
 
-void createDefaultConfigs(const std::filesystem::path &path)
+void createEmptyProfile(const std::filesystem::path &path)
 {
-    std::filesystem::path path_default_profile = path / FILENAME_DEFAULT_PROFILE;
-    std::ofstream file_profile(path_default_profile);
+    std::string str_path = path.string();
+    std::ofstream file_profile(str_path);
     file_profile << DEFAULT_PROFILE;
     file_profile.close();
+}
+
+void createDefaultConfigs(const std::filesystem::path &path)
+{
+    std::string filename(std::string() + FILENAME_DEFAULT_PROFILE_NAME + EXTENSION_PROFILE);
+    createEmptyProfile(path / filename);
 
     std::filesystem::path path_default_config = path / FILENAME_CONFIG;
     std::ofstream file_config(path_default_config);
-    file_config << FILENAME_DEFAULT_PROFILE;
+    file_config << FILENAME_DEFAULT_PROFILE_NAME;
     file_config.close();
 }
 
-Profile loadDeckProfile(const std::string &deck_serial)
+std::filesystem::path getStreamDeckFolderPath(const std::string &deck_serial)
 {
     std::filesystem::path configs_path = util::getHomeDirectory() / FOLDER_STREAMDECK;
 
@@ -41,6 +47,28 @@ Profile loadDeckProfile(const std::string &deck_serial)
         std::filesystem::create_directory(configs_path);
 
     std::filesystem::path deck_folder_path = configs_path / deck_serial;
+
+    return deck_folder_path;
+}
+
+std::string getDefaultProfileName(const std::string &deck_serial)
+{
+    auto deck_folder_path = getStreamDeckFolderPath(deck_serial);
+
+    std::filesystem::path path_default_config = deck_folder_path / FILENAME_CONFIG;
+    std::ifstream file_config(path_default_config);
+    if (file_config) {
+        std::string config_name;
+        file_config >> config_name;
+        return config_name;
+    }
+    else
+        return FILENAME_DEFAULT_PROFILE_NAME;
+}
+
+Profile loadDeckProfile(const std::string &deck_serial, const std::string &profile_name)
+{
+    auto deck_folder_path = getStreamDeckFolderPath(deck_serial);
 
     if (!std::filesystem::exists(deck_folder_path))
     {
@@ -48,23 +76,24 @@ Profile loadDeckProfile(const std::string &deck_serial)
         createDefaultConfigs(deck_folder_path);
     }
 
-    std::filesystem::path path_default_config = deck_folder_path / FILENAME_CONFIG;
-    std::ifstream file_config(path_default_config);
-    std::string config_name;
-    file_config >> config_name;
+    Profile profile(deck_folder_path / (profile_name + EXTENSION_PROFILE));
+    return profile;
+}
 
-    Profile profile(deck_folder_path / config_name);
+Profile createNewProfile(const std::string &deck_serial, const std::string &profile_name)
+{
+    auto deck_folder_path = getStreamDeckFolderPath(deck_serial);
+
+    // TODO check if exist and throw error
+    createEmptyProfile(deck_folder_path / (profile_name + EXTENSION_PROFILE) );
+
+    Profile profile(deck_folder_path / (profile_name + EXTENSION_PROFILE) );
     return profile;
 }
 
 std::vector<std::string> getDeckProfiles(const std::string &deck_serial)
 {
-    std::filesystem::path configs_path = util::getHomeDirectory() / FOLDER_STREAMDECK;
-
-    if (!std::filesystem::exists(configs_path))
-        std::filesystem::create_directory(configs_path);
-
-    std::filesystem::path deck_folder_path = configs_path / deck_serial;
+    auto deck_folder_path = getStreamDeckFolderPath(deck_serial);
 
     if (!std::filesystem::exists(deck_folder_path))
     {

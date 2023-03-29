@@ -52,7 +52,6 @@ void StreamDeckOriginalV2::set_key_image(unsigned char key_index, std::vector<un
 
     unsigned short page_number = 0;
     unsigned short bytes_remaining = image_data.size();
-    std::cout << "Begin image: " << bytes_remaining << std::endl;
     while (bytes_remaining > 0)
     {
         unsigned short this_length = std::min(bytes_remaining, IMAGE_REPORT_PAYLOAD_LENGTH);
@@ -70,7 +69,6 @@ void StreamDeckOriginalV2::set_key_image(unsigned char key_index, std::vector<un
         payload[7] = page_number >> 8;
         
         std::copy(image_data.begin() + bytes_sent, image_data.begin() + bytes_sent + this_length, payload.begin() + IMAGE_REPORT_HEADER_LENGTH);
-        std::cout << "rem: " << bytes_remaining << std::endl;
         m_device->write(payload);
 
         bytes_remaining -= this_length;
