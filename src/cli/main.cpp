@@ -4,6 +4,8 @@
 #include <fstream>
 #include <rpc/client.h>
 
+#include "ModuleAPI/ComponentParameters.h"
+
 // getComponentsList -> std::map<std::string, std::vector<std::string>>
 // getDevicesList -> std::vector<std::string>
 // setDeviceBrightness .. const std::string &device_id, unsigned char brightness
@@ -104,5 +106,57 @@ int main(int argc, char *argv[])
             return 0;
 
         client.call("setDeviceButtonComponent", argv[2], atoi(argv[3]), argv[4], argv[5]);
+    }
+    else if (!strcmp(argv[1], "parameters"))
+    {
+        auto str = client.call("getDeviceButtonParameters", argv[2], atoi(argv[3])).as<std::string>();
+        ComponentParameters params = ComponentParameters::deserialiseParameters(str);
+        for (const auto &param : params.params)
+        {
+            switch (param.second->type) {
+                case ComponentParameters::Parameter::INT:
+                    std::cout << "(INT) " << param.first << " = " << std::get<int>(param.second->value) << std::endl;
+                    break;
+                case ComponentParameters::Parameter::DOUBLE:
+                    std::cout << "(DOUBLE) " << param.first << " = " << std::get<double>(param.second->value) << std::endl;
+                    break;
+                case ComponentParameters::Parameter::STRING:
+                    std::cout << "(STRING) " << param.first << " = " << std::get<std::string>(param.second->value) << std::endl;
+                    break;
+                case ComponentParameters::Parameter::LIST:
+                    break;
+            }
+        }
+    }
+    else if (!strcmp(argv[1], "set_parameters"))
+    {
+        std::string device = argv[2];
+        int button = atoi(argv[3]);
+
+        ComponentParameters::Variables vars;
+
+        int arg_index = 4;
+        while (arg_index < argc)
+        {
+            if (argc - arg_index < 2)
+                break;
+
+            std::string var_name = argv[arg_index++];
+            std::string var_type = argv[arg_index++];
+            ComponentParameters::Value val;
+            if (var_type == "INT") {
+                val = atoi(argv[arg_index++]);
+            }
+            else if (var_type == "DOUBLE") {
+                val = atof(argv[arg_index++]);
+            }
+            else if (var_type == "STRING") {
+                val = argv[arg_index++];
+            }
+
+            vars.emplace_back(var_name, val);
+        }
+
+        client.call("setDeviceButtonParameters", device, button, ComponentParameters::serialiseVariables(vars));
     }
 }

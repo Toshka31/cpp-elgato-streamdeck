@@ -73,6 +73,62 @@ struct ComponentParameters
         return json_result.dump();
     }
 
+    static ComponentParameters deserialiseParameters(const std::string &from)
+    {
+        ComponentParameters params;
+
+        nlohmann::json json_params = nlohmann::json::parse(from);
+        for (const auto& el : json_params) {
+            std::string name = el["name"].get<std::string>();
+            Parameter::Type t = el["type"].get<Parameter::Type>();
+            Value val;
+            switch (t) {
+                case Parameter::INT:
+                    val = el["value"].get<int>();
+                    break;
+                case Parameter::DOUBLE:
+                    val = el["value"].get<double>();
+                    break;
+                case Parameter::STRING:
+                    val = el["value"].get<std::string>();
+                    break;
+                case Parameter::LIST:
+                    break;
+            }
+            params.params.insert({name, std::make_shared<Parameter>(val, t)});
+        }
+
+        return params;
+    }
+
+    static std::string serialiseVariables(Variables vars)
+    {
+        nlohmann::json json_result;
+
+        for (auto &var : vars)
+        {
+            nlohmann::json json_var;
+            json_var["name"] = var.first;
+            std::visit([&json_var](auto&& arg) {
+                    using T = std::decay_t<decltype(arg)>;
+                    if constexpr (std::is_same_v<T, int>) {
+                        json_var["type"] = Parameter::INT;
+                    }
+                    else if constexpr (std::is_same_v<T, double>) {
+                        json_var["type"] = Parameter::DOUBLE;
+                    }
+                    else if constexpr (std::is_same_v<T, std::string>) {
+                        json_var["type"] = Parameter::STRING;
+                    }
+                    json_var["value"] = arg;
+                }, var.second);
+
+            json_result.push_back(json_var);
+        }
+
+        return json_result.dump();
+    }
+
     static Variables deserialiseVariables(const std::string &from)
     {
         Variables result;
@@ -101,7 +157,7 @@ struct ComponentParameters
 
         return result;
     }
-private:
+
     struct Parameter {
         enum Type {
             INT, DOUBLE, STRING, LIST
