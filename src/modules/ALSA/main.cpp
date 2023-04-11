@@ -105,6 +105,8 @@ class VolumeDownComponent : public IComponent
 public:
     void init(std::shared_ptr<IDeviceButtonRestricted> deck) override
     {
+        ADD_PARAMETER("step", 5);
+
         image::helper::TargetImageParameters image_params = deck->getImageFormat();
         m_image = image::helper::prepareImageForDeck(IMAGE_VOLUME_DOWN, image_params);
     }
@@ -121,7 +123,7 @@ public:
 
     void actionPress() override
     {
-        SetVolumeDown(ALSA_VOLUME_DOWN_STEP);
+        SetVolumeDown(GET_INT_PARAMETER("step"));
     }
 
     void actionRelease() override
@@ -178,6 +180,8 @@ class VolumeUpComponent : public IComponent
 public:
     void init(std::shared_ptr<IDeviceButtonRestricted> deck) override
     {
+        ADD_PARAMETER("step", 5);
+
         image::helper::TargetImageParameters image_params = deck->getImageFormat();
         m_image = image::helper::prepareImageForDeck(IMAGE_VOLUME_UP, image_params);
     }
@@ -194,7 +198,7 @@ public:
 
     void actionPress() override
     {
-        SetVolumeUp(ALSA_VOLUME_UP_STEP);
+        SetVolumeUp(GET_INT_PARAMETER("step"));
     }
 
     void actionRelease() override

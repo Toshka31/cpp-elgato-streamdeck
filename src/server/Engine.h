@@ -24,6 +24,10 @@ private:
 
     void setDeviceButtonComponent(const std::string &device_id, unsigned char button, const std::string &module, const std::string &component);
 
+    void setDeviceButtonParameters(const std::string &device_id, unsigned char button, const std::string &parameters);
+
+    std::string getDeviceButtonParameters(const std::string &device_id, unsigned char button);
+
     std::string getDeviceCurrentProfile(const std::string &device_id) const;
 
     std::vector<std::string> getDeviceProfiles(const std::string &device_id) const;

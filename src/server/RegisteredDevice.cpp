@@ -88,6 +88,26 @@ void RegisteredDevice::setButtonComponent(ushort key, const std::string &module,
     }
 }
 
+void RegisteredDevice::setButtonParameters(ushort key, const std::string &parameters)
+{
+    const auto it = m_key_mapping.find(key);
+    if (it == m_key_mapping.end())
+        return;
+
+    ComponentParameters::Variables vars = ComponentParameters::deserialiseVariables(parameters);
+
+    it->second->setParameters(vars);
+}
+
+std::string RegisteredDevice::getButtonParameters(ushort key) const
+{
+    const auto it = m_key_mapping.find(key);
+    if (it == m_key_mapping.end())
+        return {};
+    auto param = it->second->getParameters();
+    return ComponentParameters::serialiseParameters(param);
+}
+
 std::string RegisteredDevice::getCurrentProfileName() const
 {
     return m_current_profile.getName();

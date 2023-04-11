@@ -34,6 +34,10 @@ public:
 
     void setButtonComponent(ushort key, const std::string &module, const std::string &component);
 
+    void setButtonParameters(ushort key, const std::string &component);
+
+    std::string getButtonParameters(ushort key) const;
+
     std::string getCurrentProfileName() const;
 
     void setProfile(const std::string &profile_name);

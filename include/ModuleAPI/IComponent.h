@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IDeviceButtonRestricted.h"
+#include "ComponentParameters.h"
 
 #include <string>
 #include <vector>
@@ -22,6 +23,10 @@ public:
     virtual void actionPress() = 0;
 
     virtual void actionRelease() = 0;
+
+    virtual ComponentParameters getParameters() = 0;
+
+    virtual void setParameters(ComponentParameters::Variables variables) = 0;
 
     virtual ~IComponent() = default;
 };

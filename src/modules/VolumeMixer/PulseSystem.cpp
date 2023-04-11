@@ -103,8 +103,8 @@ std::vector<unsigned char> PulseSystem::getIcon(const std::string &icon) // TODO
         return ret;
     }
     else {
-        g_error_free(error);
         std::cout << "Couldn't load" << icon.c_str() << " icon: " << error->message << std::endl;
+        g_error_free(error);
     }
     return IMAGE_DEFAULT_APP;
 }

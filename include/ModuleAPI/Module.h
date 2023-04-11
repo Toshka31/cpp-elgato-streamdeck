@@ -71,10 +71,24 @@ Module##module_name::ProfileRegistrator Profile##module_name::reg(ProvidedProfil
   static Module##module_name::ComponentRegistrator reg; \
   static std::shared_ptr<IComponent> create() { \
     return std::make_shared< component_name >(); \
-  }
+  }                                                           \
+  private:                                                    \
+    ComponentParameters m_params;                             \
+  public: \
+    ComponentParameters getParameters() override              \
+        { return m_params; } \
+    void setParameters(ComponentParameters::Variables variables) override   \
+        {                                                     \
+            for (const auto var : variables )                 \
+                m_params.setParameter(var.first, var.second); \
+        };
 
 #define REGISTER_MODULE_COMPONENT(module_name, component_name) \
   Module##module_name::ComponentRegistrator component_name::reg(#component_name, &component_name::create);
+
+#define ADD_PARAMETER(name, value) m_params.createParameter(name, value)
+
+#define GET_INT_PARAMETER(name) m_params.getParameterValue<int>(name)
 
 // Profile things
 

@@ -108,6 +108,18 @@ Engine::Engine()
             setDeviceButtonComponent(device_id, button, module, component);
         }
     );
+    srv.bind(
+        "setDeviceButtonParameters",
+        [this](const std::string &device_id, unsigned char button, const std::string &parameters) -> void {
+            setDeviceButtonParameters(device_id, button, parameters);
+        }
+    );
+    srv.bind(
+        "getDeviceButtonParameters",
+        [this](const std::string &device_id, unsigned char button) -> std::string {
+            return getDeviceButtonParameters(device_id, button);
+        }
+    );
 
     srv.async_run();
 
@@ -173,6 +185,21 @@ void Engine::setDeviceButtonComponent(const std::string &device_id, unsigned cha
     auto it = m_registered_deices.find(device_id);
     if (it != m_registered_deices.end())
         it->second->setButtonComponent(button, module, component);
+}
+
+void Engine::setDeviceButtonParameters(const std::string &device_id, unsigned char button, const std::string &parameters)
+{
+    auto it = m_registered_deices.find(device_id);
+    if (it != m_registered_deices.end())
+        it->second->setButtonParameters(button, parameters);
+}
+
+std::string Engine::getDeviceButtonParameters(const std::string &device_id, unsigned char button)
+{
+    auto it = m_registered_deices.find(device_id);
+    if (it != m_registered_deices.end())
+        return it->second->getButtonParameters(button);
+    return {};
 }
 
 std::string Engine::getDeviceCurrentProfile(const std::string &device_id) const
