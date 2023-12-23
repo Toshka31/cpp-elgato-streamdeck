@@ -1,10 +1,24 @@
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.6)
 
 project(elgato-streamdeck)
 
-set(SAMPLES_FOLDER ${CMAKE_CURRENT_LIST_DIR}/sample_images)
+set(CMAKE_CXX_STANDARD 17)
 
-add_library(streamdeck.iface INTERFACE)
-target_include_directories(streamdeck.iface INTERFACE include)
+find_package(Boost)
+find_package(OpenCV REQUIRED)
+find_package(rpclib REQUIRED)
+find_package(OpenSSL REQUIRED)
+find_package(Threads REQUIRED)
+find_package(cppzmq)
 
-add_subdirectory(src)
+add_library(3rdparty.nlohmann.iface INTERFACE)
+target_include_directories(3rdparty.nlohmann.iface INTERFACE 3rdparty/include)
+
+add_subdirectory(StreamdeckLib)
+add_subdirectory(ModuleSDK)
+add_subdirectory(Modules)
+add_subdirectory(Server)
+add_subdirectory(CLI)
+add_subdirectory(UI)
+add_subdirectory(DeviceEmulator)
+

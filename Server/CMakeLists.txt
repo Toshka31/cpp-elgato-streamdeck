@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.6)
 
 file(GLOB_RECURSE HEADERS_FILES ${CMAKE_CURRENT_LIST_DIR}/*.cpp)
 file(GLOB_RECURSE SOURCE_FILES ${CMAKE_CURRENT_LIST_DIR}/*.h)
@@ -8,10 +8,11 @@ target_link_libraries(streamdeck.server
     PUBLIC
         boost_system
         boost_filesystem
-        streamdeck.iface
         streamdeck.lib
+        streamdeck.module_api
         OpenSSL::Crypto
-        rpc)
+        rpc
+        3rdparty.nlohmann.iface)
 
 if (USE_EMULATOR)
     target_compile_definitions(streamdeck.server PUBLIC EMULATOR)
