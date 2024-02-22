@@ -19,4 +19,6 @@ protected:
     std::shared_ptr<ModuleLoader> m_module_loader;
     std::shared_ptr<ServerRPC> m_rpc_server;
     std::shared_ptr<DeviceController> m_device_controller;
+
+    std::atomic_bool m_is_running;
 };

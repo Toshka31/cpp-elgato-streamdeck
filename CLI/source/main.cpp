@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    rpc::client client("127.0.0.1", 11925);
+    rpc::client client("127.0.0.1", 27015);
 
     if (!strcmp(argv[1], "components"))
     {

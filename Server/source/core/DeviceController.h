@@ -6,12 +6,15 @@
 
 #include "RegisteredDevice.h"
 #include "ModuleLoader.h"
+#include "device/DeviceManager.h"
 
 class DeviceController {
 public:
-    DeviceController(std::shared_ptr<ModuleLoader> mod_loader);
+    DeviceController(std::shared_ptr<ModuleLoader> mod_loader, std::shared_ptr<ITransport> transport);
 
     void tick();
+
+    void deviceInspector();
 
     std::vector<std::string> getDevicesList() const;
 
@@ -32,5 +35,9 @@ public:
     std::vector<std::string> getDevicePages(const std::string &device_id) const;
 
 private:
+    DeviceManager m_dev_manager;
+    std::shared_ptr<ModuleLoader> m_mod_loader;
+
+    mutable std::mutex m_mutex;
     std::map<std::string, std::shared_ptr<RegisteredDevice>> m_registered_deices;
 };

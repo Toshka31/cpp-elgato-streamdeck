@@ -13,7 +13,7 @@ add_library(streamdeck.modules.mixer SHARED ${HEADERS_FILES} ${SOURCE_FILES})
 target_link_libraries(streamdeck.modules.mixer
         pulse
         ${GTK3_LIBRARIES}
-        streamdeck.iface
+        streamdeck.module_api
         streamdeck.lib)
 
 install(TARGETS streamdeck.modules.mixer DESTINATION $ENV{HOME}/.streamdeck/modules)
