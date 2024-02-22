@@ -1,7 +1,8 @@
 #pragma once
 
-#include <StreamDeckLib/Device/IStreamDeck.h>
-#include <StreamDeckLib/Transport/ITransport.h>
+#include <streamdeck/IStreamDeck.h>
+#include <device/ITransport.h>
+#include <device/IDevice.h>
 #include <StreamDeckLib//ProductID.h>
 
 #include <string>

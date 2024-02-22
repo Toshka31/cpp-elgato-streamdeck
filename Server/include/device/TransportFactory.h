@@ -1,6 +1,6 @@
 #pragma once
 
-#include <StreamDeckLib/Transport/ITransport.h>
+#include "ITransport.h"
 
 
 class TransportFactory

@@ -1,6 +1,6 @@
-#include <StreamDeckLib/Transport/TransportFactory.h>
 #include "FakeTransport.h"
 #include "UsbTransport.h"
+#include <device/TransportFactory.h>
 
 
 std::shared_ptr<ITransport> TransportFactory::createUsbTransport()

@@ -7,11 +7,10 @@
 #include <string>
 #include <mutex>
 
-
 struct UsbDeviceInfo
 {
     UsbDeviceInfo(std::string path, unsigned short vendor_id, unsigned short product_id)
-        : path(path), vendor_id(vendor_id), product_id(product_id) {}
+            : path(path), vendor_id(vendor_id), product_id(product_id) {}
 
     std::string path;
     unsigned short vendor_id;
@@ -40,3 +39,6 @@ public:
 private:
     std::mutex hid_mutex;
 };
+
+
+

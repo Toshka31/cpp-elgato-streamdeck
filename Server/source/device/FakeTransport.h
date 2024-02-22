@@ -1,7 +1,7 @@
 #ifndef ELGATO_STREAMDECK_SRC_STREAMDECK_TRANSPORT_FAKETRANSPORT_H_
 #define ELGATO_STREAMDECK_SRC_STREAMDECK_TRANSPORT_FAKETRANSPORT_H_
 
-#include <StreamDeckLib/Transport/ITransport.h>
+#include <device/ITransport.h>
 
 class FakeTransport : public ITransport
 {

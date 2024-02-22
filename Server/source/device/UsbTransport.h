@@ -1,6 +1,6 @@
 #pragma once
 
-#include <StreamDeckLib/Transport/ITransport.h>
+#include <device/ITransport.h>
 #include "UsbDevice.h"
 
 #include <memory>

@@ -6,7 +6,7 @@
 #include "ModuleLoader.h"
 
 #include <StreamDeckLib/ImageHelper/ImageHelper.h>
-#include <StreamDeckLib/Device/IStreamDeck.h>
+#include <streamdeck/IStreamDeck.h>
 
 #include <memory>
 #include <functional>

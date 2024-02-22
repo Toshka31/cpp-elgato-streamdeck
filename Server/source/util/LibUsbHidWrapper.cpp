@@ -1,5 +1,4 @@
-#include "LibUsbHidWrapper.h"
-
+#include <util/LibUsbHidWrapper.h>
 
 LibUSBHIDWrapper::LibUSBHIDWrapper()
 {

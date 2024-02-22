@@ -1,9 +1,9 @@
-#include "util.h"
+#include "util/SystemUtil.h"
 
 #include <pwd.h>
 #include <unistd.h>
 
-namespace util {
+namespace system_util {
 
     std::filesystem::path getHomeDirectory()
     {

@@ -1,6 +1,4 @@
-#include "LibUsbHidWrapper.h"
 #include "UsbTransport.h"
-
 
 std::vector<std::shared_ptr<IDevice>> UsbTransport::enumerate(unsigned short vid, unsigned short pid)
 {

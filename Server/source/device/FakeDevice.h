@@ -3,7 +3,7 @@
 
 #include <zmq.hpp>
 
-#include <StreamDeckLib/Transport/IDevice.h>
+#include <device/IDevice.h>
 
 class FakeDevice : public IDevice
 {

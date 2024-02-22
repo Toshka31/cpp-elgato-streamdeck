@@ -15,6 +15,8 @@ public:
 
     virtual std::string name() const = 0;
 
+    virtual std::string moduleName() const = 0;
+
     virtual std::vector<unsigned char> getImage() const = 0;
 
     virtual void tick() = 0;

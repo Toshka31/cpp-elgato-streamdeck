@@ -2,8 +2,8 @@
 
 #include <3rdparty/nlohmann/json.hpp>
 
+#include "util/SystemUtil.h"
 #include "Profile.h"
-#include "util.h"
 
 static constexpr const char*const FOLDER_STREAMDECK = ".streamdeck";
 static constexpr const char*const FOLDER_MODULES = "modules";

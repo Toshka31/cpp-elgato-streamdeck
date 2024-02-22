@@ -1,10 +1,9 @@
 #include <string>
 #include <iostream>
 
-#include <StreamDeckLib/DeviceManager.h>
+#include <device/DeviceManager.h>
 #include <StreamDeckLib/ProductID.h>
-#include <StreamDeckLib/Transport/ITransport.h>
-#include "Devices/StreamDeckFactory.h"
+#include "StreamDeckFactory.h"
 
 
 DeviceManager::DeviceManager(std::shared_ptr<ITransport> transport)

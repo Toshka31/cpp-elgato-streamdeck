@@ -1,13 +1,12 @@
 #pragma once
 
-#include <StreamDeckLib/Transport/IDevice.h>
-#include "LibUsbHidWrapper.h"
+#include <device/IDevice.h>
+#include <util/LibUsbHidWrapper.h>
 
 #include <memory>
 #include <vector>
 #include <string>
 #include <mutex>
-
 
 class UsbDevice : public IDevice
 {

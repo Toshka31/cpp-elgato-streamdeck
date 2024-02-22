@@ -1,18 +1,17 @@
-
 #pragma once
 
-#include "ModuleLoader.h"
+#include <map>
+#include <string>
+#include <vector>
+
 #include "RegisteredDevice.h"
+#include "ModuleLoader.h"
 
-class Engine
-{
+class DeviceController {
 public:
-    Engine();
+    DeviceController(std::shared_ptr<ModuleLoader> mod_loader);
 
-    [[noreturn]] void start();
-
-private:
-    std::map<std::string, std::vector<std::string>> getComponentsList() const;
+    void tick();
 
     std::vector<std::string> getDevicesList() const;
 
@@ -32,8 +31,6 @@ private:
 
     std::vector<std::string> getDevicePages(const std::string &device_id) const;
 
-
-protected:
-    std::shared_ptr<ModuleLoader> m_module_loader;
+private:
     std::map<std::string, std::shared_ptr<RegisteredDevice>> m_registered_deices;
 };

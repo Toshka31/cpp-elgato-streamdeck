@@ -1,8 +1,8 @@
 #pragma once
 
 #include <StreamDeckLib/ProductID.h>
-#include <StreamDeckLib/Transport/ITransport.h>
-#include <StreamDeckLib/Device/IStreamDeck.h>
+#include <device/ITransport.h>
+#include <streamdeck/IStreamDeck.h>
 
 #include <vector>
 

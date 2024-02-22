@@ -3,7 +3,6 @@
 #include <3rdparty/nlohmann/json.hpp>
 
 #include "Profile.h"
-#include "util.h"
 
 #include <fstream>
 
@@ -41,7 +40,7 @@ void createDefaultConfigs(const std::filesystem::path &path)
 
 std::filesystem::path getStreamDeckFolderPath(const std::string &deck_serial)
 {
-    std::filesystem::path configs_path = util::getHomeDirectory() / FOLDER_STREAMDECK;
+    std::filesystem::path configs_path = system_util::getHomeDirectory() / FOLDER_STREAMDECK;
 
     if (!std::filesystem::exists(configs_path))
         std::filesystem::create_directory(configs_path);
@@ -135,7 +134,7 @@ std::string calculateMD5(const std::vector<uint8_t> &data)
 std::filesystem::path saveButtonImageForDeck(const std::string &deck_serial, const std::vector<uint8_t> &image)
 {
     std::string name = calculateMD5(image);
-    std::filesystem::path cache_images_path = util::getHomeDirectory() / FOLDER_STREAMDECK / FOLDER_IMAGES;
+    std::filesystem::path cache_images_path = system_util::getHomeDirectory() / FOLDER_STREAMDECK / FOLDER_IMAGES;
     if (!std::filesystem::exists(cache_images_path))
         std::filesystem::create_directories(cache_images_path);
     cache_images_path /= name;

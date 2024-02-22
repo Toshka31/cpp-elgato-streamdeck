@@ -2,7 +2,7 @@
 
 #include <filesystem>
 
-namespace util {
+namespace system_util {
 
     std::filesystem::path getHomeDirectory();
 
