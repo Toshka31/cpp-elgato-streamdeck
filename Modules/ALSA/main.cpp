@@ -21,6 +21,7 @@ DEFINE_MODULE(AlsaModule)
 class VolumeMuteComponent : public IComponent
 {
     DECLARE_MODULE_COMPONENT(AlsaModule, VolumeMuteComponent)
+        COMPONENT_SETTINGS_EMPTY
 
 public:
     void init(std::shared_ptr<IDeviceButtonRestricted> deck) override
@@ -100,6 +101,7 @@ REGISTER_MODULE_COMPONENT(AlsaModule, VolumeMuteComponent)
 class VolumeDownComponent : public IComponent
 {
     DECLARE_MODULE_COMPONENT(AlsaModule, VolumeDownComponent)
+        COMPONENT_SETTINGS_EMPTY
 
 public:
     void init(std::shared_ptr<IDeviceButtonRestricted> deck) override
@@ -173,6 +175,7 @@ REGISTER_MODULE_COMPONENT(AlsaModule, VolumeDownComponent)
 class VolumeUpComponent : public IComponent
 {
     DECLARE_MODULE_COMPONENT(AlsaModule, VolumeUpComponent)
+        COMPONENT_SETTINGS_EMPTY
 
 public:
     void init(std::shared_ptr<IDeviceButtonRestricted> deck) override

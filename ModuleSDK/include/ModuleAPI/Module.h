@@ -1,9 +1,12 @@
 #pragma once
 
+#include "ComponentSettings.h"
+
 #include <boost/config.hpp>
 #include <boost/dll/alias.hpp>
 
 #include <string>
+#include <utility>
 #include <vector>
 #include <memory>
 #include <functional>
@@ -71,7 +74,8 @@ Module##module_name::ProfileRegistrator Profile##module_name::reg(ProvidedProfil
   static Module##module_name::ComponentRegistrator reg; \
   static std::shared_ptr<IComponent> create() { \
     return std::make_shared< component_name >(); \
-  }
+  } \
+  COMPONENT_SETTINGS_SECTION
 
 #define REGISTER_MODULE_COMPONENT(module_name, component_name) \
   Module##module_name::ComponentRegistrator component_name::reg(#component_name, &component_name::create);
