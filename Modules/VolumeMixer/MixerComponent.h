@@ -6,6 +6,7 @@
 class MixerComponent : public IComponent
 {
     DECLARE_MODULE_COMPONENT(MixerModule, MixerComponent)
+        COMPONENT_SETTINGS_EMPTY
 public:
     void init(std::shared_ptr<IDeviceButtonRestricted> device) override;
 

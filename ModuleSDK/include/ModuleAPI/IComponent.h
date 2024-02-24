@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <any>
 
 class IStreamDeck;
 
@@ -22,6 +23,10 @@ public:
     virtual void actionPress() = 0;
 
     virtual void actionRelease() = 0;
+
+    virtual std::vector<std::string> getVariablesList() const = 0;
+
+    virtual void setVariable(const std::string &name, std::any) = 0;
 
     virtual ~IComponent() = default;
 };
