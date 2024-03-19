@@ -128,6 +128,13 @@ void Profile::setButtonComponent(ushort button, const std::string &module_name, 
     save();
 }
 
+void Profile::setPage(const std::string &page)
+{
+    const auto it = m_pages.find(page);
+    if (it != m_pages.cend())
+        m_current_page = it->second;
+}
+
 std::optional<KeyProfile> Profile::getCurrentKeyProfile(ushort key)
 {
     const auto it =  m_current_page->m_keys.find(key);

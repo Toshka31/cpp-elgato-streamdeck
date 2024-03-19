@@ -12,6 +12,7 @@ target_link_libraries(streamdeck.server
         boost_system
         boost_filesystem
         streamdeck.lib
+        streamDeck.api
         streamdeck.module_api
         streamdeck.server.private.iface
         OpenSSL::Crypto

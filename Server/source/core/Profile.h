@@ -34,6 +34,8 @@ public:
     void setButtonLabel(ushort button, const std::string &label);
     void setButtonComponent(ushort button, const std::string &module_name, const std::string &component_name);
 
+    void setPage(const std::string &page);
+
     std::optional<KeyProfile> getCurrentKeyProfile(ushort key);
 
     [[nodiscard]] std::vector<std::string> getPages() const;

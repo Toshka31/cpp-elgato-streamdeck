@@ -100,6 +100,17 @@ void RegisteredDevice::setProfile(const std::string &profile_name)
     refresh();
 }
 
+void RegisteredDevice::setPage(const std::string &page_name)
+{
+    m_current_profile.setPage(page_name);
+    refresh();
+}
+
+int RegisteredDevice::getBrightness()
+{
+    return 0; // TODO
+}
+
 std::vector<std::string> RegisteredDevice::getProfiles()
 {
     return getDeckProfiles(m_streamdeck->get_serial_number());

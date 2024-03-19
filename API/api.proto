@@ -1,0 +1,163 @@
+syntax = "proto3";
+
+package StreamDeckAPI;
+
+import "google/protobuf/empty.proto";
+
+service StreamDeckAPI {
+  // get list of all modules and components inside modules
+  rpc GetComponents(google.protobuf.Empty) returns (ModuleListResponse);
+
+  // get list of all connected devices
+  rpc GetDevices(google.protobuf.Empty) returns (DeviceListResponse);
+
+  // set device brightness
+  rpc SetDeviceBrightness(DeviceSetBrightnessRequest) returns (Response);
+
+  // get device brightness
+  rpc GetDeviceBrightness(DeviceRequest) returns (DeviceBrightnessResponse);
+
+  // get list of all device profiles
+  rpc GetDeviceProfiles(DeviceRequest) returns (DeviceProfileListResponse);
+
+  // get current device profile
+  rpc GetDeviceCurrentProfile(DeviceRequest) returns (DeviceCurrentProfileResponse);
+
+  // set device current profile
+  rpc SetDeviceCurrentProfile(DeviceSetProfileRequest) returns (Response);
+
+  // get list of all device pages
+  rpc GetDevicePages(DeviceRequest) returns (DevicePageListResponse);
+
+  // get device current page
+  rpc GetDeviceCurrentPage(DeviceRequest) returns (DeviceCurrentPageResponse);
+
+  // set device current page
+  rpc SetDeviceCurrentPage(DeviceSetPageRequest) returns (Response);
+
+  // get device button image
+  rpc GetDeviceButtonImage(DeviceButtonRequest) returns (DeviceButtonImageResponse);
+
+  // set device button image
+  rpc SetDeviceButtonImage(DeviceSetButtonImageRequest) returns (Response);
+
+  // get device button label
+  rpc GetDeviceButtonLabel(DeviceButtonRequest) returns (DeviceButtonLabelResponse);
+
+  // set device button label
+  rpc SetDeviceButtonLabel(DeviceSetButtonLabelRequest) returns (Response);
+
+  // get device button component
+  rpc GetDeviceButtonModuleComponent(DeviceButtonRequest) returns (DeviceButtonComponentResponse);
+
+  // set device button component
+  rpc SetDeviceButtonModuleComponent(DeviceSetButtonModuleComponentRequest) returns (Response);
+}
+
+message ModuleListResponse {
+    Response response = 1;
+    repeated Module modules = 2;
+}
+
+message DeviceListResponse {
+  Response response = 1;
+  repeated string devices = 2;
+}
+
+message DeviceRequest {
+  string device_name = 1;
+}
+
+message DeviceProfileListResponse {
+  Response response = 1;
+  repeated string profiles = 2;
+}
+
+message DeviceCurrentProfileResponse {
+  Response response = 1;
+  string profile = 2;
+}
+
+message DeviceSetProfileRequest {
+  string device = 1;
+  string profile = 2;
+}
+
+message DevicePageListResponse {
+  Response response = 1;
+  repeated string pages = 2;
+}
+
+message DeviceCurrentPageResponse {
+  Response response = 1;
+  string page = 2;
+}
+
+message DeviceSetPageRequest {
+  string device = 1;
+  string page = 2;
+}
+
+message DeviceBrightnessResponse {
+  Response response = 1;
+  int32 brightness = 2;
+}
+
+message DeviceSetBrightnessRequest {
+  string device = 1;
+  int32 brightness = 2;
+}
+
+message DeviceButtonRequest {
+  string device_name = 1;
+  int32 button = 2;
+}
+
+message DeviceButtonImageResponse {
+  Response response = 1;
+  bytes image = 2;
+}
+
+message DeviceSetButtonImageRequest {
+  string device = 1;
+  int32 button = 2;
+  bytes image = 3;
+}
+
+message DeviceButtonLabelResponse {
+  Response response = 1;
+  string label = 2;
+}
+
+message DeviceSetButtonLabelRequest {
+  string device = 1;
+  int32 button = 2;
+  string label = 3;
+}
+
+message DeviceButtonComponentResponse {
+  Response response = 1;
+  string module = 2;
+  string component = 3;
+}
+
+message DeviceSetButtonModuleComponentRequest {
+  string device = 1;
+  int32 button = 2;
+  string module = 3;
+  string component = 4;
+}
+
+message Response {
+  int32 code = 1;
+  Error error = 2;
+
+  message Error {
+    string message = 1;
+  }
+}
+
+message Module {
+  string name = 1;
+  repeated string components = 2;
+}

@@ -53,6 +53,22 @@ void DeviceController::setDeviceBrightness(const std::string &device_id, unsigne
         it->second->setBrightness(brightness);
 }
 
+void DeviceController::setDeviceCurrentProfile(const std::string &device_id, const std::string &profile)
+{
+    std::lock_guard guard(m_mutex);
+    auto it = m_registered_deices.find(device_id);
+    if (it != m_registered_deices.end())
+        it->second->setProfile(profile);
+}
+
+void DeviceController::setDeviceCurrentPage(const std::string &device_id, const std::string &page)
+{
+    std::lock_guard guard(m_mutex);
+    auto it = m_registered_deices.find(device_id);
+    if (it != m_registered_deices.end())
+        it->second->setPage(page);
+}
+
 void DeviceController::setDeviceButtonImage(const std::string &device_id, unsigned char button, std::vector<unsigned char>& image)
 {
     std::lock_guard guard(m_mutex);
@@ -78,6 +94,14 @@ void DeviceController::setDeviceButtonComponent(const std::string &device_id, un
     if (it != m_registered_deices.end()) {
         it->second->setButtonComponent(button, module, component);
     }
+}
+
+int DeviceController::getDeviceBrightness(const std::string &device_id) const {
+    std::lock_guard guard(m_mutex);
+    auto it = m_registered_deices.find(device_id);
+    if (it != m_registered_deices.end())
+        return it->second->getBrightness();
+    return {};
 }
 
 std::string DeviceController::getDeviceCurrentProfile(const std::string &device_id) const

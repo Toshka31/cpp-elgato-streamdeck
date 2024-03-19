@@ -4,105 +4,103 @@
 #include <fstream>
 #include <rpc/client.h>
 
-// getComponentsList -> std::map<std::string, std::vector<std::string>>
-// getDevicesList -> std::vector<std::string>
-// setDeviceBrightness .. const std::string &device_id, unsigned char brightness
-// setDeviceButtonImage .. const std::string &device_id, unsigned char button, std::vector<uint8_t> image, image::helper::EImageFormat format
-// setDeviceButtonComponent .. const std::string &device_id, unsigned char button, const std::string &module, const std::string &component
+#include "ArgParser.h"
+#include "Mediator.h"
+#include "GRPCClient.h"
 
 MSGPACK_ADD_ENUM(image::helper::EImageFormat);
 
 int main(int argc, char *argv[])
 {
-    if (argc < 2)
-    {
-        return 0;
-    }
+    /* get
+     * |-module
+     *   |-list
+     * |-device [ID|list]
+     *   |-brightness
+     *   |-page
+     *   | |-list
+     *   | |-current
+     *   |-profile
+     *   | |-list
+     *   | |-current
+     *   |-button
+     *     |-image
+     *     |-label
+     *     |-component
+     * set
+     * |- device [ID]
+     *   |- brightness [value 0-100]
+     *   |- page [page m_name]
+     *   |- profile [profile m_name]
+     *   |- button [button ID]
+     *     |- image [path]
+     *     |- label [label]
+     *     |- component [module] [component]
+     */
 
-    rpc::client client("127.0.0.1", 27015);
+    StreamDeckClient client(grpc::CreateChannel("localhost:50051", grpc::InsecureChannelCredentials()));
 
-    if (!strcmp(argv[1], "components"))
-    {
-        auto result = client.call("getComponentsList").as<std::map<std::string, std::vector<std::string>>>();
-    
-        for (auto module : result)
-        {
-            std::cout << module.first << std::endl;
-            for(auto comp : module.second)
-                std::cout << "\t" << comp << std::endl;
-        }
-    }
-    else if (!strcmp(argv[1], "devices"))
-    {
-        auto result = client.call("getDevicesList").as<std::vector<std::string>>();
-    
-        for (const auto& dev : result)
-            std::cout << dev << std::endl;
-    }
-    else if (!strcmp(argv[1], "get_profiles"))
-    {
-        auto result = client.call("getDeviceProfiles", argv[2]).as<std::vector<std::string>>();
+    Mediator mediator(client);
 
-        for (const auto& prof : result)
-            std::cout << prof << std::endl;
-    }
-    else if (!strcmp(argv[1], "get_pages"))
-    {
-        auto result = client.call("getDevicePages", argv[2]).as<std::vector<std::string>>();
+    ArgParser parser;
 
-        for (const auto& page : result)
-            std::cout << page << std::endl;
-    }
-    else if (!strcmp(argv[1], "page"))
-    {
-        auto result = client.call("getDeviceCurrentPage", argv[2]).as<std::string>();
+    auto get_cmd = parser.createSubCommand("get");
+    get_cmd->createSubCommand("module")->createSubCommand("list")
+        ->addAction([&mediator](auto && PH1) { mediator.getModulesList(std::forward<decltype(PH1)>(PH1)); });
 
-        std::cout << result << std::endl;
-    }
-    else if (!strcmp(argv[1], "profile"))
-    {
-        auto result = client.call("getDeviceCurrentProfile", argv[2]).as<std::string>();
+    get_cmd->createSubCommand("devices")
+        ->addAction([&mediator](auto && PH1) { mediator.getDevices(std::forward<decltype(PH1)>(PH1)); });
 
-        std::cout << result << std::endl;
-    }
-    else if (!strcmp(argv[1], "set_brightness"))
-    {
-        if (argc != 4)
-            return 0;
+    auto get_device_cmd = get_cmd->createSubCommand("device")->addParameter("device_id");
 
-        client.call("setDeviceBrightness", argv[2], atoi(argv[3]));
-    }
-    else if (!strcmp(argv[1], "set_image"))
-    {
-        std::cout << "set" << std::endl;
+    get_device_cmd->createSubCommand("brightness")
+        ->addAction([&mediator](auto && PH1) { mediator.getDeviceBrightness(std::forward<decltype(PH1)>(PH1)); });
 
-        std::string filename(argv[4]);
+    auto get_device_page_cmd = get_device_cmd->createSubCommand("page");
+    get_device_page_cmd->createSubCommand("list")
+        ->addAction([&mediator](auto && PH1) { mediator.getDevicePages(std::forward<decltype(PH1)>(PH1)); });
+    get_device_page_cmd->createSubCommand("current")
+        ->addAction([&mediator](auto && PH1) { mediator.getDeviceCurrentPage(std::forward<decltype(PH1)>(PH1)); });
 
-        std::ifstream file(argv[4], std::ios::binary | std::ios::ate);
-        if (file)
-        {
-            std::streamsize size = file.tellg();
-            file.seekg(0, std::ios::beg);
+    auto get_device_profile_cmd = get_device_cmd->createSubCommand("profile");
+    get_device_profile_cmd->createSubCommand("list")
+        ->addAction([&mediator](auto && PH1) { mediator.getDeviceProfiles(std::forward<decltype(PH1)>(PH1)); });
+    get_device_profile_cmd->createSubCommand("current")
+        ->addAction([&mediator](auto && PH1) { mediator.getDeviceCurrentProfile(std::forward<decltype(PH1)>(PH1)); });
 
-            std::vector<char> buffer(size);
-            file.read(buffer.data(), size);
-            std::cout << "size = " << size << std::endl;
-            std::cout << "image.size() = " << buffer.size() << std::endl;
+    auto get_device_button_cmd = get_device_cmd->createSubCommand("button")->addParameter("button_id");
+    get_device_button_cmd->createSubCommand("image")
+        ->addParameter("save_path")
+        ->addAction([&mediator](auto && PH1) { mediator.getDeviceButtonImage(std::forward<decltype(PH1)>(PH1)); });
+    get_device_button_cmd->createSubCommand("label")
+        ->addAction([&mediator](auto && PH1) { mediator.getDeviceButtonLabel(std::forward<decltype(PH1)>(PH1)); });
+    get_device_button_cmd->createSubCommand("component")
+        ->addAction([&mediator](auto && PH1) { mediator.getDeviceButtonComponent(std::forward<decltype(PH1)>(PH1)); });
 
-            if (!buffer.empty())
-                client.call("setDeviceButtonImage", argv[2], atoi(argv[3]), buffer);
-        }
-    }
-    else if (!strcmp(argv[1], "set_label"))
-    {
-        std::string label = argv[4];
-        client.call("setDeviceButtonLabel", argv[2], atoi(argv[3]), label);
-    }
-    else if (!strcmp(argv[1], "set_component"))
-    {
-        if (argc != 6)
-            return 0;
+    auto set_cmd = parser.createSubCommand("set");
+    auto set_device_cmd = set_cmd->createSubCommand("device")->addParameter("device_id");
 
-        client.call("setDeviceButtonComponent", argv[2], atoi(argv[3]), argv[4], argv[5]);
-    }
+    set_device_cmd->createSubCommand("brightness")->addParameter("brightness")
+        ->addAction([&mediator](auto && PH1) { mediator.setDeviceBrightness(std::forward<decltype(PH1)>(PH1)); });
+
+    set_device_cmd->createSubCommand("page")->addParameter("page_name")
+        ->addAction([&mediator](auto && PH1) { mediator.setDevicePage(std::forward<decltype(PH1)>(PH1)); });
+
+    set_device_cmd->createSubCommand("profile")->addParameter("profile_name")
+        ->addAction([&mediator](auto && PH1) { mediator.setDeviceProfile(std::forward<decltype(PH1)>(PH1)); });
+
+    auto set_device_button_cmd = set_device_cmd->createSubCommand("button")->addParameter("button_id");
+    set_device_button_cmd->createSubCommand("image")->addParameter("image_path")
+        ->addAction([&mediator](auto && PH1) { mediator.setDeviceButtonImage(std::forward<decltype(PH1)>(PH1)); });
+    set_device_button_cmd->createSubCommand("label")->addParameter("label")
+        ->addAction([&mediator](auto && PH1) { mediator.setDeviceButtonLabel(std::forward<decltype(PH1)>(PH1)); });
+    set_device_button_cmd
+        ->createSubCommand("component")
+        ->addParameter("module_name")
+        ->addParameter("component_name")
+        ->addAction([&mediator](auto && PH1) { mediator.setDeviceButtonComponent(std::forward<decltype(PH1)>(PH1)); });
+
+    parser.parse(argc, argv);
+
+    return 0;
 }

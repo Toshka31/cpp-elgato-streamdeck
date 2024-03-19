@@ -26,12 +26,12 @@ Engine::Engine()
 #endif
     m_device_controller = std::make_shared<DeviceController>(m_module_loader, transport);
 
-    m_rpc_server = std::make_shared<ServerRPC>(27015, m_device_controller, m_module_loader);
+    m_rpc_server = std::make_shared<ServerGRPC>(50051, m_device_controller, m_module_loader);
 }
 
 [[noreturn]] int Engine::start()
 {
-    std::thread thread_rpc(&ServerRPC::start, m_rpc_server);
+    std::thread thread_rpc(&ServerGRPC::start, m_rpc_server);
     std::thread thread_dev_inspector(&DeviceController::deviceInspector, m_device_controller);
 
     m_is_running = true;

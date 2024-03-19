@@ -38,6 +38,10 @@ public:
 
     void setProfile(const std::string &profile_name);
 
+    void setPage(const std::string &profile_name);
+
+    int getBrightness();
+
     std::vector<std::string> getProfiles();
 
     std::string getCurrentPageName() const;

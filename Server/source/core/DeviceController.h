@@ -20,11 +20,17 @@ public:
 
     void setDeviceBrightness(const std::string &device_id, unsigned char brightness);
 
+    void setDeviceCurrentProfile(const std::string &device_id, const std::string &profile);
+
+    void setDeviceCurrentPage(const std::string &device_id, const std::string &page);
+
     void setDeviceButtonImage(const std::string &device_id, unsigned char button, std::vector<unsigned char>& image);
 
     void setDeviceButtonLabel(const std::string &device_id, unsigned char button, const std::string &label);
 
     void setDeviceButtonComponent(const std::string &device_id, unsigned char button, const std::string &module, const std::string &component);
+
+    int getDeviceBrightness(const std::string &device_id) const;
 
     std::string getDeviceCurrentProfile(const std::string &device_id) const;
 

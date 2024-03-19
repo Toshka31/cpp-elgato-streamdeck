@@ -2,7 +2,7 @@
 #pragma once
 
 #include "DeviceController.h"
-#include "ServerRPC.h"
+#include "ServerGRPC.h"
 
 #include <vector>
 #include <map>
@@ -17,7 +17,7 @@ public:
 
 protected:
     std::shared_ptr<ModuleLoader> m_module_loader;
-    std::shared_ptr<ServerRPC> m_rpc_server;
+    std::shared_ptr<ServerGRPC> m_rpc_server;
     std::shared_ptr<DeviceController> m_device_controller;
 
     std::atomic_bool m_is_running;
