@@ -8,8 +8,7 @@
 #include <map>
 #include <string>
 
-class Engine
-{
+class Engine {
 public:
     Engine();
 

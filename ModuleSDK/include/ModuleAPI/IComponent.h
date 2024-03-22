@@ -9,8 +9,7 @@
 
 class IStreamDeck;
 
-class IComponent
-{
+class IComponent {
 public:
     virtual void init(std::shared_ptr<IDeviceButtonRestricted> device) = 0;
 

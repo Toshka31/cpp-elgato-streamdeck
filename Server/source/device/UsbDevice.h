@@ -8,8 +8,7 @@
 #include <string>
 #include <mutex>
 
-class UsbDevice : public IDevice
-{
+class UsbDevice : public IDevice {
 public:
     UsbDevice(std::shared_ptr<LibUSBHIDWrapper> libUsb, UsbDeviceInfo device_info);
 
@@ -40,7 +39,7 @@ public:
 private:
     std::shared_ptr<LibUSBHIDWrapper> m_libUsb;
     UsbDeviceInfo m_device_info;
-    hid_device* m_device_handle = nullptr;
+    hid_device *m_device_handle = nullptr;
 
     mutable std::mutex device_mutex;
 };

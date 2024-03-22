@@ -13,22 +13,20 @@
 #include <mutex>
 #include <chrono>
 
-
-class BaseStreamDeck : public std::enable_shared_from_this<BaseStreamDeck>, public IStreamDeck
-{
+class BaseStreamDeck : public std::enable_shared_from_this<BaseStreamDeck>, public IStreamDeck {
 public:
     BaseStreamDeck(
-        std::shared_ptr<IDevice> device, 
-        unsigned short KEY_COUNT = 0, 
-        unsigned short KEY_COLS = 0,
-        unsigned short KEY_ROWS = 0,
-        unsigned short KEY_PIXEL_WIDTH = 0,
-        unsigned short KEY_PIXEL_HEIGHT = 0,
-        std::string KEY_IMAGE_FORMAT = "",
-        std::pair<bool, bool> KEY_FLIP = {false, false},
-        unsigned short KEY_ROTATION = 0,
-        std::string DECK_TYPE = "",
-        bool DECK_VISUAL = false
+        std::shared_ptr<IDevice> device,
+        unsigned short key_count = 0,
+        unsigned short key_cols = 0,
+        unsigned short key_rows = 0,
+        unsigned short key_image_pixel_width = 0,
+        unsigned short key_image_pixel_height = 0,
+        std::string key_image_format = "",
+        std::pair<bool, bool> key_flip = { false, false },
+        unsigned short key_rotation = 0,
+        std::string deck_type = "",
+        bool deck_visual = false
     );
 
     virtual ~BaseStreamDeck();
@@ -53,17 +51,17 @@ public:
 
     unsigned short vendor_id() const;
 
-    unsigned short product_id()  const;
+    unsigned short product_id() const;
 
-    std::string id()  const;
+    std::string id() const;
 
-    unsigned short key_count()  const;
+    unsigned short key_count() const;
 
-    std::string deck_type()  const;
+    std::string deck_type() const;
 
-    bool is_visual()  const;
+    bool is_visual() const;
 
-    std::pair<unsigned short, unsigned short> key_layout()  const;
+    std::pair<unsigned short, unsigned short> key_layout() const;
 
     KeyImageFormat key_image_format() const;
 
@@ -83,29 +81,29 @@ protected:
     void setup_reader(std::function<void()> callback);
 
 protected:
-    unsigned short KEY_COUNT;
-    unsigned short KEY_COLS;
-    unsigned short KEY_ROWS;
+    unsigned short m_key_count;
+    unsigned short m_key_cols;
+    unsigned short m_key_rows;
 
-    unsigned short KEY_PIXEL_WIDTH;
-    unsigned short KEY_PIXEL_HEIGHT;
+    unsigned short m_key_image_pixel_width;
+    unsigned short m_key_image_pixel_height;
 
-    std::string KEY_IMAGE_FORMAT;
-    std::pair<bool, bool> KEY_FLIP;
-    unsigned short KEY_ROTATION;
+    std::string m_key_image_format;
+    std::pair<bool, bool> m_key_image_flip;
+    unsigned short m_key_image_rotation;
 
-    std::string DECK_TYPE;
-    bool DECK_VISUAL;
+    std::string m_deck_type;
+    bool m_deck_visual;
 
     std::shared_ptr<IDevice> m_device;
 
-    std::vector<bool> last_key_stated;
+    std::vector<bool> m_last_key_states;
 
-    unsigned int read_poll_hz = 20U;
+    unsigned int m_read_poll_hz = 20U;
 
-    std::function<void(std::shared_ptr<BaseStreamDeck>, unsigned short, bool)> key_callback;
+    std::function<void(std::shared_ptr<BaseStreamDeck>, unsigned short, bool)> m_key_callback;
 
-    bool run_read_thread = false;
-    std::thread read_thread;
-    mutable std::mutex key_state_mutex;
+    bool m_run_read_thread = false;
+    std::thread m_read_thread;
+    mutable std::mutex m_key_state_mutex;
 };

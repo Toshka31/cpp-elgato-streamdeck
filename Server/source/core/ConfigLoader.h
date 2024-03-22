@@ -1,17 +1,17 @@
-#pragma once 
-
-#include <3rdparty/nlohmann/json.hpp>
+#pragma once
 
 #include "util/SystemUtil.h"
 #include "Profile.h"
 
-static constexpr const char*const FOLDER_STREAMDECK = ".streamdeck";
-static constexpr const char*const FOLDER_MODULES = "modules";
-static constexpr const char*const FOLDER_IMAGES = "images";
-static constexpr const char*const FOLDER_PROFILES = "profiles";
-static constexpr const char*const FILENAME_CONFIG = ".config";
-static constexpr const char*const FILENAME_DEFAULT_PROFILE_NAME = "default";
-static constexpr const char*const EXTENSION_PROFILE = ".profile";
+#include <3rdparty/nlohmann/json.hpp>
+
+static constexpr const char *const FOLDER_STREAMDECK = ".streamdeck";
+static constexpr const char *const FOLDER_MODULES = "modules";
+static constexpr const char *const FOLDER_IMAGES = "images";
+static constexpr const char *const FOLDER_PROFILES = "profiles";
+static constexpr const char *const FILENAME_CONFIG = ".config";
+static constexpr const char *const FILENAME_DEFAULT_PROFILE_NAME = "default";
+static constexpr const char *const EXTENSION_PROFILE = ".profile";
 
 void createDefaultConfigs(const std::filesystem::path &path);
 

@@ -5,8 +5,7 @@
 #include <string>
 #include <vector>
 
-class IDeviceButtonRestricted
-{
+class IDeviceButtonRestricted {
 public:
     virtual std::string getID() = 0;
 

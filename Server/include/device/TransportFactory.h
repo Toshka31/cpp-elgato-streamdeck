@@ -2,11 +2,9 @@
 
 #include "ITransport.h"
 
-
-class TransportFactory
-{
+class TransportFactory {
 public:
-  static std::shared_ptr<ITransport> createUsbTransport();
+    static std::shared_ptr<ITransport> createUsbTransport();
 
-  static std::shared_ptr<ITransport> createDebugTransport();
+    static std::shared_ptr<ITransport> createDebugTransport();
 };

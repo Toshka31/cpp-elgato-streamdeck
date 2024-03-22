@@ -5,15 +5,13 @@
 #include <string>
 #include <functional>
 
-
-class IStreamDeck
-{
+class IStreamDeck {
 public:
     typedef std::function<void(std::shared_ptr<IStreamDeck>, unsigned short, bool)> KeyCallback;
 
     IStreamDeck() = default;
 
-    virtual ~IStreamDeck()  = default;
+    virtual ~IStreamDeck() = default;
 
     struct KeyImageFormat {
         std::pair<unsigned short, unsigned short> size;
@@ -36,29 +34,29 @@ public:
 
     virtual void close() = 0;
 
-    virtual bool is_open() const = 0;
+    [[nodiscard]] virtual bool is_open() const = 0;
 
-    virtual bool connected() const = 0;
+    [[nodiscard]] virtual bool connected() const = 0;
 
-    virtual unsigned short vendor_id() const = 0;
+    [[nodiscard]] virtual unsigned short vendor_id() const = 0;
 
-    virtual unsigned short product_id() const = 0;
+    [[nodiscard]] virtual unsigned short product_id() const = 0;
 
-    virtual std::string id()  const = 0;
+    [[nodiscard]] virtual std::string id() const = 0;
 
-    virtual unsigned short key_count() const = 0;
+    [[nodiscard]] virtual unsigned short key_count() const = 0;
 
-    virtual std::string deck_type() const = 0;
+    [[nodiscard]] virtual std::string deck_type() const = 0;
 
-    virtual bool is_visual() const = 0;
+    [[nodiscard]] virtual bool is_visual() const = 0;
 
-    virtual std::pair<unsigned short, unsigned short> key_layout() const = 0;
+    [[nodiscard]] virtual std::pair<unsigned short, unsigned short> key_layout() const = 0;
 
-    virtual KeyImageFormat key_image_format() const = 0;
+    [[nodiscard]] virtual KeyImageFormat key_image_format() const = 0;
 
     virtual void set_poll_frequency(unsigned int hz) = 0;
 
-    virtual void set_key_callback(KeyCallback callback)  = 0;
+    virtual void set_key_callback(KeyCallback callback) = 0;
 
-    virtual std::vector<bool> key_states() const = 0;
+    [[nodiscard]] virtual std::vector<bool> key_states() const = 0;
 };

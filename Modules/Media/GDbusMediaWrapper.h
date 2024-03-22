@@ -22,5 +22,4 @@ private:
     static std::any getMediaPlayerProperty(const std::string &dbus_player, const std::string &property);
 };
 
-
 #endif //ELGATO_STREAMDECK_GDBUSMEDIAWRAPPER_H

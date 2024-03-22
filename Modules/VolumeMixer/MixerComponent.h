@@ -3,10 +3,9 @@
 #include "module.h"
 #include "MixerButtonManager.h"
 
-class MixerComponent : public IComponent
-{
+class MixerComponent : public IComponent {
     DECLARE_MODULE_COMPONENT(MixerModule, MixerComponent)
-        COMPONENT_SETTINGS_EMPTY
+    COMPONENT_SETTINGS_EMPTY
 public:
     void init(std::shared_ptr<IDeviceButtonRestricted> device) override;
 

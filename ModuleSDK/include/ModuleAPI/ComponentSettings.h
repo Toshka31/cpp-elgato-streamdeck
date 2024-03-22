@@ -87,8 +87,10 @@
   } \
   const std::unordered_map<std::string, std::shared_ptr<ConfigVarBase>> m_config_variables \
 
+
 struct ConfigVarBase {
-    explicit ConfigVarBase(std::string name) : m_name(std::move(name)) {}
+    explicit ConfigVarBase(std::string name)
+        : m_name(std::move(name)) {}
 
     // Return all info about variable in JSON format
     [[nodiscard]] virtual std::string getInfo() const = 0;
@@ -101,11 +103,8 @@ struct ConfigVarBase {
 };
 
 struct ConfigVarInt : ConfigVarBase {
-    ConfigVarInt(std::string name, int value, int min, int max) :
-            ConfigVarBase(std::move(name)),
-            m_value(value),
-            m_min(min),
-            m_max(max) {}
+    ConfigVarInt(std::string name, int value, int min, int max)
+        : ConfigVarBase(std::move(name)), m_value(value), m_min(min), m_max(max) {}
 
     int m_value{};
     int m_max{};
@@ -117,7 +116,7 @@ struct ConfigVarInt : ConfigVarBase {
             if (val >= m_min && val <= m_max)
                 m_value = val;
         }
-        catch (const std::bad_any_cast& e) {}
+        catch (const std::bad_any_cast &e) {}
     }
 
     [[nodiscard]] std::string getInfo() const final {
@@ -137,11 +136,8 @@ struct ConfigVarInt : ConfigVarBase {
 };
 
 struct ConfigVarDouble : ConfigVarBase {
-    ConfigVarDouble(std::string name, double value, double min, double max) :
-            ConfigVarBase(std::move(name)),
-            m_value(value),
-            m_min(min),
-            m_max(max) {}
+    ConfigVarDouble(std::string name, double value, double min, double max)
+        : ConfigVarBase(std::move(name)), m_value(value), m_min(min), m_max(max) {}
 
     double m_value{};
     double m_max{};
@@ -153,7 +149,7 @@ struct ConfigVarDouble : ConfigVarBase {
             if (val >= m_min && val <= m_max)
                 m_value = val;
         }
-        catch (const std::bad_any_cast& e) {}
+        catch (const std::bad_any_cast &e) {}
     }
 
     [[nodiscard]] std::string getInfo() const final {
@@ -173,11 +169,8 @@ struct ConfigVarDouble : ConfigVarBase {
 };
 
 struct ConfigVarString : ConfigVarBase {
-    ConfigVarString(std::string name, std::string  value, std::string::size_type max_size) :
-            ConfigVarBase(std::move(name)),
-            m_value(std::move(value)),
-            m_max_size(max_size) {}
-
+    ConfigVarString(std::string name, std::string value, std::string::size_type max_size)
+        : ConfigVarBase(std::move(name)), m_value(std::move(value)), m_max_size(max_size) {}
 
     std::string m_value;
     std::string::size_type m_max_size;
@@ -188,7 +181,7 @@ struct ConfigVarString : ConfigVarBase {
             if (m_max_size == 0 || val.size() <= m_max_size)
                 m_value = val;
         }
-        catch (const std::bad_any_cast& e) {}
+        catch (const std::bad_any_cast &e) {}
     }
 
     [[nodiscard]] std::string getInfo() const final {
@@ -207,9 +200,8 @@ struct ConfigVarString : ConfigVarBase {
 };
 
 struct ConfigVarBool : ConfigVarBase {
-    explicit ConfigVarBool(std::string name, bool value) :
-            ConfigVarBase(std::move(name)),
-            m_value(value) {}
+    explicit ConfigVarBool(std::string name, bool value)
+        : ConfigVarBase(std::move(name)), m_value(value) {}
 
     bool m_value{};
 
@@ -218,7 +210,7 @@ struct ConfigVarBool : ConfigVarBase {
             auto val = std::any_cast<bool>(value);
             m_value = val;
         }
-        catch (const std::bad_any_cast& e) {}
+        catch (const std::bad_any_cast &e) {}
     }
 
     [[nodiscard]] std::string getInfo() const final {
@@ -236,10 +228,8 @@ struct ConfigVarBool : ConfigVarBase {
 };
 
 struct ConfigVarCombo : ConfigVarBase {
-    ConfigVarCombo(std::string name, int value, std::unordered_map<int, std::string> list) :
-            ConfigVarBase(std::move(name)),
-            m_value(value),
-            m_list(std::move(list)) {}
+    ConfigVarCombo(std::string name, int value, std::unordered_map<int, std::string> list)
+        : ConfigVarBase(std::move(name)), m_value(value), m_list(std::move(list)) {}
 
     int m_value;
     std::unordered_map<int, std::string> m_list;
@@ -250,7 +240,7 @@ struct ConfigVarCombo : ConfigVarBase {
             if (m_list.contains(val))
                 m_value = val;
         }
-        catch (const std::bad_any_cast& e) {}
+        catch (const std::bad_any_cast &e) {}
     }
 
     [[nodiscard]] std::string getInfo() const final {

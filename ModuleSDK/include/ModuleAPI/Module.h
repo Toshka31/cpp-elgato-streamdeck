@@ -95,7 +95,7 @@ Module##module_name::ProfileRegistrator Profile##module_name::reg(ProvidedProfil
 #define MAP_GET_END2() 0, MAP_END
 #define MAP_GET_END1(...) MAP_GET_END2
 #define MAP_GET_END(...) MAP_GET_END1
-#define MAP_NEXT0(test, next , ...) next MAP_OUT
+#define MAP_NEXT0(test, next, ...) next MAP_OUT
 #define MAP_NEXT1(test, next) MAP_NEXT0(test, next, 0)
 #define MAP_NEXT(test, next)  MAP_NEXT1(MAP_GET_END test, next)
 
@@ -104,7 +104,7 @@ Module##module_name::ProfileRegistrator Profile##module_name::reg(ProvidedProfil
 #define MAP_TUPLES_BEGIN(f, x, peek, ...) f x MAP_NEXT(peek, MAP_TUPLES1)(f, peek, __VA_ARGS__)
 #define MAP_TUPLES(f, ...) EVAL(MAP_TUPLES_BEGIN(f, __VA_ARGS__, ()()(),  0))
 
-#define DECL_PAIR(type,var)\
+#define DECL_PAIR(type, var)\
   {type, var}
 
 #define CREATE_PROFILE(...) { MAP_TUPLES(DECL_PAIR, __VA_ARGS__) }

@@ -7,15 +7,15 @@
 
 class Mediator {
 public:
-    explicit Mediator(StreamDeckClient &cli) : m_client(cli) {}
+    explicit Mediator(StreamDeckClient &cli)
+        : m_client(cli) {}
 
     void getModulesList(const std::map<std::string, std::string> &args) {
         std::cout << "getModulesList" << std::endl;
         auto result = m_client.getComponents();
-        for (const auto& module : result)
-        {
+        for (const auto &module : result) {
             std::cout << module.first << std::endl;
-            for(const auto& comp : module.second)
+            for (const auto &comp : module.second)
                 std::cout << "\t" << comp << std::endl;
         }
     }
@@ -23,7 +23,7 @@ public:
     void getDevices(const std::map<std::string, std::string> &args) {
         std::cout << "getDevices" << std::endl;
         auto result = m_client.getDevices();
-        for (const auto& device : result) {
+        for (const auto &device : result) {
             std::cout << device << std::endl;
         }
     }
@@ -33,8 +33,7 @@ public:
             std::cout << "getDeviceBrightness " << args.at("device_id") << std::endl;
             auto result = m_client.getDeviceBrightness(args.at("device_id"));
             std::cout << result << std::endl;
-        }
-        else
+        } else
             std::cout << "getDeviceBrightness error";
     }
 
@@ -42,10 +41,9 @@ public:
         if (args.contains("device_id")) {
             std::cout << "getDevicePages " << args.at("device_id") << std::endl;
             auto result = m_client.getDevicePages(args.at("device_id"));
-            for (const auto& page : result)
+            for (const auto &page : result)
                 std::cout << page << std::endl;
-        }
-        else
+        } else
             std::cout << "getDevicePages error";
     }
 
@@ -54,8 +52,7 @@ public:
             std::cout << "getDeviceCurrentPage " << args.at("device_id") << std::endl;
             auto result = m_client.getDeviceCurrentPage(args.at("device_id"));
             std::cout << result << std::endl;
-        }
-        else
+        } else
             std::cout << "getDeviceCurrentPage error";
     }
 
@@ -63,10 +60,9 @@ public:
         if (args.contains("device_id")) {
             std::cout << "getDeviceProfiles " << args.at("device_id") << std::endl;
             auto result = m_client.getDeviceProfiles(args.at("device_id"));
-            for (const auto& prof : result)
+            for (const auto &prof : result)
                 std::cout << prof << std::endl;
-        }
-        else
+        } else
             std::cout << "getDeviceProfiles error";
     }
 
@@ -75,8 +71,7 @@ public:
             std::cout << "getDeviceCurrentProfile " << args.at("device_id") << std::endl;
             auto result = m_client.getDeviceCurrentProfile(args.at("device_id"));
             std::cout << result << std::endl;
-        }
-        else
+        } else
             std::cout << "getDeviceCurrentProfile error";
     }
 
@@ -86,8 +81,7 @@ public:
             auto img = m_client.getDeviceButtonImage(args.at("device_id"), std::atoi(args.at("button_id").c_str()));
             std::ofstream file(args.at("save_path"), std::ios::binary);
             std::copy(img.cbegin(), img.cend(), std::ostream_iterator<char>(file));
-        }
-        else
+        } else
             std::cout << "getDeviceButtonImage error";
     }
 
@@ -96,8 +90,7 @@ public:
             std::cout << "getDeviceButtonLabel " << args.at("device_id") << " " << args.at("button_id") << std::endl;
             auto label = m_client.getDeviceButtonLabel(args.at("device_id"), std::atoi(args.at("button_id").c_str()));
             std::cout << label << std::endl;
-        }
-        else
+        } else
             std::cout << "getDeviceButtonLabel error";
     }
 
@@ -106,8 +99,7 @@ public:
             std::cout << "getDeviceButtonComponent " << args.at("device_id") << " " << args.at("button_id") << std::endl;
             auto moduleComponent = m_client.getDeviceButtonModuleComponent(args.at("device_id"), std::atoi(args.at("button_id").c_str()));
             std::cout << moduleComponent.first << "\t" << moduleComponent.second << std::endl;
-        }
-        else
+        } else
             std::cout << "getDeviceButtonComponent error";
     }
 
@@ -115,8 +107,7 @@ public:
         if (args.contains("device_id") && args.contains("brightness")) {
             std::cout << "setDeviceBrightness " << args.at("brightness") << std::endl;
             m_client.setDeviceBrightness(args.at("device_id"), std::atoi(args.at("brightness").c_str()));
-        }
-        else
+        } else
             std::cout << "setDeviceBrightness error";
     }
 
@@ -124,8 +115,7 @@ public:
         if (args.contains("device_id") && args.contains("page_name")) {
             std::cout << "setDevicePage " << args.at("page_name") << std::endl;
             m_client.setDeviceCurrentPage(args.at("device_id"), args.at("page_name"));
-        }
-        else
+        } else
             std::cout << "setDevicePage error";
     }
 
@@ -133,8 +123,7 @@ public:
         if (args.contains("device_id") && args.contains("profile_name")) {
             std::cout << "setDeviceProfile " << args.at("profile_name") << std::endl;
             m_client.setDeviceCurrentProfile(args.at("device_id"), args.at("profile_name"));
-        }
-        else
+        } else
             std::cout << "setDeviceProfile error";
     }
 
@@ -155,8 +144,7 @@ public:
                 if (!buffer.empty())
                     m_client.setDeviceButtonImage(args.at("device_id"), std::stoi(args.at("button_id")), buffer);
             }
-        }
-        else
+        } else
             std::cout << "setDeviceButtonImage error";
     }
 
@@ -164,19 +152,21 @@ public:
         if (args.contains("device_id") && args.contains("button_id") && args.contains("label")) {
             std::cout << "setDeviceButtonLabel " << args.at("label") << std::endl;
             m_client.setDeviceButtonLabel(args.at("device_id"), std::atoi(args.at("button_id").c_str()), args.at("label"));
-        }
-        else
+        } else
             std::cout << "setDeviceButtonLabel error";
     }
 
     void setDeviceButtonComponent(const std::map<std::string, std::string> &args) {
         if (args.contains("device_id") && args.contains("button_id") && args.contains("module_name") && args.contains("component_name")) {
             std::cout << "setDeviceButtonComponent " << args.at("module_name") << " " << args.at("component_name") << std::endl;
-            m_client.setDeviceButtonModuleComponent(args.at("device_id"), std::atoi(args.at("button_id").c_str()), args.at("module_name"), args.at("component_name"));
-        }
-        else
+            m_client.setDeviceButtonModuleComponent(args.at("device_id"),
+                                                    std::atoi(args.at("button_id").c_str()),
+                                                    args.at("module_name"),
+                                                    args.at("component_name"));
+        } else
             std::cout << "setDeviceButtonComponent error";
     }
+
 private:
     StreamDeckClient &m_client;
 };

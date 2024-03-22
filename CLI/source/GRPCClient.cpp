@@ -9,7 +9,7 @@ std::map<std::string, std::vector<std::string>> StreamDeckClient::getComponents(
 
     if (status.ok() && !reply.response().has_error()) {
         std::map<std::string, std::vector<std::string>> result;
-        for (const auto& module : reply.modules()) {
+        for (const auto &module : reply.modules()) {
             std::vector<std::string> components(module.components().begin(), module.components().end());
             result[module.name()] = components;
         }
@@ -62,7 +62,7 @@ std::string StreamDeckClient::getDeviceCurrentProfile(const std::string &device)
     }
 }
 
-int32_t StreamDeckClient::setDeviceCurrentProfile(const std::string &device, const std::string &profile ) {
+int32_t StreamDeckClient::setDeviceCurrentProfile(const std::string &device, const std::string &profile) {
     grpc::ClientContext context;
     StreamDeckAPI::Response response;
     StreamDeckAPI::DeviceSetProfileRequest request;
@@ -103,7 +103,7 @@ std::string StreamDeckClient::getDeviceCurrentPage(const std::string &device) {
     }
 }
 
-int32_t StreamDeckClient::setDeviceCurrentPage(const std::string &device, const std::string &page ) {
+int32_t StreamDeckClient::setDeviceCurrentPage(const std::string &device, const std::string &page) {
     grpc::ClientContext context;
     StreamDeckAPI::Response response;
     StreamDeckAPI::DeviceSetPageRequest request;
@@ -212,7 +212,12 @@ int32_t StreamDeckClient::setDeviceButtonLabel(const std::string &device, int bu
     }
 }
 
-int32_t StreamDeckClient::setDeviceButtonModuleComponent(const std::string &device, int button, const std::string &module, const std::string &component) {
+int32_t StreamDeckClient::setDeviceButtonModuleComponent(
+    const std::string &device,
+    int button,
+    const std::string &module,
+    const std::string &component
+) {
     grpc::ClientContext context;
     StreamDeckAPI::Response response;
     StreamDeckAPI::DeviceSetButtonModuleComponentRequest request;

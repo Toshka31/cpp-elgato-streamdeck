@@ -5,14 +5,12 @@
 #include <memory>
 #include <vector>
 
-
 /*
 Base transport layer, representing an abstract communication back-end which
 can be used to discovery attached StreamDeck devices.
 */
-class ITransport
-{
-public:  
+class ITransport {
+public:
     /*
     Enumerates all available devices on the system using the current
     transport back-end.

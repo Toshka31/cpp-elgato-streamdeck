@@ -10,8 +10,7 @@
 #include <filesystem>
 #include <fstream>
 
-Engine::Engine()
-{
+Engine::Engine() {
     std::filesystem::path homedir = system_util::getHomeDirectory();
 
     std::filesystem::path modules_path = homedir / FOLDER_STREAMDECK / FOLDER_MODULES;
@@ -29,15 +28,13 @@ Engine::Engine()
     m_rpc_server = std::make_shared<ServerGRPC>(50051, m_device_controller, m_module_loader);
 }
 
-[[noreturn]] int Engine::start()
-{
+[[noreturn]] int Engine::start() {
     std::thread thread_rpc(&ServerGRPC::start, m_rpc_server);
     std::thread thread_dev_inspector(&DeviceController::deviceInspector, m_device_controller);
 
     m_is_running = true;
 
-    while ( m_is_running )
-    {
+    while (m_is_running) {
         m_device_controller->tick();
 
         using namespace std::chrono_literals;

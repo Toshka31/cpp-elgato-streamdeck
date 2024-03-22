@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ConfigLoader.h"
-
 #include "Profile.h"
 #include "ModuleLoader.h"
 
@@ -11,8 +10,7 @@
 #include <memory>
 #include <functional>
 
-class RegisteredDevice : public std::enable_shared_from_this<RegisteredDevice>
-{
+class RegisteredDevice : public std::enable_shared_from_this<RegisteredDevice> {
 public:
     RegisteredDevice(std::shared_ptr<IStreamDeck> deck, std::shared_ptr<ModuleLoader> module_loader);
 
@@ -66,13 +64,14 @@ protected:
     Profile m_current_profile;
     std::map<ushort, std::shared_ptr<IComponent>> m_key_mapping;
 
-    struct Event
-    {
-        Event(ushort key, bool val) : key(key), value(val) {}
-        
+    struct Event {
+        Event(ushort key, bool val)
+            : key(key), value(val) {}
+
         ushort key;
         bool value;
     };
+
     std::mutex m_mutex;
     std::vector<Event> m_events;
 };

@@ -5,34 +5,28 @@
 
 #include "images/mixer.h"
 
-void MixerSwitchComponent::init(std::shared_ptr<IDeviceButtonRestricted> device)
-{
+void MixerSwitchComponent::init(std::shared_ptr<IDeviceButtonRestricted> device) {
     m_device = device;
 }
 
-std::string MixerSwitchComponent::name() const
-{
+std::string MixerSwitchComponent::name() const {
     return "Show Mixer";
 }
 
-void MixerSwitchComponent::tick()
-{
+void MixerSwitchComponent::tick() {
 
 }
 
-void MixerSwitchComponent::actionPress()
-{
+void MixerSwitchComponent::actionPress() {
     std::string cur_profile_name = m_device->getCurrentProfileName();
     MixerButtonManager::getManager(m_device)->setPreviousProfileName(cur_profile_name);
     m_device->setProfile("MixerModule");
 }
 
-void MixerSwitchComponent::actionRelease()
-{
+void MixerSwitchComponent::actionRelease() {
 
 }
 
-std::vector<unsigned char> MixerSwitchComponent::getImage() const
-{
+std::vector<unsigned char> MixerSwitchComponent::getImage() const {
     return IMAGE_MIXER;
 }

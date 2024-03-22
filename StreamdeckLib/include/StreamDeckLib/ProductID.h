@@ -1,14 +1,12 @@
 #pragma once
 
 // USB Vendor IDs for known StreamDeck devices..
-enum USBVendorIDs : unsigned short
-{
+enum USBVendorIDs : unsigned short {
     USB_VID_ELGATO = 0x0fd9
 };
 
 // USB Product IDs for known StreamDeck devices..
-enum USBProductIDs : unsigned short
-{
+enum USBProductIDs : unsigned short {
     USB_PID_STREAMDECK_ORIGINAL = 0x0060,
     USB_PID_STREAMDECK_ORIGINAL_V2 = 0x006d,
     USB_PID_STREAMDECK_MINI = 0x0063,

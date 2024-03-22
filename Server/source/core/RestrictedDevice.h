@@ -6,8 +6,7 @@
 
 class RegisteredDevice;
 
-class RestrictedDevice : public IDeviceButtonRestricted
-{
+class RestrictedDevice : public IDeviceButtonRestricted {
 public:
     RestrictedDevice(unsigned short key, std::shared_ptr<RegisteredDevice> device);
 

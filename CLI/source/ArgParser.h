@@ -59,10 +59,9 @@ public:
             auto list_params = command->needParameterList();
             for (const auto &param : list_params) {
                 if (cur < argc) {
-                    collected_args.insert({param, argv[cur]});
+                    collected_args.insert({ param, argv[cur] });
                     cur++;
-                }
-                else {
+                } else {
                     // TODO error
                 }
             }

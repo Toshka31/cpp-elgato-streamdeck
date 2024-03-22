@@ -6,9 +6,7 @@
 #include <memory>
 #include <vector>
 
-
-class UsbTransport : public ITransport
-{
+class UsbTransport : public ITransport {
 public:
     std::vector<std::shared_ptr<IDevice>> enumerate(unsigned short vid, unsigned short pid) override;
 };

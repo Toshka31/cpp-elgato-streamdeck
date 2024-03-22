@@ -1,151 +1,132 @@
 #include "BaseStreamDeck.h"
 
+#include <utility>
+
 BaseStreamDeck::BaseStreamDeck(
-    std::shared_ptr<IDevice> device, 
-    unsigned short KEY_COUNT, 
-    unsigned short KEY_COLS,
-    unsigned short KEY_ROWS ,
-    unsigned short KEY_PIXEL_WIDTH,
-    unsigned short KEY_PIXEL_HEIGHT,
-    std::string KEY_IMAGE_FORMAT,
-    std::pair<bool, bool> KEY_FLIP,
-    unsigned short KEY_ROTATION,
-    std::string DECK_TYPE,
-    bool DECK_VISUAL
-) : m_device(device),
-    KEY_COUNT(KEY_COUNT),
-    KEY_COLS(KEY_COLS),
-    KEY_ROWS(KEY_ROWS) ,
-    KEY_PIXEL_WIDTH(KEY_PIXEL_WIDTH),
-    KEY_PIXEL_HEIGHT(KEY_PIXEL_HEIGHT),
-    KEY_IMAGE_FORMAT(KEY_IMAGE_FORMAT),
-    KEY_FLIP(KEY_FLIP),
-    KEY_ROTATION(KEY_ROTATION),
-    DECK_TYPE(DECK_TYPE),
-    DECK_VISUAL(DECK_VISUAL)
+    std::shared_ptr<IDevice> device,
+    unsigned short key_count,
+    unsigned short key_cols,
+    unsigned short key_rows,
+    unsigned short key_image_pixel_width,
+    unsigned short key_image_pixel_height,
+    std::string key_image_format,
+    std::pair<bool, bool> key_flip,
+    unsigned short key_rotation,
+    std::string deck_type,
+    bool deck_visual
+)
+    : m_device(std::move(device))
+    , m_key_count(key_count)
+    , m_key_cols(key_cols)
+    , m_key_rows(key_rows)
+    , m_key_image_pixel_width(key_image_pixel_width)
+    , m_key_image_pixel_height(key_image_pixel_height)
+    , m_key_image_format(std::move(key_image_format))
+    , m_key_image_flip(std::move(key_flip))
+    , m_key_image_rotation(key_rotation)
+    , m_deck_type(std::move(deck_type))
+    , m_deck_visual(deck_visual)
 {
-    last_key_stated = std::vector<bool>(KEY_COUNT, false);
+    m_last_key_states = std::vector<bool>(key_count, false);
 }
 
-BaseStreamDeck::~BaseStreamDeck() 
-{
+BaseStreamDeck::~BaseStreamDeck() {
     setup_reader({});
     close();
 }
 
-void BaseStreamDeck::open()
-{
+void BaseStreamDeck::open() {
     m_device->open();
 
     reset_key_stream();
-    setup_reader(std::bind(&BaseStreamDeck::read, this));
+    setup_reader([this] { read(); });
 }
 
-void BaseStreamDeck::close()
-{
+void BaseStreamDeck::close() {
     m_device->close();
 }
 
-bool BaseStreamDeck::is_open() const
-{
+bool BaseStreamDeck::is_open() const {
     return m_device->is_open();
 }
 
-bool BaseStreamDeck::connected() const
-{
+bool BaseStreamDeck::connected() const {
     return m_device->connected();
 }
 
-unsigned short BaseStreamDeck::vendor_id() const
-{
+unsigned short BaseStreamDeck::vendor_id() const {
     return m_device->vendor_id();
 }
 
-unsigned short BaseStreamDeck::product_id() const
-{
+unsigned short BaseStreamDeck::product_id() const {
     return m_device->product_id();
 }
 
-std::string BaseStreamDeck::id() const
-{
+std::string BaseStreamDeck::id() const {
     return m_device->path();
-}  
-
-unsigned short BaseStreamDeck::key_count() const
-{
-    return KEY_COUNT;
 }
 
-std::string BaseStreamDeck::deck_type() const
-{
-    return DECK_TYPE;
+unsigned short BaseStreamDeck::key_count() const {
+    return m_key_count;
 }
 
-bool BaseStreamDeck::is_visual() const
-{
-    return DECK_VISUAL;
+std::string BaseStreamDeck::deck_type() const {
+    return m_deck_type;
 }
 
-std::pair<unsigned short, unsigned short> BaseStreamDeck::key_layout() const
-{
-    return {KEY_ROWS, KEY_COLS};
+bool BaseStreamDeck::is_visual() const {
+    return m_deck_visual;
 }
 
-BaseStreamDeck::KeyImageFormat BaseStreamDeck::key_image_format() const
-{
-    return {{KEY_PIXEL_WIDTH, KEY_PIXEL_HEIGHT}, KEY_IMAGE_FORMAT, KEY_FLIP, KEY_ROTATION};
+std::pair<unsigned short, unsigned short> BaseStreamDeck::key_layout() const {
+    return { m_key_rows, m_key_cols };
 }
 
-void BaseStreamDeck::set_poll_frequency(unsigned int hz) 
-{
-    read_poll_hz = std::min(std::max(hz, 1U), 1000U);
+BaseStreamDeck::KeyImageFormat BaseStreamDeck::key_image_format() const {
+    return {{ m_key_image_pixel_width, m_key_image_pixel_height }, m_key_image_format, m_key_image_flip, m_key_image_rotation };
 }
 
-void BaseStreamDeck::set_key_callback(IStreamDeck::KeyCallback callback)
-{
-    std::lock_guard<std::mutex> guard(key_state_mutex);
-    key_callback = callback;
+void BaseStreamDeck::set_poll_frequency(unsigned int hz) {
+    m_read_poll_hz = std::min(std::max(hz, 1U), 1000U);
 }
 
-std::vector<bool> BaseStreamDeck::key_states() const
-{
-    std::lock_guard<std::mutex> guard(key_state_mutex);
-    return last_key_stated;
+void BaseStreamDeck::set_key_callback(IStreamDeck::KeyCallback callback) {
+    std::lock_guard<std::mutex> guard(m_key_state_mutex);
+    m_key_callback = callback;
 }
 
-void BaseStreamDeck::read()
-{
+std::vector<bool> BaseStreamDeck::key_states() const {
+    std::lock_guard<std::mutex> guard(m_key_state_mutex);
+    return m_last_key_states;
+}
+
+void BaseStreamDeck::read() {
     using namespace std::chrono_literals;
-    while (run_read_thread)
-    {
+    while (m_run_read_thread) {
         auto new_key_states = read_key_states();
-        if (new_key_states.empty())
-        {
+        if (new_key_states.empty()) {
             std::this_thread::sleep_for(100ms);
             continue;
         }
 
-        std::lock_guard<std::mutex> lock(key_state_mutex);
-        if (key_callback)
-        {
-            for (int index = 0; index < KEY_COUNT; ++index)
-                if (new_key_states[index] != last_key_stated[index])
-                    key_callback(shared_from_this(), index, new_key_states[index]);
+        std::lock_guard<std::mutex> lock(m_key_state_mutex);
+        if (m_key_callback) {
+            for (int index = 0; index < m_key_count; ++index)
+                if (new_key_states[index] != m_last_key_states[index])
+                    m_key_callback(shared_from_this(), index, new_key_states[index]);
         }
 
-        last_key_stated = new_key_states;
+        m_last_key_states = new_key_states;
     }
 }
 
-void BaseStreamDeck::setup_reader(std::function<void()> callback)
-{
-    run_read_thread = false;
-    if (read_thread.joinable())
-        read_thread.join();
+void BaseStreamDeck::setup_reader(std::function<void()> callback) {
+    m_run_read_thread = false;
+    if (m_read_thread.joinable())
+        m_read_thread.join();
 
-    if (callback)
-    {
-        run_read_thread = true;
-        read_thread = std::thread(callback);
+    if (callback) {
+        m_run_read_thread = true;
+        m_read_thread = std::thread(callback);
     }
 }

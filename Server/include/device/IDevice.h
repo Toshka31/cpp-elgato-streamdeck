@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 
 #include <vector>
 #include <string>
@@ -7,8 +7,7 @@
 Base connection device, representing an abstract connected device which
 can be communicated with by an upper layer high level protocol.
 */
-class IDevice
-{
+class IDevice {
 public:
     virtual ~IDevice() = default;
     /*
@@ -31,7 +30,7 @@ public:
     to has been opened by the host.
     :rtype: bool
     :return: `True` if the device is open, `False` otherwise.
-    */      
+    */
     virtual bool is_open() const = 0;
 
     /*
@@ -39,7 +38,7 @@ public:
     to is still connected to the host.
     :rtype: bool
     :return: `True` if the device is still connected, `False` otherwise.
-    */        
+    */
     virtual bool connected() const = 0;
 
     /*
@@ -48,21 +47,21 @@ public:
     device from another.
     :rtype: str
     :return: Logical device path for the attached device.
-    */        
+    */
     virtual std::string path() const = 0;
 
     /*
     Retrieves the vendor ID value of the attached device.
     :rtype: int
     :return: Vendor ID of the attached device.
-    */        
+    */
     virtual unsigned short vendor_id() const = 0;
 
     /*
     Retrieves the product ID value of the attached device.
     :rtype: int
     :return: Product ID of the attached device.
-    */        
+    */
     virtual unsigned short product_id() const = 0;
 
     /*
@@ -73,7 +72,7 @@ public:
                                     ID of the report being sent.
     :rtype: int
     :return: Number of bytes successfully sent to the device.
-    */        
+    */
     virtual int write_feature(std::vector<unsigned char>) = 0;
 
     /*
@@ -95,7 +94,7 @@ public:
                                     ID of the report being sent.
     :rtype: int
     :return: Number of bytes successfully sent to the device.
-    */    
+    */
     virtual int write(std::vector<unsigned char>) = 0;
 
     /*

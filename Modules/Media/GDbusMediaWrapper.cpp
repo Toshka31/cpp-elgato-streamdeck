@@ -56,24 +56,25 @@ std::vector<std::string> GDbusMediaWrapper::getMediaPlayers() {
     GDBusConnection *session_bus = g_bus_get_sync(G_BUS_TYPE_SESSION, nullptr, nullptr);
     if (session_bus) {
         GDBusMessage *msg = g_dbus_message_new_method_call("org.freedesktop.DBus",
-                                                                     "/org/freedesktop/DBus",
-                                                                     "org.freedesktop.DBus",
-                                                                     "ListNames");
+                                                           "/org/freedesktop/DBus",
+                                                           "org.freedesktop.DBus",
+                                                           "ListNames"
+        );
 
         GDBusMessage *reply = g_dbus_connection_send_message_with_reply_sync(session_bus, msg,
-                                                               G_DBUS_SEND_MESSAGE_FLAGS_NONE,
-                                                               30000, // NOLINT: flatpak legacy code
-                                                               nullptr,
-                                                               nullptr,
-                                                               nullptr);
+                                                                             G_DBUS_SEND_MESSAGE_FLAGS_NONE,
+                                                                             30000, // NOLINT: flatpak legacy code
+                                                                             nullptr,
+                                                                             nullptr,
+                                                                             nullptr
+        );
         if (reply) {
-            auto type = g_dbus_message_get_message_type (reply);
+            auto type = g_dbus_message_get_message_type(reply);
             if (type == G_DBUS_MESSAGE_TYPE_ERROR) {
                 g_autoptr(GError) local_error = nullptr;
                 g_dbus_message_to_gerror(reply, &local_error);
                 std::cout << "portal: reply received with error: " << local_error->message << "\n";
-            }
-            else if (type == G_DBUS_MESSAGE_TYPE_METHOD_RETURN) {
+            } else if (type == G_DBUS_MESSAGE_TYPE_METHOD_RETURN) {
                 GVariant *v = g_dbus_message_get_body(reply);
                 GVariantIter *iter;
                 gchar *str;
@@ -104,10 +105,11 @@ bool GDbusMediaWrapper::sendMediaPlayerCommand(const std::string &dbus_player, c
                                                                              command.c_str());  // PlayPause | Next | Previous
 
         result = g_dbus_connection_send_message(session_bus,
-                                                     msg_command,
-                                                     G_DBUS_SEND_MESSAGE_FLAGS_NONE,
-                                                     nullptr,
-                                                     nullptr);
+                                                msg_command,
+                                                G_DBUS_SEND_MESSAGE_FLAGS_NONE,
+                                                nullptr,
+                                                nullptr
+        );
 
         if (result)
             result = g_dbus_connection_flush_sync(session_bus, nullptr, nullptr);
@@ -122,7 +124,8 @@ std::any GDbusMediaWrapper::getMediaPlayerProperty(const std::string &dbus_playe
         GDBusMessage *msg_prop = g_dbus_message_new_method_call(dbus_player.c_str(),
                                                                 "/org/mpris/MediaPlayer2",
                                                                 "org.freedesktop.DBus.Properties",
-                                                                "Get");
+                                                                "Get"
+        );
 
         g_dbus_message_set_body(msg_prop, g_variant_new("(ss)", "org.mpris.MediaPlayer2.Player", property.c_str()));
 
@@ -131,7 +134,8 @@ std::any GDbusMediaWrapper::getMediaPlayerProperty(const std::string &dbus_playe
                                                                              30000, // NOLINT: flatpak legacy code
                                                                              nullptr,
                                                                              nullptr,
-                                                                             nullptr);
+                                                                             nullptr
+        );
         if (reply) {
             auto type = g_dbus_message_get_message_type(reply);
             if (type == G_DBUS_MESSAGE_TYPE_ERROR) {

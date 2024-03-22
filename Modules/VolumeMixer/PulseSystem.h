@@ -9,8 +9,7 @@
 #include <vector>
 #include <mutex>
 
-class PulseSystem
-{
+class PulseSystem {
 public:
     PulseSystem();
 
@@ -41,7 +40,7 @@ private:
         std::string name;
     };
 
-    void addSinkInput(const SinkInput& si);
+    void addSinkInput(const SinkInput &si);
 
     void updateSinkInputs();
 
@@ -52,11 +51,11 @@ private:
     static void pa_sink_input_cb(pa_context *c, const pa_sink_input_info *i, int eol, void *userdata);
 
 private:
-    pa_threaded_mainloop *pa_ml{nullptr};
-    pa_mainloop_api *pa_api{nullptr};
-    pa_context *pa_Context{nullptr};
+    pa_threaded_mainloop *pa_ml{ nullptr };
+    pa_mainloop_api *pa_api{ nullptr };
+    pa_context *pa_Context{ nullptr };
 
-    pa_operation *pa_sinkinputs_update{nullptr};
+    pa_operation *pa_sinkinputs_update{ nullptr };
 
     std::mutex m_mutex;
 

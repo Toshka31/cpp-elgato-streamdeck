@@ -1,33 +1,27 @@
 #include "MixerComponent.h"
 
-void MixerComponent::init(std::shared_ptr<IDeviceButtonRestricted> device)
-{
+void MixerComponent::init(std::shared_ptr<IDeviceButtonRestricted> device) {
     m_device = device;
     m_manager = MixerButtonManager::getManager(m_device);
 }
 
-std::string MixerComponent::name() const
-{
+std::string MixerComponent::name() const {
     return "MixerComponent";
 }
 
-void MixerComponent::tick()
-{
+void MixerComponent::tick() {
     m_manager->tickButton(m_device->getOwnedKey());
     m_device->updateButtonImage();
 }
 
-void MixerComponent::actionPress()
-{
+void MixerComponent::actionPress() {
     m_manager->pressButton(m_device->getOwnedKey());
 }
 
-void MixerComponent::actionRelease()
-{
+void MixerComponent::actionRelease() {
 // pass
 }
 
-std::vector<unsigned char> MixerComponent::getImage() const
-{
+std::vector<unsigned char> MixerComponent::getImage() const {
     return m_manager->getButtonImage(m_device->getOwnedKey());
 }

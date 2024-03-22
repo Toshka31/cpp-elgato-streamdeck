@@ -2,11 +2,10 @@
 
 #include "module.h"
 
-class MixerSwitchComponent : public IComponent
-{
-  DECLARE_MODULE_COMPONENT(MixerModule, MixerSwitchComponent)
+class MixerSwitchComponent : public IComponent {
+    DECLARE_MODULE_COMPONENT(MixerModule, MixerSwitchComponent)
     COMPONENT_SETTINGS_EMPTY
- public:
+public:
     void init(std::shared_ptr<IDeviceButtonRestricted> device) override;
 
     std::string name() const override;

@@ -1,23 +1,19 @@
 #include <util/LibUsbHidWrapper.h>
 
-LibUSBHIDWrapper::LibUSBHIDWrapper()
-{
-    if (hid_init() != 0)
-    {
+LibUSBHIDWrapper::LibUSBHIDWrapper() {
+    if (hid_init() != 0) {
         throw std::runtime_error("hid_init failed");
     }
 };
 
-std::vector<UsbDeviceInfo> LibUSBHIDWrapper::enumerate(unsigned short vendor_id, unsigned short product_id)
-{
+std::vector<UsbDeviceInfo> LibUSBHIDWrapper::enumerate(unsigned short vendor_id, unsigned short product_id) {
     std::vector<UsbDeviceInfo> devices;
 
     std::unique_lock lock(hid_mutex);
-    hid_device_info* device_info_enum = hid_enumerate(vendor_id, product_id);
+    hid_device_info *device_info_enum = hid_enumerate(vendor_id, product_id);
     // lock.unlock(); if hid_enumerate returns independent list
-    hid_device_info* device_info = device_info_enum;
-    while (device_info)
-    {
+    hid_device_info *device_info = device_info_enum;
+    while (device_info) {
         devices.emplace_back(device_info->path, device_info->vendor_id, device_info->product_id);
         device_info = device_info->next;
     }
@@ -26,10 +22,9 @@ std::vector<UsbDeviceInfo> LibUSBHIDWrapper::enumerate(unsigned short vendor_id,
     return devices;
 };
 
-hid_device* LibUSBHIDWrapper::open_device(const std::string &path)
-{
+hid_device *LibUSBHIDWrapper::open_device(const std::string &path) {
     std::lock_guard lock(hid_mutex);
-    hid_device* device = hid_open_path(path.c_str());
+    hid_device *device = hid_open_path(path.c_str());
 
     if (!device)
         throw std::runtime_error("Could not open HID device.");
@@ -40,17 +35,14 @@ hid_device* LibUSBHIDWrapper::open_device(const std::string &path)
     return device;
 }
 
-void LibUSBHIDWrapper::close_device(hid_device* device)
-{
-    if (device)
-    {
+void LibUSBHIDWrapper::close_device(hid_device *device) {
+    if (device) {
         std::lock_guard lock(hid_mutex);
         hid_close(device);
     }
 }
 
-int LibUSBHIDWrapper::send_feature_report(hid_device* device, const unsigned char *data, size_t size)
-{
+int LibUSBHIDWrapper::send_feature_report(hid_device *device, const unsigned char *data, size_t size) {
     if (!device)
         throw std::runtime_error("No HID device (send_feature_report).");
 
@@ -64,8 +56,7 @@ int LibUSBHIDWrapper::send_feature_report(hid_device* device, const unsigned cha
     return result;
 }
 
-std::vector<unsigned char> LibUSBHIDWrapper::get_feature_report(hid_device* device, unsigned char report_id, size_t length)
-{
+std::vector<unsigned char> LibUSBHIDWrapper::get_feature_report(hid_device *device, unsigned char report_id, size_t length) {
     if (!device)
         throw std::runtime_error("No HID device (read).");
 
@@ -82,8 +73,7 @@ std::vector<unsigned char> LibUSBHIDWrapper::get_feature_report(hid_device* devi
     return data;
 }
 
-int LibUSBHIDWrapper::write(hid_device* device, unsigned char *data, size_t size)
-{
+int LibUSBHIDWrapper::write(hid_device *device, unsigned char *data, size_t size) {
     if (!device)
         throw std::runtime_error("No HID device (write).");
 
@@ -97,8 +87,7 @@ int LibUSBHIDWrapper::write(hid_device* device, unsigned char *data, size_t size
     return result;
 }
 
-std::vector<unsigned char> LibUSBHIDWrapper::read(hid_device* device, size_t length)
-{
+std::vector<unsigned char> LibUSBHIDWrapper::read(hid_device *device, size_t length) {
     if (!device)
         throw std::runtime_error("No HID device.");
 

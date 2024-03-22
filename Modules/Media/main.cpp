@@ -19,41 +19,35 @@
 #include "GDbusMediaWrapper.h"
 
 DECLARE_MODULE(MediaModule)
+
 DEFINE_MODULE(MediaModule)
 
-class MediaPlayComponent : public IComponent
-{
+class MediaPlayComponent : public IComponent {
     DECLARE_MODULE_COMPONENT(MediaModule, MediaPlayComponent)
-        COMPONENT_SETTINGS_EMPTY
+    COMPONENT_SETTINGS_EMPTY
 
 public:
-    void init(std::shared_ptr<IDeviceButtonRestricted> deck) override
-    {
+    void init(std::shared_ptr<IDeviceButtonRestricted> deck) override {
         m_deck = deck;
     }
 
-    std::string name() const override
-    {
+    std::string name() const override {
         return "Play/Pause";
     }
 
-    void tick() override
-    {
+    void tick() override {
         m_deck->updateButtonImage();
     }
 
-    void actionPress() override
-    {
+    void actionPress() override {
         GDbusMediaWrapper::playPause();
     }
 
-    void actionRelease() override
-    {
+    void actionRelease() override {
 
     }
 
-    std::vector<unsigned char> getImage() const override
-    {
+    std::vector<unsigned char> getImage() const override {
         if (GDbusMediaWrapper::isPlaying())
             return IMAGE_PAUSE;
         else
@@ -66,40 +60,33 @@ private:
 
 REGISTER_MODULE_COMPONENT(MediaModule, MediaPlayComponent)
 
-class MediaNextComponent : public IComponent
-{
+class MediaNextComponent : public IComponent {
     DECLARE_MODULE_COMPONENT(MediaModule, MediaNextComponent)
     COMPONENT_SETTINGS_EMPTY
 
 public:
-    void init(std::shared_ptr<IDeviceButtonRestricted> deck) override
-    {
+    void init(std::shared_ptr<IDeviceButtonRestricted> deck) override {
         m_deck = deck;
     }
 
-    std::string name() const override
-    {
+    std::string name() const override {
         return "Next";
     }
 
-    void tick() override
-    {
+    void tick() override {
         m_deck->updateButtonImage();
     }
 
-    void actionPress() override
-    {
+    void actionPress() override {
         if (GDbusMediaWrapper::hasNext())
             GDbusMediaWrapper::next();
     }
 
-    void actionRelease() override
-    {
+    void actionRelease() override {
 
     }
 
-    std::vector<unsigned char> getImage() const override
-    {
+    std::vector<unsigned char> getImage() const override {
         if (GDbusMediaWrapper::hasNext())
             return IMAGE_NEXT;
         else
@@ -112,40 +99,33 @@ private:
 
 REGISTER_MODULE_COMPONENT(MediaModule, MediaNextComponent)
 
-class MediaPrevComponent : public IComponent
-{
+class MediaPrevComponent : public IComponent {
     DECLARE_MODULE_COMPONENT(MediaModule, MediaPrevComponent)
     COMPONENT_SETTINGS_EMPTY
 
 public:
-    void init(std::shared_ptr<IDeviceButtonRestricted> deck) override
-    {
+    void init(std::shared_ptr<IDeviceButtonRestricted> deck) override {
         m_deck = deck;
     }
 
-    std::string name() const override
-    {
+    std::string name() const override {
         return "Previous";
     }
 
-    void tick() override
-    {
+    void tick() override {
         m_deck->updateButtonImage();
     }
 
-    void actionPress() override
-    {
+    void actionPress() override {
         if (GDbusMediaWrapper::hasPrevious())
             GDbusMediaWrapper::previous();
     }
 
-    void actionRelease() override
-    {
+    void actionRelease() override {
 
     }
 
-    std::vector<unsigned char> getImage() const override
-    {
+    std::vector<unsigned char> getImage() const override {
         if (GDbusMediaWrapper::hasPrevious())
             return IMAGE_PREV;
         else

@@ -7,8 +7,7 @@
 
 MSGPACK_ADD_ENUM(image::helper::EImageFormat);
 
-class ServerRPC
-{
+class ServerRPC {
 public:
     ServerRPC(uint16_t port, std::shared_ptr<DeviceController> dev_ctrl, std::shared_ptr<ModuleLoader> mod_ctrl);
 

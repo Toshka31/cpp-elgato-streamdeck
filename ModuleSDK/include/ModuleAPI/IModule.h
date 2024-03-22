@@ -9,16 +9,15 @@
 
 class IComponent;
 
-class IModule
-{
- public:
-  virtual std::string getName() const = 0;
+class IModule {
+public:
+    virtual std::string getName() const = 0;
 
-  virtual std::shared_ptr<IComponent> createComponent(const std::string& name) = 0;
+    virtual std::shared_ptr<IComponent> createComponent(const std::string &name) = 0;
 
-  virtual bool hasComponent(const std::string& name) = 0;
+    virtual bool hasComponent(const std::string &name) = 0;
 
-  virtual std::vector<std::string> getComponentList() const = 0;
+    virtual std::vector<std::string> getComponentList() const = 0;
 
-  virtual std::optional<ProvidedProfile> getProvidedProfile() const = 0;
+    virtual std::optional<ProvidedProfile> getProvidedProfile() const = 0;
 };

@@ -5,10 +5,9 @@
 
 namespace system_util {
 
-    std::filesystem::path getHomeDirectory()
-    {
-        struct passwd *pw = getpwuid(getuid());
-        return std::filesystem::path(pw->pw_dir);
-    }
+std::filesystem::path getHomeDirectory() {
+    struct passwd *pw = getpwuid(getuid());
+    return {pw->pw_dir};
+}
 
 }

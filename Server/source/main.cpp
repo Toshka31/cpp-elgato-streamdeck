@@ -2,8 +2,7 @@
 
 #include <boost/program_options.hpp>
 
-int main()
-{
+int main() {
     Engine engine;
     return engine.start();
 }

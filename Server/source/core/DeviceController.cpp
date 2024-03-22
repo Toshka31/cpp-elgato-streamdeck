@@ -3,74 +3,66 @@
 #include <device/DeviceManager.h>
 #include <device/TransportFactory.h>
 
+#include <utility>
+
 DeviceController::DeviceController(std::shared_ptr<ModuleLoader> mod_loader, std::shared_ptr<ITransport> transport)
-    : m_mod_loader(mod_loader),
-      m_dev_manager(transport)
+    : m_mod_loader(std::move(mod_loader))
+    , m_dev_manager(std::move(transport))
 {}
 
-void DeviceController::tick()
-{
+void DeviceController::tick() {
     std::lock_guard guard(m_mutex);
-    for (const auto& device : m_registered_deices)
-    {
-        if (device.second->is_device_open())
-        {
+    for (const auto &device : m_registered_deices) {
+        if (device.second->is_device_open()) {
             device.second->tick();
         }
     }
 }
 
-void DeviceController::deviceInspector()
-{
+void DeviceController::deviceInspector() {
     auto streamdecks = m_dev_manager.enumerate();
 
-    for (auto &deck : streamdecks)
-    {
+    for (auto &deck : streamdecks) {
         deck->open();
         deck->reset();
 
         auto reg_device = std::make_shared<RegisteredDevice>(deck, m_mod_loader);
         reg_device->init();
         std::lock_guard guard(m_mutex);
-        m_registered_deices.insert({deck->get_serial_number(), reg_device});
+        m_registered_deices.insert({ deck->get_serial_number(), reg_device });
     }
 }
 
-std::vector<std::string> DeviceController::getDevicesList() const
-{
+std::vector<std::string> DeviceController::getDevicesList() const {
     std::lock_guard guard(m_mutex);
     std::vector<std::string> devices;
-    for (const auto& device : m_registered_deices)
+    for (const auto &device : m_registered_deices)
         devices.push_back(device.first);
     return devices;
 }
 
-void DeviceController::setDeviceBrightness(const std::string &device_id, unsigned char brightness)
-{
+void DeviceController::setDeviceBrightness(const std::string &device_id, unsigned char brightness) {
     std::lock_guard guard(m_mutex);
     auto it = m_registered_deices.find(device_id);
     if (it != m_registered_deices.end())
         it->second->setBrightness(brightness);
 }
 
-void DeviceController::setDeviceCurrentProfile(const std::string &device_id, const std::string &profile)
-{
+void DeviceController::setDeviceCurrentProfile(const std::string &device_id, const std::string &profile) {
     std::lock_guard guard(m_mutex);
     auto it = m_registered_deices.find(device_id);
     if (it != m_registered_deices.end())
         it->second->setProfile(profile);
 }
 
-void DeviceController::setDeviceCurrentPage(const std::string &device_id, const std::string &page)
-{
+void DeviceController::setDeviceCurrentPage(const std::string &device_id, const std::string &page) {
     std::lock_guard guard(m_mutex);
     auto it = m_registered_deices.find(device_id);
     if (it != m_registered_deices.end())
         it->second->setPage(page);
 }
 
-void DeviceController::setDeviceButtonImage(const std::string &device_id, unsigned char button, std::vector<unsigned char>& image)
-{
+void DeviceController::setDeviceButtonImage(const std::string &device_id, unsigned char button, std::vector<unsigned char> &image) {
     std::lock_guard guard(m_mutex);
     std::cout << "image.size() = " << image.size() << std::endl;
     auto it = m_registered_deices.find(device_id);
@@ -78,17 +70,17 @@ void DeviceController::setDeviceButtonImage(const std::string &device_id, unsign
         it->second->setButtonImage(button, image);
 }
 
-void DeviceController::setDeviceButtonLabel(const std::string &device_id, unsigned char button, const std::string &label)
-{
+void DeviceController::setDeviceButtonLabel(const std::string &device_id, unsigned char button, const std::string &label) {
     std::lock_guard guard(m_mutex);
     auto it = m_registered_deices.find(device_id);
     if (it != m_registered_deices.end())
         it->second->setButtonLabel(button, label);
 }
 
-void DeviceController::setDeviceButtonComponent(const std::string &device_id, unsigned char button,
-                                                const std::string &module, const std::string &component)
-{
+void DeviceController::setDeviceButtonComponent(
+    const std::string &device_id, unsigned char button,
+    const std::string &module, const std::string &component
+) {
     std::lock_guard guard(m_mutex);
     auto it = m_registered_deices.find(device_id);
     if (it != m_registered_deices.end()) {
@@ -104,8 +96,7 @@ int DeviceController::getDeviceBrightness(const std::string &device_id) const {
     return {};
 }
 
-std::string DeviceController::getDeviceCurrentProfile(const std::string &device_id) const
-{
+std::string DeviceController::getDeviceCurrentProfile(const std::string &device_id) const {
     std::lock_guard guard(m_mutex);
     auto it = m_registered_deices.find(device_id);
     if (it != m_registered_deices.end())
@@ -113,8 +104,7 @@ std::string DeviceController::getDeviceCurrentProfile(const std::string &device_
     return {};
 }
 
-std::vector<std::string> DeviceController::getDeviceProfiles(const std::string &device_id) const
-{
+std::vector<std::string> DeviceController::getDeviceProfiles(const std::string &device_id) const {
     std::lock_guard guard(m_mutex);
     auto it = m_registered_deices.find(device_id);
     if (it != m_registered_deices.end())
@@ -122,8 +112,7 @@ std::vector<std::string> DeviceController::getDeviceProfiles(const std::string &
     return {};
 }
 
-std::string DeviceController::getDeviceCurrentPage(const std::string &device_id) const
-{
+std::string DeviceController::getDeviceCurrentPage(const std::string &device_id) const {
     std::lock_guard guard(m_mutex);
     auto it = m_registered_deices.find(device_id);
     if (it != m_registered_deices.end())
@@ -131,8 +120,7 @@ std::string DeviceController::getDeviceCurrentPage(const std::string &device_id)
     return {};
 }
 
-std::vector<std::string> DeviceController::getDevicePages(const std::string &device_id) const
-{
+std::vector<std::string> DeviceController::getDevicePages(const std::string &device_id) const {
     std::lock_guard guard(m_mutex);
     auto it = m_registered_deices.find(device_id);
     if (it != m_registered_deices.end())

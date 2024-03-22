@@ -6,12 +6,11 @@
 
 #include <memory>
 
-class MixerButtonManager
-{
+class MixerButtonManager {
 public:
-    static std::shared_ptr<MixerButtonManager> getManager(std::shared_ptr<IDeviceButtonRestricted> device);
+    static std::shared_ptr<MixerButtonManager> getManager(const std::shared_ptr<IDeviceButtonRestricted>& device);
 
-    MixerButtonManager(std::shared_ptr<IDeviceButtonRestricted>);
+    explicit MixerButtonManager(std::shared_ptr<IDeviceButtonRestricted>);
     ~MixerButtonManager() = default;
 
     void setPreviousProfileName(const std::string &profile_name);

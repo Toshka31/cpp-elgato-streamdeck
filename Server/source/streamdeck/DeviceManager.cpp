@@ -1,16 +1,15 @@
 #include <string>
 #include <iostream>
+#include <utility>
 
 #include <device/DeviceManager.h>
 #include <StreamDeckLib/ProductID.h>
 #include "StreamDeckFactory.h"
 
-
 DeviceManager::DeviceManager(std::shared_ptr<ITransport> transport)
-    : m_transport(transport) {}
+    : m_transport(std::move(transport)) {}
 
-std::vector<std::shared_ptr<IStreamDeck>> DeviceManager::enumerate() 
-{
+std::vector<std::shared_ptr<IStreamDeck>> DeviceManager::enumerate() {
     static std::vector<USBProductIDs> products = {
         USBProductIDs::USB_PID_STREAMDECK_ORIGINAL,
         USBProductIDs::USB_PID_STREAMDECK_ORIGINAL_V2,
@@ -23,11 +22,9 @@ std::vector<std::shared_ptr<IStreamDeck>> DeviceManager::enumerate()
     };
 
     std::vector<std::shared_ptr<IStreamDeck>> list_streamdeck;
-    for (auto prod : products)
-    {
+    for (auto prod : products) {
         auto devices = m_transport->enumerate(USBVendorIDs::USB_VID_ELGATO, prod);
-        for (const auto &device : devices)
-        {
+        for (const auto &device : devices) {
             std::cout << prod << std::endl;
             list_streamdeck.push_back(StreamDeckFactory::createInstance(prod, device));
         }

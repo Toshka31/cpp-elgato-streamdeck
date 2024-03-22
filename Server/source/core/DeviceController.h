@@ -1,12 +1,12 @@
 #pragma once
 
-#include <map>
-#include <string>
-#include <vector>
-
 #include "RegisteredDevice.h"
 #include "ModuleLoader.h"
 #include "device/DeviceManager.h"
+
+#include <map>
+#include <string>
+#include <vector>
 
 class DeviceController {
 public:
@@ -24,11 +24,16 @@ public:
 
     void setDeviceCurrentPage(const std::string &device_id, const std::string &page);
 
-    void setDeviceButtonImage(const std::string &device_id, unsigned char button, std::vector<unsigned char>& image);
+    void setDeviceButtonImage(const std::string &device_id, unsigned char button, std::vector<unsigned char> &image);
 
     void setDeviceButtonLabel(const std::string &device_id, unsigned char button, const std::string &label);
 
-    void setDeviceButtonComponent(const std::string &device_id, unsigned char button, const std::string &module, const std::string &component);
+    void setDeviceButtonComponent(
+        const std::string &device_id,
+        unsigned char button,
+        const std::string &module,
+        const std::string &component
+    );
 
     int getDeviceBrightness(const std::string &device_id) const;
 

@@ -8,8 +8,8 @@
 
 class StreamDeckClient {
 public:
-    StreamDeckClient(std::shared_ptr<grpc::Channel> channel)
-            : stub_(StreamDeckAPI::StreamDeckAPI::NewStub(channel)) {}
+    explicit StreamDeckClient(std::shared_ptr<grpc::Channel> channel)
+        : stub_(StreamDeckAPI::StreamDeckAPI::NewStub(channel)) {}
 
     std::map<std::string, std::vector<std::string>> getComponents();
 
@@ -19,13 +19,13 @@ public:
 
     std::string getDeviceCurrentProfile(const std::string &device);
 
-    int32_t setDeviceCurrentProfile(const std::string &device, const std::string &profile );
+    int32_t setDeviceCurrentProfile(const std::string &device, const std::string &profile);
 
     std::vector<std::string> getDevicePages(const std::string &device);
 
     std::string getDeviceCurrentPage(const std::string &device);
 
-    int32_t setDeviceCurrentPage(const std::string &device, const std::string &page );
+    int32_t setDeviceCurrentPage(const std::string &device, const std::string &page);
 
     std::vector<char> getDeviceButtonImage(const std::string &device, int button);
 
@@ -46,6 +46,5 @@ public:
 private:
     std::unique_ptr<StreamDeckAPI::StreamDeckAPI::Stub> stub_;
 };
-
 
 #endif //ELGATO_STREAMDECK_GRPCCLIENT_H

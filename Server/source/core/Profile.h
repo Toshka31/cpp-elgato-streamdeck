@@ -8,23 +8,22 @@
 #include <filesystem>
 #include <optional>
 
-
-struct KeyProfile
-{
+struct KeyProfile {
     KeyProfile() = default;
 
     static KeyProfile createKeyProfileWithLabel(std::string label);
     static KeyProfile createKeyProfileWithImage(std::string custom_image);
-    static KeyProfile createKeyProfileWithComponent(std::string module_name,
-                                                    std::string component_name);
+    static KeyProfile createKeyProfileWithComponent(
+        std::string module_name,
+        std::string component_name
+    );
     std::string m_custom_image;
     std::string m_custom_label;
     std::string m_module_name;
     std::string m_component_name;
 };
 
-class Profile
-{
+class Profile {
 public:
     explicit Profile(const std::filesystem::path &path);
     void save();
@@ -48,8 +47,7 @@ private:
     std::string m_profile_name;
     ushort m_brightness{};
 
-    struct Page
-    {
+    struct Page {
         std::string m_name;
         std::map<ushort, KeyProfile> m_keys;
     };

@@ -7,8 +7,8 @@ add_library(streamdeck.server.private.iface INTERFACE)
 target_include_directories(streamdeck.server.private.iface INTERFACE include)
 
 add_executable(streamdeck.server ${HEADERS_FILES} ${SOURCE_FILES})
-target_link_libraries(streamdeck.server 
-    PUBLIC
+target_link_libraries(streamdeck.server
+        PUBLIC
         boost_system
         boost_filesystem
         streamdeck.lib
@@ -21,4 +21,4 @@ target_link_libraries(streamdeck.server
 
 if (USE_EMULATOR)
     target_compile_definitions(streamdeck.server PUBLIC EMULATOR)
-endif()
+endif ()

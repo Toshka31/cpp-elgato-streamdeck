@@ -4,6 +4,6 @@
 
 namespace system_util {
 
-    std::filesystem::path getHomeDirectory();
+std::filesystem::path getHomeDirectory();
 
 }
