@@ -58,7 +58,7 @@ struct Command {
             std::cout << " " << "[" << param << "]";
         for (const auto &cmd : children) {
             std::cout << std::endl;
-            cmd->printInfo(++tab);
+            cmd->printInfo(tab+1);
         }
     }
 };
