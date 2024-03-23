@@ -32,6 +32,7 @@ std::vector<std::string> StreamDeckClient::getDevices() {
         std::copy(response.devices().begin(), response.devices().end(), result.begin());
         return result;
     }
+    return {};
 }
 
 std::vector<std::string> StreamDeckClient::getDeviceProfiles(const std::string &device) {
@@ -47,6 +48,7 @@ std::vector<std::string> StreamDeckClient::getDeviceProfiles(const std::string &
         std::copy(response.profiles().begin(), response.profiles().end(), result.begin());
         return result;
     }
+    return {};
 }
 
 std::string StreamDeckClient::getDeviceCurrentProfile(const std::string &device) {
@@ -60,6 +62,7 @@ std::string StreamDeckClient::getDeviceCurrentProfile(const std::string &device)
         std::vector<std::string> result;
         return response.profile();
     }
+    return {};
 }
 
 int32_t StreamDeckClient::setDeviceCurrentProfile(const std::string &device, const std::string &profile) {
@@ -73,6 +76,7 @@ int32_t StreamDeckClient::setDeviceCurrentProfile(const std::string &device, con
     if (status.ok()) {
         return response.code();
     }
+    return -1;
 }
 
 std::vector<std::string> StreamDeckClient::getDevicePages(const std::string &device) {
@@ -88,6 +92,7 @@ std::vector<std::string> StreamDeckClient::getDevicePages(const std::string &dev
         std::copy(response.pages().begin(), response.pages().end(), result.begin());
         return result;
     }
+    return {};
 }
 
 std::string StreamDeckClient::getDeviceCurrentPage(const std::string &device) {
@@ -101,6 +106,7 @@ std::string StreamDeckClient::getDeviceCurrentPage(const std::string &device) {
         std::vector<std::string> result;
         return response.page();
     }
+    return {};
 }
 
 int32_t StreamDeckClient::setDeviceCurrentPage(const std::string &device, const std::string &page) {
@@ -114,6 +120,7 @@ int32_t StreamDeckClient::setDeviceCurrentPage(const std::string &device, const 
     if (status.ok()) {
         return response.code();
     }
+    return -1;
 }
 
 std::vector<char> StreamDeckClient::getDeviceButtonImage(const std::string &device, int button) {
@@ -156,6 +163,7 @@ std::pair<std::string, std::string> StreamDeckClient::getDeviceButtonModuleCompo
     if (status.ok()) {
         return { response.module(), response.component() };
     }
+    return {};
 }
 
 int32_t StreamDeckClient::getDeviceBrightness(const std::string &device) {
@@ -168,6 +176,7 @@ int32_t StreamDeckClient::getDeviceBrightness(const std::string &device) {
     if (status.ok()) {
         return response.brightness();
     }
+    return -1;
 }
 
 int32_t StreamDeckClient::setDeviceBrightness(const std::string &device, int32_t brightness) {
@@ -181,6 +190,7 @@ int32_t StreamDeckClient::setDeviceBrightness(const std::string &device, int32_t
     if (status.ok()) {
         return response.code();
     }
+    return -1;
 }
 
 int32_t StreamDeckClient::setDeviceButtonImage(const std::string &device, int button, const std::vector<char> &img_data) {
@@ -196,6 +206,7 @@ int32_t StreamDeckClient::setDeviceButtonImage(const std::string &device, int bu
     if (status.ok()) {
         return response.code();
     }
+    return -1;
 }
 
 int32_t StreamDeckClient::setDeviceButtonLabel(const std::string &device, int button, const std::string &label) {
@@ -210,6 +221,7 @@ int32_t StreamDeckClient::setDeviceButtonLabel(const std::string &device, int bu
     if (status.ok()) {
         return response.code();
     }
+    return -1;
 }
 
 int32_t StreamDeckClient::setDeviceButtonModuleComponent(
@@ -230,4 +242,5 @@ int32_t StreamDeckClient::setDeviceButtonModuleComponent(
     if (status.ok()) {
         return response.code();
     }
+    return -1;
 }

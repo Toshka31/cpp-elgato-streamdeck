@@ -17726,7 +17726,7 @@ inline char* append_exponent(char* buf, int e)
     auto k = static_cast<std::uint32_t>(e);
     if (k < 10)
     {
-        // Always print at least two digits in the exponent.
+        // Always printInfo at least two digits in the exponent.
         // This is for compatibility with printf("%g").
         *buf++ = '0';
         *buf++ = static_cast<char>('0' + k);

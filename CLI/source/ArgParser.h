@@ -12,6 +12,15 @@ struct Command {
     std::function<void(const std::map<std::string, std::string> &)> callback;
     std::vector<Command *> children;
 
+    explicit Command(std::string name)
+        : m_name(std::move(name))
+    {}
+
+    ~Command() {
+        for (auto cmd : children)
+            delete cmd;
+    }
+
     Command *createSubCommand(const std::string &cmd) {
         auto command = new Command(cmd);
         children.push_back(command);
@@ -40,16 +49,26 @@ struct Command {
     [[nodiscard]] const std::vector<std::string> &needParameterList() const {
         return parameters;
     }
+
+    void printInfo(int tab) {
+        for (int i = 0; i < tab; ++i)
+            std::cout << "  ";
+        std:: cout << m_name;
+        for (const auto &param : parameters)
+            std::cout << " " << "[" << param << "]";
+        for (const auto &cmd : children) {
+            std::cout << std::endl;
+            cmd->printInfo(++tab);
+        }
+    }
 };
 
 class ArgParser : public Command {
 public:
-    ArgParser() = default;
+    explicit ArgParser(const std::string &name) : Command(name) {};
     ~ArgParser() = default;
 
-    void parse(int argc, char *argv[]) {
-        m_name = argv[0];
-
+    bool parse(int argc, char *argv[]) {
         std::map<std::string, std::string> collected_args;
 
         int cur = 1;
@@ -62,12 +81,11 @@ public:
                     collected_args.insert({ param, argv[cur] });
                     cur++;
                 } else {
-                    // TODO error
+                    return false;
                 }
             }
 
             if (command->callback) {
-                command->callback(collected_args);
                 break;
             }
 
@@ -75,10 +93,16 @@ public:
             cur++;
 
             if (!command)
-                break; // TODO error
+                return false;
         }
         if (command && command->callback) {
             command->callback(collected_args);
         }
+        delete command;
+        return true;
+    }
+
+    void printHelp() {
+        printInfo(0);
     }
 };

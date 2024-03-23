@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
 
     Mediator mediator(client);
 
-    ArgParser parser;
+    ArgParser parser(argv[0]);
 
     auto get_cmd = parser.createSubCommand("get");
     get_cmd->createSubCommand("module")->createSubCommand("list")
@@ -99,7 +99,8 @@ int main(int argc, char *argv[]) {
         ->addParameter("component_name")
         ->addAction([&mediator](auto &&PH1) { mediator.setDeviceButtonComponent(std::forward<decltype(PH1)>(PH1)); });
 
-    parser.parse(argc, argv);
+    if (!parser.parse(argc, argv))
+        parser.printHelp();
 
     return 0;
 }
